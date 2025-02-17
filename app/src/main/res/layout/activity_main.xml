@@ -1,19 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#3772E7"
+    android:orientation="vertical"
     tools:context=".MainActivity">
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_gravity="start"
+        android:fontFamily="@font/ys_medium"
+        android:paddingStart="16dp"
+        android:paddingTop="14dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="16dp"
+        android:text="@string/playlist_maker"
+        android:textColor="#FFFFFF"
+        android:textSize="22sp"
+        android:textStyle="normal" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
+        android:layout_weight="1"
+        android:backgroundTint="#FFFFFF"
+        android:fontFamily="@font/ys_medium"
+        android:text="@string/button_search"
+
+        android:textColor="#1A1B22"
+        android:textSize="22sp"
+        app:cornerRadius="16dp"
+        app:icon="@drawable/ic_search"
+        app:iconGravity="textStart"
+        app:iconPadding="10dp"
+        app:iconTint="#1A1B22" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
+        android:layout_weight="1"
+        android:backgroundTint="#FFFFFF"
+        android:fontFamily="@font/ys_medium"
+        android:text="@string/button_media"
+        android:textColor="#1A1B22"
+        android:textSize="22sp"
+        app:cornerRadius="16dp"
+        app:icon="@drawable/ic_media"
+        app:iconGravity="textStart"
+        app:iconPadding="10dp"
+        app:iconTint="#1A1B22" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_weight="1"
+        android:backgroundTint="#FFFFFF"
+        android:fontFamily="@font/ys_medium"
+        android:text="@string/button_settings"
+        android:textColor="#1A1B22"
+        android:textSize="22sp"
+        app:cornerRadius="16dp"
+        app:icon="@drawable/ic_settings"
+        app:iconGravity="textStart"
+        app:iconPadding="10dp"
+        app:iconTint="#1A1B22" />
+
+
+</LinearLayout>
+
