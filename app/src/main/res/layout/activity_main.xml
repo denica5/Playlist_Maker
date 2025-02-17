@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="start"
-        android:fontFamily="@font/ys_medium"
+
         android:paddingStart="16dp"
         android:paddingTop="14dp"
         android:paddingEnd="16dp"
@@ -34,7 +34,7 @@
         android:layout_marginBottom="8dp"
         android:layout_weight="1"
         android:backgroundTint="#FFFFFF"
-        android:fontFamily="@font/ys_medium"
+
         android:text="@string/button_search"
 
         android:textColor="#1A1B22"
@@ -54,7 +54,7 @@
         android:layout_marginBottom="8dp"
         android:layout_weight="1"
         android:backgroundTint="#FFFFFF"
-        android:fontFamily="@font/ys_medium"
+
         android:text="@string/button_media"
         android:textColor="#1A1B22"
         android:textSize="22sp"
@@ -73,7 +73,7 @@
         android:layout_marginBottom="8dp"
         android:layout_weight="1"
         android:backgroundTint="#FFFFFF"
-        android:fontFamily="@font/ys_medium"
+
         android:text="@string/button_settings"
         android:textColor="#1A1B22"
         android:textSize="22sp"
