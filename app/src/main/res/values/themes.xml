@@ -7,5 +7,10 @@
 
     <style name="Theme.PlaylistMaker" parent="Base.Theme.PlaylistMaker" />
 
+    <style name="Color1SwitchStyle" parent="Theme.PlaylistMaker">
+        <item name="colorControlActivated">#E6E8EB</item>
+        <item name="colorSwitchThumbNormal">#E6E8EB</item>
+
+    </style>
 
 </resources>

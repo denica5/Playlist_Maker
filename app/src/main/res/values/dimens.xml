@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="medium_text_size">22sp</dimen>
+    <dimen name="medium_text_size">22sp</dimen>
+    <dimen name="button_corner_radius_16dp">16dp</dimen>
+    <dimen name="icon_padding_10dp">10dp</dimen>
+</resources>

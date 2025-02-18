@@ -14,14 +14,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="start"
-
+        android:fontFamily="@font/ys_medium"
         android:paddingStart="16dp"
         android:paddingTop="14dp"
         android:paddingEnd="16dp"
         android:paddingBottom="16dp"
-        android:text="@string/playlist_maker"
+        android:text="@string/header_playlist_maker"
         android:textColor="#FFFFFF"
-        android:textSize="22sp"
+        android:textSize="@dimen/medium_text_size"
         android:textStyle="normal" />
 
 
@@ -34,15 +34,14 @@
         android:layout_marginBottom="8dp"
         android:layout_weight="1"
         android:backgroundTint="#FFFFFF"
-
+        android:fontFamily="@font/ys_medium"
         android:text="@string/button_search"
-
         android:textColor="#1A1B22"
-        android:textSize="22sp"
-        app:cornerRadius="16dp"
+        android:textSize="@dimen/medium_text_size"
+        app:cornerRadius="@dimen/button_corner_radius_16dp"
         app:icon="@drawable/ic_search"
         app:iconGravity="textStart"
-        app:iconPadding="10dp"
+        app:iconPadding="@dimen/icon_padding_10dp"
         app:iconTint="#1A1B22" />
 
     <Button
@@ -54,33 +53,33 @@
         android:layout_marginBottom="8dp"
         android:layout_weight="1"
         android:backgroundTint="#FFFFFF"
-
+        android:fontFamily="@font/ys_medium"
         android:text="@string/button_media"
         android:textColor="#1A1B22"
-        android:textSize="22sp"
-        app:cornerRadius="16dp"
+        android:textSize="@dimen/medium_text_size"
+        app:cornerRadius="@dimen/button_corner_radius_16dp"
         app:icon="@drawable/ic_media"
         app:iconGravity="textStart"
-        app:iconPadding="10dp"
+        app:iconPadding="@dimen/icon_padding_10dp"
         app:iconTint="#1A1B22" />
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
         android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
         android:layout_marginBottom="8dp"
         android:layout_weight="1"
         android:backgroundTint="#FFFFFF"
-
+        android:fontFamily="@font/ys_medium"
         android:text="@string/button_settings"
         android:textColor="#1A1B22"
-        android:textSize="22sp"
-        app:cornerRadius="16dp"
+        android:textSize="@dimen/medium_text_size"
+        app:cornerRadius="@dimen/button_corner_radius_16dp"
         app:icon="@drawable/ic_settings"
         app:iconGravity="textStart"
-        app:iconPadding="10dp"
+        app:iconPadding="@dimen/icon_padding_10dp"
         app:iconTint="#1A1B22" />
 
 
