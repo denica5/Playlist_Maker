@@ -2,22 +2,39 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/settings"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="@color/white_color"
     android:orientation="vertical">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <ImageView
+            android:id="@+id/settings_arrow_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="20dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="20dp"
+            android:src="@drawable/ic_arrow_back"
+            app:tint="@color/text_button_color"
+            />
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fontFamily="@font/ys_medium"
-        android:paddingStart="16dp"
+        android:paddingStart="@dimen/settings_start_padding_16dp"
         android:paddingTop="14dp"
         android:paddingEnd="16dp"
         android:paddingBottom="16dp"
         android:text="@string/header_settings"
-        android:textColor="#1A1B22"
+        android:textColor="@color/text_button_color"
         android:textSize="22sp" />
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -29,25 +46,26 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:paddingStart="16dp"
+            android:paddingStart="@dimen/settings_start_padding_16dp"
             android:paddingTop="21dp"
             android:paddingEnd="16dp"
             android:paddingBottom="21dp"
+
             android:text="@string/dark_theme"
-            android:textColor="#1A1B22"
+            android:textColor="@color/text_button_color"
             android:textSize="16sp" />
 
         <androidx.appcompat.widget.SwitchCompat
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:checked="true"
+            android:checked="false"
             android:paddingStart="18dp"
             android:paddingTop="21dp"
             android:paddingEnd="18dp"
             android:paddingBottom="22dp"
-            app:theme="@style/Color1SwitchStyle"
-
+            app:thumbTint="#AEAFB4"
+            app:trackTint="#E6E8EB"
             />
     </LinearLayout>
 
@@ -60,12 +78,12 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:paddingStart="16dp"
+            android:paddingStart="@dimen/settings_start_padding_16dp"
             android:paddingTop="22dp"
             android:paddingEnd="16dp"
             android:paddingBottom="21dp"
             android:text="@string/share_app"
-            android:textColor="#1A1B22"
+            android:textColor="@color/text_button_color"
             android:textSize="16sp" />
 
         <ImageView
@@ -77,7 +95,8 @@
             android:paddingTop="22dp"
             android:paddingEnd="16dp"
             android:paddingBottom="22dp"
-            android:src="@drawable/ic_share" />
+            android:src="@drawable/ic_share"
+           app:tint="@color/settings_icon_color"/>
     </LinearLayout>
 
     <LinearLayout
@@ -89,12 +108,12 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:paddingStart="16dp"
+            android:paddingStart="@dimen/settings_start_padding_16dp"
             android:paddingTop="21dp"
             android:paddingEnd="16dp"
             android:paddingBottom="21dp"
             android:text="@string/write_support"
-            android:textColor="#1A1B22"
+            android:textColor="@color/text_button_color"
             android:textSize="16sp" />
 
         <ImageView
@@ -106,7 +125,7 @@
             android:paddingEnd="14dp"
             android:paddingBottom="21dp"
             android:src="@drawable/ic_support"
-
+           app:tint="@color/settings_icon_color"
             />
     </LinearLayout>
 
@@ -119,12 +138,12 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:paddingStart="16dp"
+            android:paddingStart="@dimen/settings_start_padding_16dp"
             android:paddingTop="21dp"
             android:paddingEnd="16dp"
             android:paddingBottom="21dp"
             android:text="@string/user_agreement"
-            android:textColor="#1A1B22"
+            android:textColor="@color/text_button_color"
             android:textSize="16sp" />
 
         <ImageView
@@ -137,7 +156,7 @@
             android:paddingEnd="20dp"
             android:paddingBottom="23dp"
             android:src="@drawable/ic_arrow_forward"
-
+           app:tint="@color/settings_icon_color"
             />
 
     </LinearLayout>
