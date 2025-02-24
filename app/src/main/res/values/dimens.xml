@@ -6,4 +6,5 @@
     <dimen name="main_start_padding_16dp">16dp</dimen>
     <dimen name="main_end_padding_16dp">16dp</dimen>
     <dimen name="settings_start_padding_16dp">16dp</dimen>
+    <dimen name="settings_text_16sp">16sp</dimen>
 </resources>

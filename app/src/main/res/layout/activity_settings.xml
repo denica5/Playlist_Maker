@@ -33,7 +33,7 @@
         android:paddingBottom="16dp"
         android:text="@string/header_settings"
         android:textColor="@color/text_button_color"
-        android:textSize="22sp" />
+        android:textSize="@dimen/medium_text_size" />
     </LinearLayout>
 
     <LinearLayout
@@ -53,7 +53,7 @@
 
             android:text="@string/dark_theme"
             android:textColor="@color/text_button_color"
-            android:textSize="16sp" />
+            android:textSize="@dimen/settings_text_16sp" />
 
         <androidx.appcompat.widget.SwitchCompat
             android:layout_width="wrap_content"
@@ -84,7 +84,7 @@
             android:paddingBottom="21dp"
             android:text="@string/share_app"
             android:textColor="@color/text_button_color"
-            android:textSize="16sp" />
+            android:textSize="@dimen/settings_text_16sp" />
 
         <ImageView
             android:layout_width="wrap_content"
@@ -114,7 +114,7 @@
             android:paddingBottom="21dp"
             android:text="@string/write_support"
             android:textColor="@color/text_button_color"
-            android:textSize="16sp" />
+            android:textSize="@dimen/settings_text_16sp" />
 
         <ImageView
             android:layout_width="wrap_content"
@@ -144,7 +144,7 @@
             android:paddingBottom="21dp"
             android:text="@string/user_agreement"
             android:textColor="@color/text_button_color"
-            android:textSize="16sp" />
+            android:textSize="@dimen/settings_text_16sp" />
 
         <ImageView
             android:layout_width="wrap_content"
