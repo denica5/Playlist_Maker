@@ -64,8 +64,8 @@
             android:paddingTop="21dp"
             android:paddingEnd="18dp"
             android:paddingBottom="22dp"
-            app:thumbTint="#AEAFB4"
-            app:trackTint="#E6E8EB"
+            app:thumbTint="@color/settings_switch_thumb_color"
+            app:trackTint="@color/settings_switch_track_color"
             />
     </LinearLayout>
 
