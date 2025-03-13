@@ -3,8 +3,9 @@
     <dimen name="medium_text_size">22sp</dimen>
     <dimen name="button_corner_radius_16dp">16dp</dimen>
     <dimen name="icon_padding_10dp">10dp</dimen>
-    <dimen name="main_start_padding_16dp">16dp</dimen>
-    <dimen name="main_end_padding_16dp">16dp</dimen>
+    <dimen name="main_start_margin_16dp">16dp</dimen>
+    <dimen name="main_end_margin_16dp">16dp</dimen>
     <dimen name="settings_start_padding_16dp">16dp</dimen>
     <dimen name="settings_text_16sp">16sp</dimen>
+    <dimen name="main_bottom_padding_8dp">8dp</dimen>
 </resources>

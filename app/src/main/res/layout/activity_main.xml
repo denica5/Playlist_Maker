@@ -11,79 +11,28 @@
     tools:context=".MainActivity">
 
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="start"
-        android:fontFamily="@font/ys_medium"
-        android:paddingStart="@dimen/main_start_padding_16dp"
-        android:paddingTop="14dp"
-        android:paddingEnd="@dimen/main_end_padding_16dp"
-        android:paddingBottom="16dp"
-        android:text="@string/header_playlist_maker"
-        android:textColor="@color/white_color"
-        android:textSize="@dimen/medium_text_size"
-        android:textStyle="normal" />
+        style="@style/MainTextHeaderStyle"
+        android:text="@string/header_playlist_maker" />
 
 
     <Button
         android:id="@+id/search_button"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginStart="@dimen/main_start_padding_16dp"
+        style="@style/MainButtonsStyle"
         android:layout_marginTop="24dp"
-        android:layout_marginEnd="@dimen/main_end_padding_16dp"
-        android:layout_marginBottom="8dp"
-        android:layout_weight="1"
-        android:backgroundTint="@color/white_color"
-        android:fontFamily="@font/ys_medium"
         android:text="@string/button_search"
-        android:textColor="@color/text_button_color"
-        android:textSize="@dimen/medium_text_size"
-        app:cornerRadius="@dimen/button_corner_radius_16dp"
-        app:icon="@drawable/ic_search"
-        app:iconGravity="textStart"
-        app:iconPadding="@dimen/icon_padding_10dp"
-        app:iconTint="@color/text_button_color" />
+        app:icon="@drawable/ic_search" />
 
     <Button
         android:id="@+id/media_button"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginStart="@dimen/main_start_padding_16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="@dimen/main_end_padding_16dp"
-        android:layout_marginBottom="8dp"
-        android:layout_weight="1"
-        android:backgroundTint="@color/white_color"
-        android:fontFamily="@font/ys_medium"
+        style="@style/MainButtonsStyle"
         android:text="@string/button_media"
-        android:textColor="@color/text_button_color"
-        android:textSize="@dimen/medium_text_size"
-        app:cornerRadius="@dimen/button_corner_radius_16dp"
-        app:icon="@drawable/ic_media"
-        app:iconGravity="textStart"
-        app:iconPadding="@dimen/icon_padding_10dp"
-        app:iconTint="@color/text_button_color" />
+        app:icon="@drawable/ic_media" />
 
     <Button
         android:id="@+id/settings_button"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginStart="@dimen/main_start_padding_16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="@dimen/main_end_padding_16dp"
-        android:layout_marginBottom="8dp"
-        android:layout_weight="1"
-        android:backgroundTint="@color/white_color"
-        android:fontFamily="@font/ys_medium"
+        style="@style/MainButtonsStyle"
         android:text="@string/button_settings"
-        android:textColor="@color/text_button_color"
-        android:textSize="@dimen/medium_text_size"
-        app:cornerRadius="@dimen/button_corner_radius_16dp"
-        app:icon="@drawable/ic_settings"
-        app:iconGravity="textStart"
-        app:iconPadding="@dimen/icon_padding_10dp"
-        app:iconTint="@color/text_button_color" />
+        app:icon="@drawable/ic_settings" />
 
 
 </LinearLayout>
