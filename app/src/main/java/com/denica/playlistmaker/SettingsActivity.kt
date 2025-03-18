@@ -1,10 +1,14 @@
 package com.denica.playlistmaker
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.widget.ImageView
+import android.widget.LinearLayout
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.widget.SwitchCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 
@@ -18,9 +22,55 @@ class SettingsActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
         val settingsArrowBack = findViewById<ImageView>(R.id.settings_arrow_back)
+        val shareAppLayout = findViewById<LinearLayout>(R.id.share_app_layout)
+        val writeSupportLayout = findViewById<LinearLayout>(R.id.write_support_layout)
+        val userAgreementLayout = findViewById<LinearLayout>(R.id.user_agreement_layout)
+        val darkThemeSwitch = findViewById<SwitchCompat>(R.id.dark_theme_switch)
         settingsArrowBack.setOnClickListener {
             finish()
         }
+        shareAppLayout.setOnClickListener {
+            val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                putExtra(
+                    Intent.EXTRA_TEXT,
+                    "https://practicum.yandex.ru/android-developer/?from=catalog"
+                )
+                setType("text/plain")
+                startActivity(this)
+            }
+        }
+        writeSupportLayout.setOnClickListener {
+            val writeSupportIntent = Intent(Intent.ACTION_SENDTO)
+
+            writeSupportIntent.apply {
+                data = Uri.parse("mailto:")
+                putExtra(Intent.EXTRA_EMAIL, arrayOf("Denica5@yandex.ru"))
+                putExtra(
+                    Intent.EXTRA_SUBJECT,
+                    "Сообщение разработчикам и разработчицам приложения Playlist Maker"
+                )
+                putExtra(
+                    Intent.EXTRA_TEXT,
+                    "Спасибо разработчикам и разработчицам за крутое приложение!"
+                )
+
+                startActivity(this)
+            }
+        }
+        userAgreementLayout.setOnClickListener {
+            val userAgreementIntent =
+                Intent(Intent.ACTION_VIEW, Uri.parse("https://yandex.ru/legal/practicum_offer"))
+
+            startActivity(userAgreementIntent)
+
+        }
+        darkThemeSwitch.setOnClickListener {
+            if(darkThemeSwitch.isChecked) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            } else AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        }
+
     }
 }

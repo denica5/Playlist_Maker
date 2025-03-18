@@ -16,7 +16,8 @@
             style="@style/SettingsBackArrowStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_arrow_back" />
+            android:src="@drawable/ic_arrow_back"
+            />
 
         <TextView
             style="@style/SettingsHeaderStyle"
@@ -32,11 +33,14 @@
             android:text="@string/dark_theme" />
 
         <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/dark_theme_switch"
             style="@style/DarkThemeSwitch"
             />
     </LinearLayout>
 
-    <LinearLayout style="@style/SettingsCategoryLayoutStyle">
+    <LinearLayout
+        android:id="@+id/share_app_layout"
+        style="@style/SettingsCategoryLayoutStyle">
 
         <TextView
             style="@style/SettingsCategoryTextStyle"
@@ -49,10 +53,14 @@
             android:paddingTop="22dp"
             android:paddingEnd="16dp"
             android:paddingBottom="22dp"
-            android:src="@drawable/ic_share" />
+            android:src="@drawable/ic_share"
+
+            />
     </LinearLayout>
 
-    <LinearLayout style="@style/SettingsCategoryLayoutStyle">
+    <LinearLayout
+        android:id="@+id/write_support_layout"
+        style="@style/SettingsCategoryLayoutStyle">
 
         <TextView
             style="@style/SettingsCategoryTextStyle"
@@ -68,7 +76,9 @@
             android:src="@drawable/ic_support" />
     </LinearLayout>
 
-    <LinearLayout style="@style/SettingsCategoryLayoutStyle">
+    <LinearLayout
+        android:id="@+id/user_agreement_layout"
+        style="@style/SettingsCategoryLayoutStyle">
 
         <TextView
             style="@style/SettingsCategoryTextStyle"
