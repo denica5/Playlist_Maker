@@ -32,10 +32,9 @@ class SettingsActivity : AppCompatActivity() {
             finish()
         }
         shareAppLayout.setOnClickListener {
-            val shareIntent = Intent(Intent.ACTION_SEND).apply {
+            Intent(Intent.ACTION_SEND).apply {
                 putExtra(
-                    Intent.EXTRA_TEXT,
-                    "https://practicum.yandex.ru/android-developer/?from=catalog"
+                    Intent.EXTRA_TEXT, getString(R.string.share_text_practicum)
                 )
                 setType("text/plain")
                 startActivity(this)
@@ -46,14 +45,15 @@ class SettingsActivity : AppCompatActivity() {
 
             writeSupportIntent.apply {
                 data = Uri.parse("mailto:")
-                putExtra(Intent.EXTRA_EMAIL, arrayOf("Denica5@yandex.ru"))
                 putExtra(
-                    Intent.EXTRA_SUBJECT,
-                    "Сообщение разработчикам и разработчицам приложения Playlist Maker"
+                    Intent.EXTRA_EMAIL,
+                    arrayOf(getString(R.string.write_support_my_email_practicum))
                 )
                 putExtra(
-                    Intent.EXTRA_TEXT,
-                    "Спасибо разработчикам и разработчицам за крутое приложение!"
+                    Intent.EXTRA_SUBJECT, getString(R.string.write_support_email_subject_practicum)
+                )
+                putExtra(
+                    Intent.EXTRA_TEXT, getString(R.string.write_support_email_body_practicum)
                 )
 
                 startActivity(this)
@@ -61,14 +61,14 @@ class SettingsActivity : AppCompatActivity() {
         }
         userAgreementLayout.setOnClickListener {
             val userAgreementIntent =
-                Intent(Intent.ACTION_VIEW, Uri.parse("https://yandex.ru/legal/practicum_offer"))
+                Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.user_agreement_practicum)))
 
             startActivity(userAgreementIntent)
 
         }
         darkThemeSwitch.setOnClickListener {
-            if(darkThemeSwitch.isChecked) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            if (darkThemeSwitch.isChecked) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
             } else AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         }
 

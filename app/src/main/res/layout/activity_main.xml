@@ -17,7 +17,7 @@
         style="@style/MainButtonsStyle"
         android:layout_marginTop="24dp"
         android:text="@string/button_search"
-        app:icon="@drawable/ic_search" />
+        app:icon="@drawable/ic_search_main_layout" />
 
     <Button
         android:id="@+id/media_button"
