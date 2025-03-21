@@ -5,15 +5,18 @@ import android.os.PersistableBundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
+import com.google.android.material.appbar.MaterialToolbar
 
 class SearchActivity : AppCompatActivity() {
-    var searchText = ""
+    private var searchText = ""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -25,11 +28,19 @@ class SearchActivity : AppCompatActivity() {
         }
         val searchEditText = findViewById<EditText>(R.id.search_edit_text)
         val searchClearIc = findViewById<ImageView>(R.id.search_clear_ic_x)
-        val searchBackArrow = findViewById<ImageView>(R.id.search_back_arrow)
+        val searchHeader = findViewById<MaterialToolbar>(R.id.search_header)
         searchEditText.setText(searchText)
         searchClearIc.setOnClickListener {
             searchEditText.setText("")
+            try{
+                val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(it.windowToken, 0)
+            } catch (e: Exception) {
+                //
+            }
+
         }
+
 
         val searchTextWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -37,7 +48,7 @@ class SearchActivity : AppCompatActivity() {
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                searchClearIc.visibility = clearIcVisibility(s)
+                searchClearIc.isVisible = !s.isNullOrEmpty()
                 searchText = s.toString()
             }
 
@@ -47,9 +58,10 @@ class SearchActivity : AppCompatActivity() {
         }
         searchEditText.addTextChangedListener(searchTextWatcher)
 
-        searchBackArrow.setOnClickListener {
+        searchHeader.setNavigationOnClickListener {
             finish()
         }
+
     }
 
     companion object {
@@ -67,11 +79,5 @@ class SearchActivity : AppCompatActivity() {
         searchText = savedInstanceState.getString(SEARCH_TEXT_KEY) ?: ""
     }
 
-    fun clearIcVisibility(s: CharSequence?): Int {
-        return if (s.isNullOrEmpty()) {
-            View.GONE
-        } else {
-            View.VISIBLE
-        }
-    }
+
 }

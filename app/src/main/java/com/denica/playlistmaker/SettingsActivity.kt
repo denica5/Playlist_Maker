@@ -1,16 +1,19 @@
 package com.denica.playlistmaker
 
 import android.content.Intent
+import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
-import android.widget.ImageView
-import android.widget.LinearLayout
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.appcompat.widget.SwitchCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.switchmaterial.SwitchMaterial
+import com.google.android.material.textview.MaterialTextView
+import java.security.AccessController.getContext
+
 
 class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,14 +26,15 @@ class SettingsActivity : AppCompatActivity() {
             insets
         }
 
-        val settingsArrowBack = findViewById<ImageView>(R.id.settings_arrow_back)
-        val shareAppLayout = findViewById<LinearLayout>(R.id.share_app_layout)
-        val writeSupportLayout = findViewById<LinearLayout>(R.id.write_support_layout)
-        val userAgreementLayout = findViewById<LinearLayout>(R.id.user_agreement_layout)
-        val darkThemeSwitch = findViewById<SwitchCompat>(R.id.dark_theme_switch)
-        settingsArrowBack.setOnClickListener {
+        val settingsHeader = findViewById<MaterialToolbar>(R.id.settings_header)
+        val shareAppLayout = findViewById<MaterialTextView>(R.id.share_app_category)
+        val writeSupportLayout = findViewById<MaterialTextView>(R.id.write_support_category)
+        val userAgreementLayout = findViewById<MaterialTextView>(R.id.user_agreement_category)
+        val darkThemeSwitch = findViewById<SwitchMaterial>(R.id.dark_theme_switch)
+        settingsHeader.setNavigationOnClickListener {
             finish()
         }
+        darkThemeSwitch.isChecked = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
         shareAppLayout.setOnClickListener {
             Intent(Intent.ACTION_SEND).apply {
                 putExtra(

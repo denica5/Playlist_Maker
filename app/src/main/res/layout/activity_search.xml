@@ -8,21 +8,16 @@
     android:orientation="vertical"
     tools:context=".SearchActivity">
 
-    <LinearLayout
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/search_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:title="@string/search_text_header"/>
 
-        <ImageView
-            android:id="@+id/search_back_arrow"
-            style="@style/SettingsBackArrowStyle"
-            app:srcCompat="@drawable/ic_arrow_back" />
 
-        <TextView
-            android:id="@+id/search_text_view_header"
-            style="@style/SettingsHeaderStyle"
-            android:text="@string/search_text_header" />
-    </LinearLayout>
+
 
     <FrameLayout
         android:layout_width="match_parent"
