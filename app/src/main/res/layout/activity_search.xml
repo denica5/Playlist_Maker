@@ -10,11 +10,10 @@
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/search_header"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        style="@style/SettingsHeaderStyle"
         app:navigationIcon="@drawable/ic_arrow_back"
-        app:title="@string/search_text_header"/>
+        app:title="@string/search_text_header"
+        />
 
 
 

@@ -53,26 +53,15 @@
     <style name="SettingsHeaderStyle">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingStart">12dp</item>
-        <item name="android:paddingTop">14dp</item>
-        <item name="android:paddingEnd">16dp</item>
-        <item name="android:paddingBottom">16dp</item>
-        <item name="android:textColor">@color/black</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="titleTextColor">@color/black</item>
         <item name="android:textSize">@dimen/medium_text_size</item>
         <item name="fontFamily">@font/ys_display_medium</item>
         <item name="fontWeight">500</item>
+        <item name="navigationIconTint">@color/black</item>
     </style>
 
-    <style name="SettingsBackArrowStyle">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_gravity">start</item>
-        <item name="android:paddingStart">20dp</item>
-        <item name="android:paddingTop">20dp</item>
-        <item name="android:paddingEnd">@dimen/main_end_margin_16dp</item>
-        <item name="android:paddingBottom">20dp</item>
-        <item name="tint">@color/black</item>
-    </style>
+
 
     <style name="SettingsCategoryStyle">
         <item name="android:layout_width">match_parent</item>
@@ -84,6 +73,8 @@
         <item name="android:textSize">@dimen/settings_text_16sp</item>
         <item name="fontFamily">@font/ys_display_regular</item>
         <item name="fontWeight">400</item>
+        <item name="drawableTint">@color/settings_icon_color</item>
+
     </style>
 
 

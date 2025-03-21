@@ -8,11 +8,11 @@
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/settings_header"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        style="@style/SettingsHeaderStyle"
         app:navigationIcon="@drawable/ic_arrow_back"
-        app:title="@string/header_settings" />
+        app:title="@string/header_settings"
+
+        />
 
     <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/dark_theme_switch"
@@ -25,7 +25,8 @@
         android:id="@+id/share_app_category"
         style="@style/SettingsCategoryStyle"
         android:text="@string/share_app"
-        android:drawableEnd="@drawable/ic_share"/>
+        android:drawableEnd="@drawable/ic_share"
+        />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/write_support_category"
