@@ -44,11 +44,17 @@ class TrackListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
     fun bind(track: Track) {
         Glide.with(itemView.context).load(track.artworkUrl100).centerCrop()
-            .transform(RoundedCorners(2)).into(trackImage)
+            .transform(RoundedCorners(dpToPx(2f,itemView.context))).into(trackImage)
         trackName.text = track.trackName
         trackArtistName.text = track.artistName
         trackDuration.text = track.trackTime
     }
 
-
+    fun dpToPx(dp: Float, context: Context): Int {
+        return TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            dp,
+            context.resources.displayMetrics
+        ).toInt()
+    }
 }
