@@ -10,7 +10,10 @@
         android:id="@+id/search_header"
         style="@style/SettingsHeaderStyle"
         app:navigationIcon="@drawable/ic_arrow_back"
-        app:title="@string/search_text_header" />
+        app:title="@string/search_text_header"
+        />
+
+
 
 
     <FrameLayout
@@ -25,22 +28,17 @@
 
         <EditText
             android:id="@+id/search_edit_text"
-            style="@style/SearchEditTextStyle" />
+            style="@style/SearchEditTextStyle"
+             />
 
         <ImageView
             android:id="@+id/search_clear_ic_x"
             style="@style/SearchClearIcXStyle"
             android:background="@android:color/transparent"
-            android:visibility="gone" />
+            android:visibility="gone"
+             />
 
     </FrameLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-
-        android:id="@+id/track_list_rc"
-        android:layout_marginTop="16dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:listitem="@layout/track_item"/>
 
 </LinearLayout>

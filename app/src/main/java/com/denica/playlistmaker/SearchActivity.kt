@@ -13,8 +13,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
 
 class SearchActivity : AppCompatActivity() {
@@ -31,11 +29,10 @@ class SearchActivity : AppCompatActivity() {
         val searchEditText = findViewById<EditText>(R.id.search_edit_text)
         val searchClearIc = findViewById<ImageView>(R.id.search_clear_ic_x)
         val searchHeader = findViewById<MaterialToolbar>(R.id.search_header)
-        val trackListRc = findViewById<RecyclerView>(R.id.track_list_rc)
         searchEditText.setText(searchText)
         searchClearIc.setOnClickListener {
             searchEditText.setText("")
-            try {
+            try{
                 val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
                 imm.hideSoftInputFromWindow(it.windowToken, 0)
             } catch (e: Exception) {
@@ -65,9 +62,6 @@ class SearchActivity : AppCompatActivity() {
             finish()
         }
 
-        val adapter = TrackListAdapter(Track.test)
-        trackListRc.adapter = adapter
-        trackListRc.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
     }
 
     companion object {
