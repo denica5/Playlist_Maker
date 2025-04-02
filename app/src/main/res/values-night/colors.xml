@@ -7,4 +7,7 @@
     <color name="switch_thumb_inactive_color">#AEAFB4</color>
     <color name="switch_track_active_color">#9FBBF3</color>
     <color name="switch_thumb_active_color">#3772E7</color>
+    <color name="dot_color">@color/white</color>
+    <color name="artist_name_and_time_color">@color/white</color>
+    <color name="track_item_text_color">@color/white</color>
 </resources>
