@@ -13,5 +13,9 @@
     <color name="edit_text_hint_color">#AEAFB4</color>
     <color name="edit_text_cursor_color">#3772E7</color>
     <color name="edit_text_background_color">#E6E8EB</color>
+    <color name="dot_color">#AEAFB4</color>
+    <color name="artist_name_and_time_color">#AEAFB4</color>
+    <color name="track_item_text_color">@color/black</color>
+    <color name="ic_arrow_forward">#AEAFB4</color>
 </resources>
 
