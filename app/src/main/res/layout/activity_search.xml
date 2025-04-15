@@ -25,7 +25,10 @@
 
         <EditText
             android:id="@+id/search_edit_text"
-            style="@style/SearchEditTextStyle" />
+            style="@style/SearchEditTextStyle"
+            android:imeOptions="actionDone"
+            android:singleLine="true"
+            />
 
         <ImageView
             android:id="@+id/search_clear_ic_x"

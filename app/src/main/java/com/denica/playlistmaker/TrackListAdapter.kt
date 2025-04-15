@@ -10,9 +10,12 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import java.text.SimpleDateFormat
+import java.util.Locale
 
-class TrackListAdapter(private val itemList: List<Track>) :
+class TrackListAdapter() :
     RecyclerView.Adapter<TrackListViewHolder>() {
+    var itemList: List<Track> = arrayListOf()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackListViewHolder {
         val itemView =
             LayoutInflater.from(parent.context).inflate(R.layout.track_item, parent, false)
@@ -46,7 +49,7 @@ class TrackListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             .transform(RoundedCorners(dpToPx(2f,itemView.context))).into(trackImage)
         trackName.text = track.trackName
         trackArtistName.text = track.artistName
-        trackDuration.text = track.trackTime
+        trackDuration.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis)
     }
 
     fun dpToPx(dp: Float, context: Context): Int {
