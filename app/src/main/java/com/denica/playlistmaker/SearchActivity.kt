@@ -16,9 +16,18 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.create
+
+private const val ITUNES_BASE_URL = "https://itunes.apple.com"
 
 class SearchActivity : AppCompatActivity() {
     private var searchText = ""
+    private val retrofit = Retrofit.Builder().baseUrl(ITUNES_BASE_URL)
+        .addConverterFactory(GsonConverterFactory.create()).build()
+    private val itunesService = retrofit.create(ItunesApi::class.java)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -28,6 +37,7 @@ class SearchActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
         val searchEditText = findViewById<EditText>(R.id.search_edit_text)
         val searchClearIc = findViewById<ImageView>(R.id.search_clear_ic_x)
         val searchHeader = findViewById<MaterialToolbar>(R.id.search_header)
