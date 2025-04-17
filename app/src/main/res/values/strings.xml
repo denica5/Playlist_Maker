@@ -16,6 +16,7 @@
     <string name="write_support_email_body_practicum">Спасибо разработчикам и разработчицам за крутое приложение!</string>
     <string name="write_support_my_email_practicum">Denica5@yandex.ru</string>
     <string name="share_text_practicum">https://practicum.yandex.ru/android-developer/?from=catalog</string>
-    <string name="something_went_wrong">Проблемы со связью\n\nЗагрузка не удалась. Проверьте подключение к интернету</string>
+    <string name="failed_search">Проблемы со связью\n\nЗагрузка не удалась. Проверьте подключение к интернету</string>
     <string name="nothing_found">Ничего не нашлось</string>
+    <string name="button_refresh">Обновить</string>
 </resources>

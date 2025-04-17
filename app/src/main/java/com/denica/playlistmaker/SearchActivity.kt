@@ -100,12 +100,12 @@ class SearchActivity : AppCompatActivity() {
                                     showMessage("", "")
                                 }
                             } else {
-                                showMessage(getString(R.string.something_went_wrong), response.code().toString())
+                                showMessage(getString(R.string.failed_search), response.code().toString())
                             }
                         }
 
                         override fun onFailure(call: Call<SongResponse>, t: Throwable) {
-                            showMessage(getString(R.string.something_went_wrong), t.message.toString())
+                            showMessage(getString(R.string.failed_search), t.message.toString())
                         }
 
                     })
