@@ -149,7 +149,7 @@ class SearchActivity : AppCompatActivity() {
                 }
 
                 override fun onFailure(call: Call<SongResponse>, t: Throwable) {
-                    clearTracks(getString(R.string.failed_search), )
+                    clearTracks(getString(R.string.failed_search))
                     notFoundError.visibility = View.GONE
                     trackListRc.visibility = View.GONE
                     failedSearchError.visibility = View.VISIBLE
