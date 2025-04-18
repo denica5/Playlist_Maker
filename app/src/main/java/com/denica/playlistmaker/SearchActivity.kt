@@ -60,10 +60,7 @@ class SearchActivity : AppCompatActivity() {
             try {
                 val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
                 imm.hideSoftInputFromWindow(it.windowToken, 0)
-                tracks.clear()
-                notFoundError.visibility = View.GONE
-                trackListRc.visibility = View.GONE
-                failedSearchError.visibility = View.GONE
+                clearTracks("clear_button")
             } catch (e: Exception) {
                 //
             }
@@ -103,10 +100,7 @@ class SearchActivity : AppCompatActivity() {
                 if (searchEditText.text.isNotEmpty()) {
                     callToApi()
                 } else {
-                    tracks.clear()
-                    notFoundError.visibility = View.VISIBLE
-                    trackListRc.visibility = View.GONE
-                    failedSearchError.visibility = View.GONE
+                    clearTracks(getString(R.string.nothing_found))
                 }
                 return@setOnEditorActionListener true
             }
@@ -128,31 +122,23 @@ class SearchActivity : AppCompatActivity() {
                         }
                         if (tracks.isEmpty()) {
                             clearTracks(getString(R.string.nothing_found))
-                            notFoundError.visibility = View.VISIBLE
-                            trackListRc.visibility = View.GONE
-                            failedSearchError.visibility = View.GONE
+
                         } else {
                             clearTracks("")
-                            notFoundError.visibility = View.GONE
-                            trackListRc.visibility = View.VISIBLE
-                            failedSearchError.visibility = View.GONE
+
                         }
                     } else {
                         clearTracks(
                             getString(R.string.failed_search)
                         )
 //                                    Toast.makeText(this@SearchActivity, "?", Toast.LENGTH_LONG).show()
-                        notFoundError.visibility = View.GONE
-                        trackListRc.visibility = View.GONE
-                        failedSearchError.visibility = View.VISIBLE
+
                     }
                 }
 
                 override fun onFailure(call: Call<SongResponse>, t: Throwable) {
                     clearTracks(getString(R.string.failed_search))
-                    notFoundError.visibility = View.GONE
-                    trackListRc.visibility = View.GONE
-                    failedSearchError.visibility = View.VISIBLE
+
                 }
 
             })
@@ -163,6 +149,28 @@ class SearchActivity : AppCompatActivity() {
         if (text.isNotEmpty()) {
             tracks.clear()
             adapter.notifyDataSetChanged()
+        }
+        when(text) {
+            getString(R.string.failed_search) -> {
+                notFoundError.visibility = View.GONE
+                trackListRc.visibility = View.GONE
+                failedSearchError.visibility = View.VISIBLE
+            }
+            getString(R.string.nothing_found) -> {
+                notFoundError.visibility = View.VISIBLE
+                trackListRc.visibility = View.GONE
+                failedSearchError.visibility = View.GONE
+            }
+            "" -> {
+                notFoundError.visibility = View.GONE
+                trackListRc.visibility = View.VISIBLE
+                failedSearchError.visibility = View.GONE
+            }
+            "clear_button" -> {
+                notFoundError.visibility = View.GONE
+                trackListRc.visibility = View.GONE
+                failedSearchError.visibility = View.GONE
+            }
         }
     }
 
