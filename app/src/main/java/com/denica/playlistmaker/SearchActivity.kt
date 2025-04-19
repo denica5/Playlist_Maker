@@ -1,13 +1,15 @@
 package com.denica.playlistmaker
 
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.LinearLayout
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -16,9 +18,25 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+
+private const val ITUNES_BASE_URL = "https://itunes.apple.com"
 
 class SearchActivity : AppCompatActivity() {
     private var searchText = ""
+    private val retrofit = Retrofit.Builder().baseUrl(ITUNES_BASE_URL)
+        .addConverterFactory(GsonConverterFactory.create()).build()
+    private val itunesService = retrofit.create(ItunesApi::class.java)
+    private val tracks = arrayListOf<Track>()
+    private val adapter = TrackListAdapter()
+    private lateinit var trackListRc: RecyclerView
+    private lateinit var notFoundError: LinearLayout
+    private lateinit var failedSearchError: LinearLayout
+    private lateinit var searchEditText: EditText
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -28,20 +46,28 @@ class SearchActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        val searchEditText = findViewById<EditText>(R.id.search_edit_text)
+
+        searchEditText = findViewById(R.id.search_edit_text)
         val searchClearIc = findViewById<ImageView>(R.id.search_clear_ic_x)
         val searchHeader = findViewById<MaterialToolbar>(R.id.search_header)
-        val trackListRc = findViewById<RecyclerView>(R.id.track_list_rc)
+        val refreshButton = findViewById<Button>(R.id.button_refresh)
+        trackListRc = findViewById(R.id.track_list_rc)
+        notFoundError = findViewById(R.id.not_found_error)
+        failedSearchError = findViewById(R.id.failed_search_error)
         searchEditText.setText(searchText)
         searchClearIc.setOnClickListener {
             searchEditText.setText("")
             try {
                 val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
                 imm.hideSoftInputFromWindow(it.windowToken, 0)
+                clearTracks("clear_button")
             } catch (e: Exception) {
                 //
             }
 
+        }
+        refreshButton.setOnClickListener {
+            callToApi()
         }
 
 
@@ -65,9 +91,87 @@ class SearchActivity : AppCompatActivity() {
             finish()
         }
 
-        val adapter = TrackListAdapter(Track.test)
+
+        adapter.itemList = tracks
         trackListRc.adapter = adapter
         trackListRc.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        searchEditText.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                if (searchEditText.text.isNotEmpty()) {
+                    callToApi()
+                } else {
+                    clearTracks(getString(R.string.nothing_found))
+                }
+                return@setOnEditorActionListener true
+            }
+            false
+        }
+    }
+
+    private fun callToApi() {
+        itunesService.search(searchEditText.text.toString())
+            .enqueue(object : Callback<SongResponse> {
+                override fun onResponse(
+                    call: Call<SongResponse>, response: Response<SongResponse>
+                ) {
+                    if (response.code() == 200) {
+                        tracks.clear()
+                        if (response.body()?.results?.isNotEmpty() == true) {
+                            tracks.addAll(response.body()?.results!!)
+                            adapter.notifyDataSetChanged()
+                        }
+                        if (tracks.isEmpty()) {
+                            clearTracks(getString(R.string.nothing_found))
+
+                        } else {
+                            clearTracks("")
+
+                        }
+                    } else {
+                        clearTracks(
+                            getString(R.string.failed_search)
+                        )
+//                                    Toast.makeText(this@SearchActivity, "?", Toast.LENGTH_LONG).show()
+
+                    }
+                }
+
+                override fun onFailure(call: Call<SongResponse>, t: Throwable) {
+                    clearTracks(getString(R.string.failed_search))
+
+                }
+
+            })
+    }
+
+    private fun clearTracks(text: String) {
+
+        if (text.isNotEmpty()) {
+            tracks.clear()
+            adapter.notifyDataSetChanged()
+        }
+        when(text) {
+            getString(R.string.failed_search) -> {
+                notFoundError.visibility = View.GONE
+                trackListRc.visibility = View.GONE
+                failedSearchError.visibility = View.VISIBLE
+            }
+            getString(R.string.nothing_found) -> {
+                notFoundError.visibility = View.VISIBLE
+                trackListRc.visibility = View.GONE
+                failedSearchError.visibility = View.GONE
+            }
+            "" -> {
+                notFoundError.visibility = View.GONE
+                trackListRc.visibility = View.VISIBLE
+                failedSearchError.visibility = View.GONE
+            }
+            "clear_button" -> {
+                notFoundError.visibility = View.GONE
+                trackListRc.visibility = View.GONE
+                failedSearchError.visibility = View.GONE
+            }
+        }
     }
 
     companion object {

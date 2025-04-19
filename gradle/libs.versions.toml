@@ -11,6 +11,9 @@ activity = "1.8.0"
 constraintlayout = "2.2.0"
 glide = "4.14.2"
 glide-processor = "4.14.2"
+retrofit = "2.9.0"
+
+
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -20,8 +23,11 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
-glide = {group = "com.github.bumptech.glide", name = "glide", version.ref = "glide"}
-glide-processor = {group = "com.github.bumptech.glide", name = "compiler", version.ref = "glide-processor"}
+glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
+glide-processor = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "glide-processor" }
+retrofit = {group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit"}
+retrofit-gson-convertert = {group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit"}
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
