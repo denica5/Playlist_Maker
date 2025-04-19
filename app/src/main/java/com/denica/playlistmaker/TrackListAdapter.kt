@@ -45,7 +45,7 @@ class TrackListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     }
 
     fun bind(track: Track) {
-        Glide.with(itemView.context).load(track.artworkUrl100).placeholder(R.drawable.ic_cancel_x).centerCrop()
+        Glide.with(itemView.context).load(track.artworkUrl100).placeholder(R.drawable.ic_track_placeholder).centerCrop()
             .transform(RoundedCorners(dpToPx(2f,itemView.context))).into(trackImage)
         trackName.text = track.trackName
         trackArtistName.text = track.artistName
