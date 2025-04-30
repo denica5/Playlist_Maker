@@ -6,13 +6,11 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textview.MaterialTextView
-import java.security.AccessController.getContext
 
 const val PLAYLIST_MAKER_PREFERENCES = "playlist_maker_preferences"
 const val DARK_THEME_MODE_KEY = "dark_theme_mode_key"

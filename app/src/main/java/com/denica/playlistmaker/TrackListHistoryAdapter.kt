@@ -13,12 +13,14 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class TrackListAdapter() :
+class TrackListAdapter(val onItemClickListener: OnItemClickListener) :
     RecyclerView.Adapter<TrackListViewHolder>() {
     var itemList: List<Track> = arrayListOf()
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackListViewHolder {
         val itemView =
             LayoutInflater.from(parent.context).inflate(R.layout.track_item, parent, false)
+
         return TrackListViewHolder(itemView)
     }
 
@@ -28,6 +30,9 @@ class TrackListAdapter() :
 
     override fun onBindViewHolder(holder: TrackListViewHolder, position: Int) {
         holder.bind(itemList[position])
+        holder.itemView.setOnClickListener {
+            onItemClickListener.onItemClick(itemList[holder.adapterPosition])
+        }
     }
 }
 
@@ -52,11 +57,33 @@ class TrackListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         trackDuration.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis)
     }
 
+
+
     fun dpToPx(dp: Float, context: Context): Int {
         return TypedValue.applyDimension(
             TypedValue.COMPLEX_UNIT_DIP,
             dp,
             context.resources.displayMetrics
         ).toInt()
+    }
+}
+
+class TrackListHistoryAdapter() :
+    RecyclerView.Adapter<TrackListViewHolder>() {
+    var itemList: List<Track> = arrayListOf()
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackListViewHolder {
+        val itemView =
+            LayoutInflater.from(parent.context).inflate(R.layout.track_item, parent, false)
+
+        return TrackListViewHolder(itemView)
+    }
+
+    override fun getItemCount(): Int {
+        return itemList.size
+    }
+
+    override fun onBindViewHolder(holder: TrackListViewHolder, position: Int) {
+        holder.bind(itemList[position])
     }
 }
