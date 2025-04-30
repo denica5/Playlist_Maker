@@ -6,13 +6,14 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textview.MaterialTextView
-import java.security.AccessController.getContext
+
+const val PLAYLIST_MAKER_PREFERENCES = "playlist_maker_preferences"
+const val DARK_THEME_MODE_KEY = "dark_theme_mode_key"
 
 
 class SettingsActivity : AppCompatActivity() {
@@ -25,7 +26,7 @@ class SettingsActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-
+        val sharedPref = getSharedPreferences(PLAYLIST_MAKER_PREFERENCES, MODE_PRIVATE)
         val settingsHeader = findViewById<MaterialToolbar>(R.id.settings_header)
         val shareAppLayout = findViewById<MaterialTextView>(R.id.share_app_category)
         val writeSupportLayout = findViewById<MaterialTextView>(R.id.write_support_category)
@@ -34,7 +35,8 @@ class SettingsActivity : AppCompatActivity() {
         settingsHeader.setNavigationOnClickListener {
             finish()
         }
-        darkThemeSwitch.isChecked = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
+        darkThemeSwitch.isChecked =
+            resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
         shareAppLayout.setOnClickListener {
             Intent(Intent.ACTION_SEND).apply {
                 putExtra(
@@ -70,10 +72,9 @@ class SettingsActivity : AppCompatActivity() {
             startActivity(userAgreementIntent)
 
         }
-        darkThemeSwitch.setOnClickListener {
-            if (darkThemeSwitch.isChecked) {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            } else AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        darkThemeSwitch.setOnCheckedChangeListener { switcher, checked ->
+            (applicationContext as App).switchTheme(checked)
+            sharedPref.edit().putBoolean(DARK_THEME_MODE_KEY, darkThemeSwitch.isChecked).apply()
         }
 
     }

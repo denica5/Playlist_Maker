@@ -1,8 +1,10 @@
 package com.denica.playlistmaker
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -10,6 +12,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -18,6 +21,7 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -32,11 +36,17 @@ class SearchActivity : AppCompatActivity() {
         .addConverterFactory(GsonConverterFactory.create()).build()
     private val itunesService = retrofit.create(ItunesApi::class.java)
     private val tracks = arrayListOf<Track>()
-    private val adapter = TrackListAdapter()
+    private val savedTracksArrayList = arrayListOf<Track>()
+    private lateinit var adapter: TrackListAdapter
+    private lateinit var historyAdapter: TrackListHistoryAdapter
     private lateinit var trackListRc: RecyclerView
     private lateinit var notFoundError: LinearLayout
     private lateinit var failedSearchError: LinearLayout
     private lateinit var searchEditText: EditText
+    private lateinit var youSearchTextView: TextView
+    private lateinit var clearHistoryButton: Button
+    private lateinit var sharedPref: SharedPreferences
+    private lateinit var searchHistory: SearchHistory
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -50,10 +60,23 @@ class SearchActivity : AppCompatActivity() {
         searchEditText = findViewById(R.id.search_edit_text)
         val searchClearIc = findViewById<ImageView>(R.id.search_clear_ic_x)
         val searchHeader = findViewById<MaterialToolbar>(R.id.search_header)
-        val refreshButton = findViewById<Button>(R.id.button_refresh)
+        val refreshButton = findViewById<Button>(R.id.refresh_button)
+        youSearchTextView = findViewById(R.id.you_search_text_view)
+        clearHistoryButton = findViewById(R.id.clear_history_button)
         trackListRc = findViewById(R.id.track_list_rc)
         notFoundError = findViewById(R.id.not_found_error)
         failedSearchError = findViewById(R.id.failed_search_error)
+        sharedPref = getSharedPreferences(PLAYLIST_MAKER_PREFERENCES, MODE_PRIVATE)
+        searchHistory = SearchHistory(sharedPref)
+        savedTracksArrayList.addAll(searchHistory.read())
+        val itemClickListener = object : OnItemClickListener {
+            override fun onItemClick(track: Track) {
+                searchHistory.addTrack(savedTracksArrayList, track)
+            }
+        }
+        adapter = TrackListAdapter(itemClickListener)
+        historyAdapter = TrackListHistoryAdapter()
+        historyAdapter.itemList = savedTracksArrayList
         searchEditText.setText(searchText)
         searchClearIc.setOnClickListener {
             searchEditText.setText("")
@@ -79,6 +102,21 @@ class SearchActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 searchClearIc.isVisible = !s.isNullOrEmpty()
                 searchText = s.toString()
+                if (savedTracksArrayList.isNotEmpty()) {
+                    if (searchEditText.hasFocus() && s?.isEmpty() == true) {
+                        clearHistoryButton.isVisible = true
+                        youSearchTextView.isVisible = true
+                        trackListRc.adapter = historyAdapter
+                    } else {
+                        clearHistoryButton.isVisible = false
+                        youSearchTextView.isVisible = false
+                        trackListRc.adapter = adapter
+                    }
+                } else {
+                    clearHistoryButton.isVisible = false
+                    youSearchTextView.isVisible = false
+                    trackListRc.adapter = adapter
+                }
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -86,7 +124,9 @@ class SearchActivity : AppCompatActivity() {
             }
         }
         searchEditText.addTextChangedListener(searchTextWatcher)
-
+        searchEditText.setOnFocusChangeListener { view, hasFocus ->
+            showHistory()
+        }
         searchHeader.setNavigationOnClickListener {
             finish()
         }
@@ -106,6 +146,19 @@ class SearchActivity : AppCompatActivity() {
             }
             false
         }
+
+        clearHistoryButton.setOnClickListener {
+            searchHistory.clearHistory(savedTracksArrayList)
+            clearHistoryButton.isVisible = false
+            youSearchTextView.isVisible = false
+
+        }
+    }
+
+
+    override fun onStop() {
+        super.onStop()
+        searchHistory.write(savedTracksArrayList)
     }
 
     private fun callToApi() {
@@ -150,26 +203,43 @@ class SearchActivity : AppCompatActivity() {
             tracks.clear()
             adapter.notifyDataSetChanged()
         }
-        when(text) {
+        when (text) {
             getString(R.string.failed_search) -> {
-                notFoundError.visibility = View.GONE
-                trackListRc.visibility = View.GONE
-                failedSearchError.visibility = View.VISIBLE
+                notFoundError.isVisible = false
+                trackListRc.isVisible = false
+                failedSearchError.isVisible = true
             }
+
             getString(R.string.nothing_found) -> {
-                notFoundError.visibility = View.VISIBLE
-                trackListRc.visibility = View.GONE
-                failedSearchError.visibility = View.GONE
+                notFoundError.isVisible = true
+                trackListRc.isVisible = false
+                failedSearchError.isVisible = false
             }
+
             "" -> {
-                notFoundError.visibility = View.GONE
-                trackListRc.visibility = View.VISIBLE
-                failedSearchError.visibility = View.GONE
+                notFoundError.isVisible = false
+                trackListRc.isVisible = true
+                failedSearchError.isVisible = false
             }
+
             "clear_button" -> {
-                notFoundError.visibility = View.GONE
-                trackListRc.visibility = View.GONE
-                failedSearchError.visibility = View.GONE
+                notFoundError.isVisible = false
+                trackListRc.isVisible = true
+                failedSearchError.isVisible = false
+            }
+        }
+    }
+
+    fun showHistory() {
+        if (savedTracksArrayList.isNotEmpty()) {
+            if (searchEditText.hasFocus() && searchEditText.text.isEmpty()) {
+                clearHistoryButton.isVisible = true
+                youSearchTextView.isVisible = true
+                trackListRc.adapter = historyAdapter
+            } else {
+                clearHistoryButton.isVisible = false
+                youSearchTextView.isVisible = false
+                trackListRc.adapter = adapter
             }
         }
     }
@@ -177,7 +247,6 @@ class SearchActivity : AppCompatActivity() {
     companion object {
         const val SEARCH_TEXT_KEY = "SEARCH_TEXT"
     }
-
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
