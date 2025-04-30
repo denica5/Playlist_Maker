@@ -13,6 +13,19 @@ class SearchHistory(val sharedPref: SharedPreferences) {
         savedTracksArrayList.clear()
 
     }
+    fun addTrack(savedTracksArrayList: ArrayList<Track>, track: Track) {
+        if (track in savedTracksArrayList) {
+            savedTracksArrayList.remove(track)
+            savedTracksArrayList.add(0, track)
+        } else {
+            if (savedTracksArrayList.size >= 10) {
+                savedTracksArrayList.removeAt(savedTracksArrayList.lastIndex)
+                savedTracksArrayList.add(0, track)
+            } else {
+                savedTracksArrayList.add(0, track)
+            }
+        }
+    }
 
     fun write(savedTracksArrayList: ArrayList<Track>) {
         val json = Gson().toJson(savedTracksArrayList)

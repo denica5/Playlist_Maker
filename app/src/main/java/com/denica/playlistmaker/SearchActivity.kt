@@ -71,21 +71,7 @@ class SearchActivity : AppCompatActivity() {
         savedTracksArrayList.addAll(searchHistory.read())
         val itemClickListener = object : OnItemClickListener {
             override fun onItemClick(track: Track) {
-
-                searchHistory.apply {
-
-                    if (track in savedTracksArrayList) {
-                        savedTracksArrayList.remove(track)
-                        savedTracksArrayList.add(0, track)
-                    } else {
-                        if (savedTracksArrayList.size >= 10) {
-                            savedTracksArrayList.removeAt(savedTracksArrayList.lastIndex)
-                            savedTracksArrayList.add(0, track)
-                        } else {
-                            savedTracksArrayList.add(0, track)
-                        }
-                    }
-                }
+                searchHistory.addTrack(savedTracksArrayList, track)
             }
         }
         adapter = TrackListAdapter(itemClickListener)
@@ -118,17 +104,17 @@ class SearchActivity : AppCompatActivity() {
                 searchText = s.toString()
                 if (savedTracksArrayList.isNotEmpty()) {
                     if (searchEditText.hasFocus() && s?.isEmpty() == true) {
-                        clearHistoryButton.visibility = View.VISIBLE
-                        youSearchTextView.visibility = View.VISIBLE
+                        clearHistoryButton.isVisible = true
+                        youSearchTextView.isVisible = true
                         trackListRc.adapter = historyAdapter
                     } else {
-                        clearHistoryButton.visibility = View.GONE
-                        youSearchTextView.visibility = View.GONE
+                        clearHistoryButton.isVisible = false
+                        youSearchTextView.isVisible = false
                         trackListRc.adapter = adapter
                     }
                 } else {
-                    clearHistoryButton.visibility = View.GONE
-                    youSearchTextView.visibility = View.GONE
+                    clearHistoryButton.isVisible = false
+                    youSearchTextView.isVisible = false
                     trackListRc.adapter = adapter
                 }
             }
@@ -163,8 +149,8 @@ class SearchActivity : AppCompatActivity() {
 
         clearHistoryButton.setOnClickListener {
             searchHistory.clearHistory(savedTracksArrayList)
-            clearHistoryButton.visibility = View.GONE
-            youSearchTextView.visibility = View.GONE
+            clearHistoryButton.isVisible = false
+            youSearchTextView.isVisible = false
 
         }
     }
@@ -219,27 +205,27 @@ class SearchActivity : AppCompatActivity() {
         }
         when (text) {
             getString(R.string.failed_search) -> {
-                notFoundError.visibility = View.GONE
-                trackListRc.visibility = View.GONE
-                failedSearchError.visibility = View.VISIBLE
+                notFoundError.isVisible = false
+                trackListRc.isVisible = false
+                failedSearchError.isVisible = true
             }
 
             getString(R.string.nothing_found) -> {
-                notFoundError.visibility = View.VISIBLE
-                trackListRc.visibility = View.GONE
-                failedSearchError.visibility = View.GONE
+                notFoundError.isVisible = true
+                trackListRc.isVisible = false
+                failedSearchError.isVisible = false
             }
 
             "" -> {
-                notFoundError.visibility = View.GONE
-                trackListRc.visibility = View.VISIBLE
-                failedSearchError.visibility = View.GONE
+                notFoundError.isVisible = false
+                trackListRc.isVisible = true
+                failedSearchError.isVisible = false
             }
 
             "clear_button" -> {
-                notFoundError.visibility = View.GONE
-                trackListRc.visibility = View.VISIBLE
-                failedSearchError.visibility = View.GONE
+                notFoundError.isVisible = false
+                trackListRc.isVisible = true
+                failedSearchError.isVisible = false
             }
         }
     }
@@ -247,12 +233,12 @@ class SearchActivity : AppCompatActivity() {
     fun showHistory() {
         if (savedTracksArrayList.isNotEmpty()) {
             if (searchEditText.hasFocus() && searchEditText.text.isEmpty()) {
-                clearHistoryButton.visibility = View.VISIBLE
-                youSearchTextView.visibility = View.VISIBLE
+                clearHistoryButton.isVisible = true
+                youSearchTextView.isVisible = true
                 trackListRc.adapter = historyAdapter
             } else {
-                clearHistoryButton.visibility = View.GONE
-                youSearchTextView.visibility = View.GONE
+                clearHistoryButton.isVisible = false
+                youSearchTextView.isVisible = false
                 trackListRc.adapter = adapter
             }
         }
