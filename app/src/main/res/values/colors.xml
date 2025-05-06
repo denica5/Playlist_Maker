@@ -17,5 +17,7 @@
     <color name="artist_name_and_time_color">#AEAFB4</color>
     <color name="track_item_text_color">@color/black</color>
     <color name="ic_arrow_forward">#AEAFB4</color>
+    <color name="media_player_icons_background">#AEAFB4</color>
+
 </resources>
 

@@ -62,7 +62,6 @@
     </style>
 
 
-
     <style name="SettingsCategoryStyle">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -103,16 +102,46 @@
     </style>
 
     <style name="SearchClearIcXStyle">
-        <item name = "android:layout_width">wrap_content</item>
-        <item name = "android:layout_height">wrap_content</item>
-        <item name = "android:paddingTop">12dp</item>
-        <item name = "android:paddingEnd">14dp</item>
-        <item name = "android:paddingStart">14dp</item>
-        <item name = "android:paddingBottom">12dp</item>
-        <item name = "android:src">@drawable/ic_cancel_x</item>
-        <item name = "android:layout_gravity">end</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingEnd">14dp</item>
+        <item name="android:paddingStart">14dp</item>
+        <item name="android:paddingBottom">12dp</item>
+        <item name="android:src">@drawable/ic_cancel_x</item>
+        <item name="android:layout_gravity">end</item>
         <item name="android:tint">@color/settings_icon_color</item>
     </style>
 
+    <style name="MediaPlayerTextLabel">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">16dp</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textColor">@color/edit_text_hint_color</item>
+        <item name="android:textFontWeight">400</item>
+        <item name="android:textSize">13sp</item>
+        <item name="layout_constrainedWidth">true</item>
+        <item name="layout_constraintWidth_max">120dp</item>
+        <item name="layout_constraintHorizontal_bias">0</item>
+    </style>
+
+    <style name="MediaPlayerText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginEnd">16dp</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textColor">?attr/colorOnSecondary</item>
+        <item name="android:textFontWeight">400</item>
+        <item name="android:textSize">13sp</item>
+        <item name="layout_constrainedWidth">true</item>
+        <item name="layout_constraintWidth_max">220dp</item>
+        <item name="layout_constraintHorizontal_bias">1</item>
+
+    </style>
 
 </resources>

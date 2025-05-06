@@ -60,7 +60,7 @@
                 tools:text="The Beatles" />
 
             <TextView
-                android:id="@+id/track_duration"
+                android:id="@+id/remaining_track_duration_media_player"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:drawablePadding="5dp"
