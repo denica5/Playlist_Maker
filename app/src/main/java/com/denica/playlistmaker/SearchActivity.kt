@@ -72,15 +72,20 @@ class SearchActivity : AppCompatActivity() {
 
         val itemClickListener = object : OnItemClickListener {
             override fun onItemClick(track: Track) {
-                searchHistory.addTrack(savedTracksArrayList, track)
+                val position = searchHistory.addTrack(savedTracksArrayList, track)
                 startActivity(Intent(this@SearchActivity, MediaPlayerActivity::class.java).apply {
-                    putExtra(TRACK_KEY,track)
+                    putExtra(TRACK_KEY, track)
                 })
+
+                if (position != -1) {
+                    historyAdapter.notifyItemMoved(position, 0)
+                    trackListRc.scrollToPosition(0)
+                }
             }
         }
         adapter = TrackListAdapter(itemClickListener)
         historyAdapter = TrackListAdapter(itemClickListener)
-        searchHistory = SearchHistory(sharedPref, historyAdapter, trackListRc)
+        searchHistory = SearchHistory(sharedPref)
         savedTracksArrayList.addAll(searchHistory.read())
         historyAdapter.itemList = savedTracksArrayList
         searchEditText.setText(searchText)

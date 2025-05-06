@@ -36,9 +36,9 @@ class MediaPlayerActivity : AppCompatActivity() {
             insets
         }
         val track: Track = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.getSerializableExtra(TRACK_KEY, Track::class.java) as Track
+            intent.getParcelableExtra(TRACK_KEY, Track::class.java) as Track
         } else {
-            intent.getSerializableExtra(TRACK_KEY) as Track
+            intent.getParcelableExtra<Track>(TRACK_KEY) as Track
         }
         arrowBackMediaPlayer = findViewById(R.id.arrow_back_media_player)
         trackImageMediaPlayer = findViewById(R.id.track_image_media_player)
@@ -50,9 +50,7 @@ class MediaPlayerActivity : AppCompatActivity() {
         trackYearMediaPlayer = findViewById(R.id.track_year_media_player)
         trackGenreMediaPlayer = findViewById(R.id.track_genre_media_player)
         trackCountryMediaPlayer = findViewById(R.id.track_country_media_player)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.getSerializableExtra(TRACK_KEY, Track::class.java)
-        }
+
         arrowBackMediaPlayer.setOnClickListener {
             finish()
         }

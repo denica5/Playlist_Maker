@@ -7,7 +7,7 @@ import com.google.gson.Gson
 
 const val SEARCH_HISTORY_KEY = "search_history_key"
 
-class SearchHistory(val sharedPref: SharedPreferences, val historyAdapter: TrackListAdapter, val recycle: RecyclerView) {
+class SearchHistory(val sharedPref: SharedPreferences) {
 
     fun clearHistory(savedTracksArrayList: ArrayList<Track>) {
         sharedPref.edit().putString(SEARCH_HISTORY_KEY, Gson().toJson(emptyArray<Track>())).apply()
@@ -15,13 +15,12 @@ class SearchHistory(val sharedPref: SharedPreferences, val historyAdapter: Track
 
     }
 
-    fun addTrack(savedTracksArrayList: ArrayList<Track>, track: Track) {
+    fun addTrack(savedTracksArrayList: ArrayList<Track>, track: Track):Int {
         if (track in savedTracksArrayList) {
-            historyAdapter.notifyItemMoved(savedTracksArrayList.indexOf(track), 0)
-            recycle.scrollToPosition(0)
+            val position = savedTracksArrayList.indexOf(track)
             savedTracksArrayList.remove(track)
             savedTracksArrayList.add(0, track)
-
+            return position
         } else {
             if (savedTracksArrayList.size >= 10) {
                 savedTracksArrayList.removeAt(savedTracksArrayList.lastIndex)
@@ -30,6 +29,7 @@ class SearchHistory(val sharedPref: SharedPreferences, val historyAdapter: Track
                 savedTracksArrayList.add(0, track)
             }
         }
+        return -1
     }
 
     fun write(savedTracksArrayList: ArrayList<Track>) {
