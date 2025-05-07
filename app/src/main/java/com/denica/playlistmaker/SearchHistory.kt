@@ -2,6 +2,7 @@ package com.denica.playlistmaker
 
 import android.content.SharedPreferences
 import android.util.Log
+import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 
 const val SEARCH_HISTORY_KEY = "search_history_key"
@@ -13,10 +14,13 @@ class SearchHistory(val sharedPref: SharedPreferences) {
         savedTracksArrayList.clear()
 
     }
-    fun addTrack(savedTracksArrayList: ArrayList<Track>, track: Track) {
+
+    fun addTrack(savedTracksArrayList: ArrayList<Track>, track: Track):Int {
         if (track in savedTracksArrayList) {
+            val position = savedTracksArrayList.indexOf(track)
             savedTracksArrayList.remove(track)
             savedTracksArrayList.add(0, track)
+            return position
         } else {
             if (savedTracksArrayList.size >= 10) {
                 savedTracksArrayList.removeAt(savedTracksArrayList.lastIndex)
@@ -25,6 +29,7 @@ class SearchHistory(val sharedPref: SharedPreferences) {
                 savedTracksArrayList.add(0, track)
             }
         }
+        return -1
     }
 
     fun write(savedTracksArrayList: ArrayList<Track>) {

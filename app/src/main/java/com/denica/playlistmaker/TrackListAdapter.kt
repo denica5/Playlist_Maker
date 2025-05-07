@@ -46,7 +46,7 @@ class TrackListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         trackImage = itemView.findViewById(R.id.track_image)
         trackName = itemView.findViewById(R.id.track_name)
         trackArtistName = itemView.findViewById(R.id.track_artist_name)
-        trackDuration = itemView.findViewById(R.id.track_duration)
+        trackDuration = itemView.findViewById(R.id.remaining_track_duration_media_player)
     }
 
     fun bind(track: Track) {
@@ -58,32 +58,13 @@ class TrackListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     }
 
 
-
-    fun dpToPx(dp: Float, context: Context): Int {
-        return TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP,
-            dp,
-            context.resources.displayMetrics
-        ).toInt()
-    }
-}
-
-class TrackListHistoryAdapter() :
-    RecyclerView.Adapter<TrackListViewHolder>() {
-    var itemList: List<Track> = arrayListOf()
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackListViewHolder {
-        val itemView =
-            LayoutInflater.from(parent.context).inflate(R.layout.track_item, parent, false)
-
-        return TrackListViewHolder(itemView)
-    }
-
-    override fun getItemCount(): Int {
-        return itemList.size
-    }
-
-    override fun onBindViewHolder(holder: TrackListViewHolder, position: Int) {
-        holder.bind(itemList[position])
+    companion object{
+        fun dpToPx(dp: Float, context: Context): Int {
+            return TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                dp,
+                context.resources.displayMetrics
+            ).toInt()
+        }
     }
 }

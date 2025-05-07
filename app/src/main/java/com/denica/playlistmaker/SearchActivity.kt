@@ -1,5 +1,6 @@
 package com.denica.playlistmaker
 
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.Editable
@@ -29,6 +30,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 private const val ITUNES_BASE_URL = "https://itunes.apple.com"
+const val TRACK_KEY = "TRACK_KEY"
 
 class SearchActivity : AppCompatActivity() {
     private var searchText = ""
@@ -38,7 +40,7 @@ class SearchActivity : AppCompatActivity() {
     private val tracks = arrayListOf<Track>()
     private val savedTracksArrayList = arrayListOf<Track>()
     private lateinit var adapter: TrackListAdapter
-    private lateinit var historyAdapter: TrackListHistoryAdapter
+    private lateinit var historyAdapter: TrackListAdapter
     private lateinit var trackListRc: RecyclerView
     private lateinit var notFoundError: LinearLayout
     private lateinit var failedSearchError: LinearLayout
@@ -67,15 +69,24 @@ class SearchActivity : AppCompatActivity() {
         notFoundError = findViewById(R.id.not_found_error)
         failedSearchError = findViewById(R.id.failed_search_error)
         sharedPref = getSharedPreferences(PLAYLIST_MAKER_PREFERENCES, MODE_PRIVATE)
-        searchHistory = SearchHistory(sharedPref)
-        savedTracksArrayList.addAll(searchHistory.read())
+
         val itemClickListener = object : OnItemClickListener {
             override fun onItemClick(track: Track) {
-                searchHistory.addTrack(savedTracksArrayList, track)
+                val position = searchHistory.addTrack(savedTracksArrayList, track)
+                startActivity(Intent(this@SearchActivity, MediaPlayerActivity::class.java).apply {
+                    putExtra(TRACK_KEY, track)
+                })
+
+                if (position != -1) {
+                    historyAdapter.notifyItemMoved(position, 0)
+                    trackListRc.scrollToPosition(0)
+                }
             }
         }
         adapter = TrackListAdapter(itemClickListener)
-        historyAdapter = TrackListHistoryAdapter()
+        historyAdapter = TrackListAdapter(itemClickListener)
+        searchHistory = SearchHistory(sharedPref)
+        savedTracksArrayList.addAll(searchHistory.read())
         historyAdapter.itemList = savedTracksArrayList
         searchEditText.setText(searchText)
         searchClearIc.setOnClickListener {
