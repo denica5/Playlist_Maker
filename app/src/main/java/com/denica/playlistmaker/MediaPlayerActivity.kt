@@ -5,7 +5,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
@@ -32,13 +31,10 @@ class MediaPlayerActivity : AppCompatActivity() {
     private lateinit var playTrackMediaPlayer: ImageView
     private lateinit var previewUrl: String
     private lateinit var mainHandler: Handler
-    private lateinit var playRunnable: Runnable
-    private var elapsedTime = 0L
-    private var saveTime = 0L
+    private val dateFormat by lazy { SimpleDateFormat("mm:ss", Locale.getDefault()) }
+
     private var mediaPlayer = MediaPlayer()
     private var playerState = STATE_DEFAULT
-    private var startTime = 0L
-    private var firstTime = true
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -82,10 +78,8 @@ class MediaPlayerActivity : AppCompatActivity() {
             ).into(trackImageMediaPlayer)
         trackNameMediaPlayer.text = track.trackName
         trackArtistNameMediaPlayer.text = track.artistName
-        remainingTrackDurationMediaPlayer.text =
-            SimpleDateFormat("mm:ss", Locale.getDefault()).format(DEMO_TRACK_DURATION)
-        trackDurationMediaPlayer.text =
-            SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis)
+        remainingTrackDurationMediaPlayer.text = dateFormat.format(0L)
+        trackDurationMediaPlayer.text = dateFormat.format(track.trackTimeMillis)
         trackAlbumMediaPlayer.text = track.collectionName
         trackYearMediaPlayer.text = track.releaseDate.subSequence(0, 4)
         trackGenreMediaPlayer.text = track.primaryGenreName
@@ -103,31 +97,18 @@ class MediaPlayerActivity : AppCompatActivity() {
 
 
     private fun startTimer() {
-        startTime = System.currentTimeMillis()
-        if (firstTime) {
-            playRunnable = createUpdateTimerTask
-            firstTime = false
-        }
         mainHandler.post(
-            playRunnable
+            createUpdateTimerTask
         )
     }
 
-    private var createUpdateTimerTask = Runnable {
-        elapsedTime = System.currentTimeMillis() - startTime + saveTime
-
-        val remainingTime = DEMO_TRACK_DURATION - elapsedTime
-
-        if (remainingTime > 0) {
-            remainingTrackDurationMediaPlayer.text =
-                SimpleDateFormat("mm:ss", Locale.getDefault()).format(remainingTime)
-
-            mainHandler.postDelayed(playRunnable, DELAY)
-
-        } else {
-            remainingTrackDurationMediaPlayer.text =
-                SimpleDateFormat("mm:ss", Locale.getDefault()).format(0L)
+    private var createUpdateTimerTask = object : Runnable {
+        override fun run() {
+            mainHandler.postDelayed(this, DELAY)
+            remainingTrackDurationMediaPlayer.text = dateFormat.format(mediaPlayer.currentPosition)
         }
+
+
     }
 
 
@@ -139,13 +120,11 @@ class MediaPlayerActivity : AppCompatActivity() {
             playerState = STATE_PREPARED
         }
         mediaPlayer.setOnCompletionListener {
+            mainHandler.removeCallbacks(createUpdateTimerTask)
             playTrackMediaPlayer.setImageResource(R.drawable.ic_play_track)
-            remainingTrackDurationMediaPlayer.text =
-                SimpleDateFormat("mm:ss", Locale.getDefault()).format(DEMO_TRACK_DURATION)
+            remainingTrackDurationMediaPlayer.text = dateFormat.format(0L)
             playerState = STATE_PREPARED
-            saveTime = 0
-            elapsedTime = 0
-            saveTime = 0
+
         }
     }
 
@@ -154,12 +133,11 @@ class MediaPlayerActivity : AppCompatActivity() {
         playTrackMediaPlayer.setImageResource(R.drawable.ic_stop_track)
         playerState = STATE_PLAYING
         startTimer()
-        Log.d("AAAAA", saveTime.toString())
     }
 
     private fun pausePlayer() {
-        mainHandler.removeCallbacks(playRunnable)
-        saveTime += System.currentTimeMillis() - startTime
+        mainHandler.removeCallbacks(createUpdateTimerTask)
+
         mediaPlayer.pause()
         playTrackMediaPlayer.setImageResource(R.drawable.ic_play_track)
         playerState = STATE_PAUSED
@@ -171,7 +149,7 @@ class MediaPlayerActivity : AppCompatActivity() {
         when (playerState) {
             STATE_PLAYING -> {
                 pausePlayer()
-                mainHandler.removeCallbacks(playRunnable)
+                mainHandler.removeCallbacks(createUpdateTimerTask)
             }
 
             STATE_PREPARED, STATE_PAUSED -> {
@@ -195,7 +173,6 @@ class MediaPlayerActivity : AppCompatActivity() {
         private const val STATE_PREPARED = 1
         private const val STATE_PLAYING = 2
         private const val STATE_PAUSED = 3
-        private const val DEMO_TRACK_DURATION = 30_000L
         private const val DELAY = 1000L
     }
 }

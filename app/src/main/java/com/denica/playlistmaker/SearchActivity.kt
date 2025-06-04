@@ -118,9 +118,10 @@ class SearchActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 searchClearIc.isVisible = !s.isNullOrEmpty()
                 searchText = s.toString()
-                if (searchEditText.text.isNotEmpty()) {
+                if (searchText != "") {
                     searchDebounce()
                 }
+
                 if (savedTracksArrayList.isNotEmpty()) {
                     if (searchEditText.hasFocus() && s?.isEmpty() == true) {
                         clearHistoryButton.isVisible = true
@@ -177,10 +178,6 @@ class SearchActivity : AppCompatActivity() {
 
     private fun searchRequest() {
         callToApi()
-        searchProgressBar.visibility = View.VISIBLE
-        trackListRc.visibility = View.GONE
-
-
     }
 
     private fun searchDebounce() {
@@ -194,12 +191,15 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun callToApi() {
+        searchProgressBar.isVisible = true
+        trackListRc.isVisible = false
+        notFoundError.isVisible = false
+        failedSearchError.isVisible = false
         itunesService.search(searchEditText.text.toString())
             .enqueue(object : Callback<SongResponse> {
                 override fun onResponse(
                     call: Call<SongResponse>, response: Response<SongResponse>
                 ) {
-                    searchProgressBar.visibility = View.GONE
                     if (response.code() == 200) {
                         tracks.clear()
                         if (response.body()?.results?.isNotEmpty() == true) {
@@ -217,13 +217,12 @@ class SearchActivity : AppCompatActivity() {
                         clearTracks(
                             getString(R.string.failed_search)
                         )
-//                                    Toast.makeText(this@SearchActivity, "?", Toast.LENGTH_LONG).show()
+
 
                     }
                 }
 
                 override fun onFailure(call: Call<SongResponse>, t: Throwable) {
-                    searchProgressBar.visibility = View.GONE
                     clearTracks(getString(R.string.failed_search))
 
                 }
@@ -242,24 +241,28 @@ class SearchActivity : AppCompatActivity() {
                 notFoundError.isVisible = false
                 trackListRc.isVisible = false
                 failedSearchError.isVisible = true
+                searchProgressBar.isVisible = false
             }
 
             getString(R.string.nothing_found) -> {
                 notFoundError.isVisible = true
                 trackListRc.isVisible = false
                 failedSearchError.isVisible = false
+                searchProgressBar.isVisible = false
             }
 
             "" -> {
                 notFoundError.isVisible = false
                 trackListRc.isVisible = true
                 failedSearchError.isVisible = false
+                searchProgressBar.isVisible = false
             }
 
             "clear_button" -> {
                 notFoundError.isVisible = false
                 trackListRc.isVisible = true
                 failedSearchError.isVisible = false
+                searchProgressBar.isVisible = false
             }
         }
     }
