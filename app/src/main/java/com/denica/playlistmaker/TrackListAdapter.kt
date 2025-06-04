@@ -1,6 +1,8 @@
 package com.denica.playlistmaker
 
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -16,6 +18,8 @@ import java.util.Locale
 class TrackListAdapter(val onItemClickListener: OnItemClickListener) :
     RecyclerView.Adapter<TrackListViewHolder>() {
     var itemList: List<Track> = arrayListOf()
+    private val handler = Handler(Looper.getMainLooper())
+    private var isClickAllowed = true
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackListViewHolder {
         val itemView =
@@ -31,9 +35,25 @@ class TrackListAdapter(val onItemClickListener: OnItemClickListener) :
     override fun onBindViewHolder(holder: TrackListViewHolder, position: Int) {
         holder.bind(itemList[position])
         holder.itemView.setOnClickListener {
-            onItemClickListener.onItemClick(itemList[holder.adapterPosition])
+            if (clickDebounce()) {
+                onItemClickListener.onItemClick(itemList[holder.adapterPosition])
+            }
         }
     }
+
+    companion object {
+        private const val CLICK_DEBOUNCE_DELAY = 1000L
+    }
+
+    private fun clickDebounce(): Boolean {
+        val current = isClickAllowed
+        if (isClickAllowed) {
+            isClickAllowed = false
+            handler.postDelayed({ isClickAllowed = true }, CLICK_DEBOUNCE_DELAY)
+        }
+        return current
+    }
+
 }
 
 class TrackListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -50,20 +70,20 @@ class TrackListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     }
 
     fun bind(track: Track) {
-        Glide.with(itemView.context).load(track.artworkUrl100).placeholder(R.drawable.ic_track_placeholder).centerCrop()
-            .transform(RoundedCorners(dpToPx(2f,itemView.context))).into(trackImage)
-        trackName.text = track.trackName
-        trackArtistName.text = track.artistName
-        trackDuration.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis)
+        Glide.with(itemView.context).load(track.artworkUrl100)
+            .placeholder(R.drawable.ic_track_placeholder).centerCrop()
+            .transform(RoundedCorners(dpToPx(2f, itemView.context))).into(trackImage)
+        trackName.text = track.trackName.trim()
+        trackArtistName.text = track.artistName.trim()
+        trackDuration.text =
+            SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis).trim()
     }
 
 
-    companion object{
+    companion object {
         fun dpToPx(dp: Float, context: Context): Int {
             return TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP,
-                dp,
-                context.resources.displayMetrics
+                TypedValue.COMPLEX_UNIT_DIP, dp, context.resources.displayMetrics
             ).toInt()
         }
     }
