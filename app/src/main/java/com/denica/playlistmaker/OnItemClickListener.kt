@@ -1,5 +1,5 @@
 package com.denica.playlistmaker
 
 interface OnItemClickListener {
-    fun onItemClick(track: Track)
+    fun onItemClick(trackDto: TrackDto)
 }

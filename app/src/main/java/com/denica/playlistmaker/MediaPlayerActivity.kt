@@ -47,10 +47,10 @@ class MediaPlayerActivity : AppCompatActivity() {
             insets
         }
         mainHandler = Handler(Looper.getMainLooper())
-        val track: Track = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.getParcelableExtra(TRACK_KEY, Track::class.java) as Track
+        val trackDto: TrackDto = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent.getParcelableExtra(TRACK_KEY, TrackDto::class.java) as TrackDto
         } else {
-            intent.getParcelableExtra<Track>(TRACK_KEY) as Track
+            intent.getParcelableExtra<TrackDto>(TRACK_KEY) as TrackDto
         }
         arrowBackMediaPlayer = findViewById(R.id.arrow_back_media_player)
         trackImageMediaPlayer = findViewById(R.id.track_image_media_player)
@@ -68,7 +68,7 @@ class MediaPlayerActivity : AppCompatActivity() {
         }
 
         Glide.with(trackImageMediaPlayer)
-            .load(track.artworkUrl100.replaceAfterLast('/', "512x512bb.jpg"))
+            .load(trackDto.artworkUrl100.replaceAfterLast('/', "512x512bb.jpg"))
             .placeholder(R.drawable.ic_track_placeholder).centerCrop().transform(
                 RoundedCorners(
                     TrackListViewHolder.dpToPx(
@@ -76,15 +76,15 @@ class MediaPlayerActivity : AppCompatActivity() {
                     )
                 )
             ).into(trackImageMediaPlayer)
-        trackNameMediaPlayer.text = track.trackName
-        trackArtistNameMediaPlayer.text = track.artistName
+        trackNameMediaPlayer.text = trackDto.trackName
+        trackArtistNameMediaPlayer.text = trackDto.artistName
         remainingTrackDurationMediaPlayer.text = dateFormat.format(0L)
-        trackDurationMediaPlayer.text = dateFormat.format(track.trackTimeMillis)
-        trackAlbumMediaPlayer.text = track.collectionName
-        trackYearMediaPlayer.text = track.releaseDate.subSequence(0, 4)
-        trackGenreMediaPlayer.text = track.primaryGenreName
-        trackCountryMediaPlayer.text = track.country
-        previewUrl = track.previewUrl.trim()
+        trackDurationMediaPlayer.text = dateFormat.format(trackDto.trackTimeMillis)
+        trackAlbumMediaPlayer.text = trackDto.collectionName
+        trackYearMediaPlayer.text = trackDto.releaseDate.subSequence(0, 4)
+        trackGenreMediaPlayer.text = trackDto.primaryGenreName
+        trackCountryMediaPlayer.text = trackDto.country
+        previewUrl = trackDto.previewUrl.trim()
 
         if (previewUrl != "") {
             preparePlayer()

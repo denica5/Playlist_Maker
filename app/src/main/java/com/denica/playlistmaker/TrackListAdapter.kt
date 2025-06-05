@@ -17,7 +17,7 @@ import java.util.Locale
 
 class TrackListAdapter(val onItemClickListener: OnItemClickListener) :
     RecyclerView.Adapter<TrackListViewHolder>() {
-    var itemList: List<Track> = arrayListOf()
+    var itemList: List<TrackDto> = arrayListOf()
     private val handler = Handler(Looper.getMainLooper())
     private var isClickAllowed = true
 
@@ -69,14 +69,14 @@ class TrackListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         trackDuration = itemView.findViewById(R.id.remaining_track_duration_media_player)
     }
 
-    fun bind(track: Track) {
-        Glide.with(itemView.context).load(track.artworkUrl100)
+    fun bind(trackDto: TrackDto) {
+        Glide.with(itemView.context).load(trackDto.artworkUrl100)
             .placeholder(R.drawable.ic_track_placeholder).centerCrop()
             .transform(RoundedCorners(dpToPx(2f, itemView.context))).into(trackImage)
-        trackName.text = track.trackName.trim()
-        trackArtistName.text = track.artistName.trim()
+        trackName.text = trackDto.trackName.trim()
+        trackArtistName.text = trackDto.artistName.trim()
         trackDuration.text =
-            SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis).trim()
+            SimpleDateFormat("mm:ss", Locale.getDefault()).format(trackDto.trackTimeMillis).trim()
     }
 
 

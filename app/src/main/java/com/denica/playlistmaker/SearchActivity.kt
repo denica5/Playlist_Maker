@@ -7,7 +7,6 @@ import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
@@ -38,8 +37,8 @@ class SearchActivity : AppCompatActivity() {
     private val retrofit = Retrofit.Builder().baseUrl(ITUNES_BASE_URL)
         .addConverterFactory(GsonConverterFactory.create()).build()
     private val itunesService = retrofit.create(ItunesApi::class.java)
-    private val tracks = arrayListOf<Track>()
-    private val savedTracksArrayList = arrayListOf<Track>()
+    private val trackDtos = arrayListOf<TrackDto>()
+    private val savedTracksArrayList = arrayListOf<TrackDto>()
     private lateinit var adapter: TrackListAdapter
     private lateinit var historyAdapter: TrackListAdapter
     private lateinit var trackListRc: RecyclerView
@@ -76,10 +75,10 @@ class SearchActivity : AppCompatActivity() {
         sharedPref = getSharedPreferences(PLAYLIST_MAKER_PREFERENCES, MODE_PRIVATE)
 
         val itemClickListener = object : OnItemClickListener {
-            override fun onItemClick(track: Track) {
-                val position = searchHistory.addTrack(savedTracksArrayList, track)
+            override fun onItemClick(trackDto: TrackDto) {
+                val position = searchHistory.addTrack(savedTracksArrayList, trackDto)
                 startActivity(Intent(this@SearchActivity, MediaPlayerActivity::class.java).apply {
-                    putExtra(TRACK_KEY, track)
+                    putExtra(TRACK_KEY, trackDto)
                 })
 
                 if (position != -1) {
@@ -152,7 +151,7 @@ class SearchActivity : AppCompatActivity() {
         }
 
 
-        adapter.itemList = tracks
+        adapter.itemList = trackDtos
         trackListRc.adapter = adapter
         trackListRc.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         searchEditText.setOnEditorActionListener { _, actionId, _ ->
@@ -201,12 +200,12 @@ class SearchActivity : AppCompatActivity() {
                     call: Call<SongResponse>, response: Response<SongResponse>
                 ) {
                     if (response.code() == 200) {
-                        tracks.clear()
+                        trackDtos.clear()
                         if (response.body()?.results?.isNotEmpty() == true) {
-                            tracks.addAll(response.body()?.results!!)
+                            trackDtos.addAll(response.body()?.results!!)
                             adapter.notifyDataSetChanged()
                         }
-                        if (tracks.isEmpty()) {
+                        if (trackDtos.isEmpty()) {
                             clearTracks(getString(R.string.nothing_found))
 
                         } else {
@@ -233,7 +232,7 @@ class SearchActivity : AppCompatActivity() {
     private fun clearTracks(text: String) {
 
         if (text.isNotEmpty()) {
-            tracks.clear()
+            trackDtos.clear()
             adapter.notifyDataSetChanged()
         }
         when (text) {

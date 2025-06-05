@@ -5,7 +5,6 @@ import android.os.Parcelable
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query
-import java.io.Serializable
 
 interface ItunesApi {
     @GET("/search?entity=song")
@@ -14,10 +13,10 @@ interface ItunesApi {
 
 class SongResponse(
     val resultCount: Int,
-    val results: List<Track>
+    val results: List<TrackDto>
 )
 
-class Track(
+data class TrackDto(
     val trackId: Long,
     val trackName: String,
     val artistName: String,
@@ -60,12 +59,12 @@ class Track(
         return 0
     }
 
-    companion object CREATOR : Parcelable.Creator<Track> {
-        override fun createFromParcel(parcel: Parcel): Track {
-            return Track(parcel)
+    companion object CREATOR : Parcelable.Creator<TrackDto> {
+        override fun createFromParcel(parcel: Parcel): TrackDto {
+            return TrackDto(parcel)
         }
 
-        override fun newArray(size: Int): Array<Track?> {
+        override fun newArray(size: Int): Array<TrackDto?> {
             return arrayOfNulls(size)
         }
     }
