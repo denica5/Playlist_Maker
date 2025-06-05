@@ -1,4 +1,4 @@
-package com.denica.playlistmaker
+package com.denica.playlistmaker.ui.settings
 
 import android.content.Intent
 import android.content.res.Configuration
@@ -8,6 +8,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.denica.playlistmaker.App
+import com.denica.playlistmaker.R
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textview.MaterialTextView

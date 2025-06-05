@@ -1,4 +1,4 @@
-package com.denica.playlistmaker
+package com.denica.playlistmaker.ui.search
 
 import android.content.Context
 import android.os.Handler
@@ -12,12 +12,15 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.denica.playlistmaker.R
+import com.denica.playlistmaker.domain.models.Song
+
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 class TrackListAdapter(val onItemClickListener: OnItemClickListener) :
     RecyclerView.Adapter<TrackListViewHolder>() {
-    var itemList: List<TrackDto> = arrayListOf()
+    var itemList: List<Song> = arrayListOf()
     private val handler = Handler(Looper.getMainLooper())
     private var isClickAllowed = true
 
@@ -69,14 +72,14 @@ class TrackListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         trackDuration = itemView.findViewById(R.id.remaining_track_duration_media_player)
     }
 
-    fun bind(trackDto: TrackDto) {
-        Glide.with(itemView.context).load(trackDto.artworkUrl100)
+    fun bind(songDto: Song) {
+        Glide.with(itemView.context).load(songDto.artworkUrl100)
             .placeholder(R.drawable.ic_track_placeholder).centerCrop()
             .transform(RoundedCorners(dpToPx(2f, itemView.context))).into(trackImage)
-        trackName.text = trackDto.trackName.trim()
-        trackArtistName.text = trackDto.artistName.trim()
+        trackName.text = songDto.trackName.trim()
+        trackArtistName.text = songDto.artistName.trim()
         trackDuration.text =
-            SimpleDateFormat("mm:ss", Locale.getDefault()).format(trackDto.trackTimeMillis).trim()
+            SimpleDateFormat("mm:ss", Locale.getDefault()).format(songDto.trackTimeMillis).trim()
     }
 
 

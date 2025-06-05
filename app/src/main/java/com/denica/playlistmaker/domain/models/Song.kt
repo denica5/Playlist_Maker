@@ -1,29 +1,17 @@
-package com.denica.playlistmaker
+package com.denica.playlistmaker.domain.models
 
 import android.os.Parcel
 import android.os.Parcelable
-import retrofit2.Call
-import retrofit2.http.GET
-import retrofit2.http.Query
+import com.denica.playlistmaker.data.dto.SongDto
 
-interface ItunesApi {
-    @GET("/search?entity=song")
-    fun search(@Query("term") text: String): Call<SongResponse>
-}
-
-class SongResponse(
-    val resultCount: Int,
-    val results: List<TrackDto>
-)
-
-data class TrackDto(
+data class Song(
     val trackId: Long,
     val trackName: String,
     val artistName: String,
     val trackTimeMillis: Long,
     val artworkUrl100: String,
     val collectionName: String,
-    val releaseDate: String,
+    val releaseDate: String?,
     val primaryGenreName: String,
     val country: String,
     val previewUrl: String
@@ -35,7 +23,7 @@ data class TrackDto(
         parcel.readLong(),
         parcel.readString() ?: "",
         parcel.readString() ?: "",
-        parcel.readString() ?: "",
+        parcel?.readString() ?: "",
         parcel.readString() ?: "",
         parcel.readString() ?: "",
         parcel.readString() ?: ""
@@ -59,12 +47,12 @@ data class TrackDto(
         return 0
     }
 
-    companion object CREATOR : Parcelable.Creator<TrackDto> {
-        override fun createFromParcel(parcel: Parcel): TrackDto {
-            return TrackDto(parcel)
+    companion object CREATOR : Parcelable.Creator<SongDto> {
+        override fun createFromParcel(parcel: Parcel): SongDto {
+            return SongDto(parcel)
         }
 
-        override fun newArray(size: Int): Array<TrackDto?> {
+        override fun newArray(size: Int): Array<SongDto?> {
             return arrayOfNulls(size)
         }
     }

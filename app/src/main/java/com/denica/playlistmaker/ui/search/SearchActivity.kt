@@ -1,4 +1,4 @@
-package com.denica.playlistmaker
+package com.denica.playlistmaker.ui.search
 
 import android.content.Intent
 import android.content.SharedPreferences
@@ -22,23 +22,26 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.appbar.MaterialToolbar
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import com.denica.playlistmaker.Creator
+import com.denica.playlistmaker.ui.settings.PLAYLIST_MAKER_PREFERENCES
+import com.denica.playlistmaker.R
+import com.denica.playlistmaker.data.dto.SongDto
+import com.denica.playlistmaker.ui.search.OnItemClickListener
 
-private const val ITUNES_BASE_URL = "https://itunes.apple.com"
+import com.denica.playlistmaker.domain.api.SongInteractor
+import com.denica.playlistmaker.domain.models.Song
+import com.denica.playlistmaker.ui.search.mediaplayer.MediaPlayerActivity
+import com.google.android.material.appbar.MaterialToolbar
+
+
 const val TRACK_KEY = "TRACK_KEY"
 
 class SearchActivity : AppCompatActivity() {
     private var searchText = ""
-    private val retrofit = Retrofit.Builder().baseUrl(ITUNES_BASE_URL)
-        .addConverterFactory(GsonConverterFactory.create()).build()
-    private val itunesService = retrofit.create(ItunesApi::class.java)
-    private val trackDtos = arrayListOf<TrackDto>()
-    private val savedTracksArrayList = arrayListOf<TrackDto>()
+
+    private val songs = arrayListOf<Song>()
+    private lateinit var songInteractor: SongInteractor
+    private val savedTracksArrayList = arrayListOf<Song>()
     private lateinit var adapter: TrackListAdapter
     private lateinit var historyAdapter: TrackListAdapter
     private lateinit var trackListRc: RecyclerView
@@ -75,10 +78,10 @@ class SearchActivity : AppCompatActivity() {
         sharedPref = getSharedPreferences(PLAYLIST_MAKER_PREFERENCES, MODE_PRIVATE)
 
         val itemClickListener = object : OnItemClickListener {
-            override fun onItemClick(trackDto: TrackDto) {
-                val position = searchHistory.addTrack(savedTracksArrayList, trackDto)
+            override fun onItemClick(song: Song) {
+                val position = searchHistory.addTrack(savedTracksArrayList, song)
                 startActivity(Intent(this@SearchActivity, MediaPlayerActivity::class.java).apply {
-                    putExtra(TRACK_KEY, trackDto)
+                    putExtra(TRACK_KEY, song)
                 })
 
                 if (position != -1) {
@@ -87,6 +90,8 @@ class SearchActivity : AppCompatActivity() {
                 }
             }
         }
+        songInteractor = Creator.provideSongsInteractor()
+
         adapter = TrackListAdapter(itemClickListener)
         historyAdapter = TrackListAdapter(itemClickListener)
         searchHistory = SearchHistory(sharedPref)
@@ -151,7 +156,7 @@ class SearchActivity : AppCompatActivity() {
         }
 
 
-        adapter.itemList = trackDtos
+        adapter.itemList = songs
         trackListRc.adapter = adapter
         trackListRc.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         searchEditText.setOnEditorActionListener { _, actionId, _ ->
@@ -194,45 +199,39 @@ class SearchActivity : AppCompatActivity() {
         trackListRc.isVisible = false
         notFoundError.isVisible = false
         failedSearchError.isVisible = false
-        itunesService.search(searchEditText.text.toString())
-            .enqueue(object : Callback<SongResponse> {
-                override fun onResponse(
-                    call: Call<SongResponse>, response: Response<SongResponse>
-                ) {
-                    if (response.code() == 200) {
-                        trackDtos.clear()
-                        if (response.body()?.results?.isNotEmpty() == true) {
-                            trackDtos.addAll(response.body()?.results!!)
-                            adapter.notifyDataSetChanged()
+        songInteractor.searchSong(
+            searchEditText.text.toString(),
+            object : SongInteractor.SongConsumer {
+                override fun consume(foundSongs: Pair<List<Song>, Boolean>) {
+                    if (foundSongs.second) {
+                        songs.clear()
+                        if (foundSongs.first.isNotEmpty()) {
+                            songs.addAll(foundSongs.first)
+                            handler.post() { adapter.notifyDataSetChanged() }
                         }
-                        if (trackDtos.isEmpty()) {
-                            clearTracks(getString(R.string.nothing_found))
+                        if (songs.isEmpty()) {
+                            handler.post() { clearTracks(getString(R.string.nothing_found)) }
 
                         } else {
-                            clearTracks("")
+                            handler.post() { clearTracks("") }
 
                         }
                     } else {
-                        clearTracks(
-                            getString(R.string.failed_search)
-                        )
-
-
+                        handler.post() {
+                            clearTracks(
+                                getString(R.string.failed_search)
+                            )
+                        }
                     }
                 }
-
-                override fun onFailure(call: Call<SongResponse>, t: Throwable) {
-                    clearTracks(getString(R.string.failed_search))
-
-                }
-
             })
+
     }
 
     private fun clearTracks(text: String) {
 
         if (text.isNotEmpty()) {
-            trackDtos.clear()
+            songs.clear()
             adapter.notifyDataSetChanged()
         }
         when (text) {
