@@ -14,9 +14,9 @@ import androidx.core.view.WindowInsetsCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.denica.playlistmaker.R
+import com.denica.playlistmaker.domain.models.Song
 import com.denica.playlistmaker.ui.search.TRACK_KEY
 import com.denica.playlistmaker.ui.search.TrackListViewHolder
-import com.denica.playlistmaker.data.dto.SongDto
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -51,10 +51,10 @@ class MediaPlayerActivity : AppCompatActivity() {
             insets
         }
         mainHandler = Handler(Looper.getMainLooper())
-        val songDto: SongDto = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.getParcelableExtra(TRACK_KEY, SongDto::class.java) as SongDto
+        val songDto: Song = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent.getParcelableExtra(TRACK_KEY, Song::class.java) as Song
         } else {
-            intent.getParcelableExtra<SongDto>(TRACK_KEY) as SongDto
+            intent.getParcelableExtra<Song>(TRACK_KEY) as Song
         }
         arrowBackMediaPlayer = findViewById(R.id.arrow_back_media_player)
         trackImageMediaPlayer = findViewById(R.id.track_image_media_player)
@@ -72,7 +72,7 @@ class MediaPlayerActivity : AppCompatActivity() {
         }
 
         Glide.with(trackImageMediaPlayer)
-            .load(songDto.artworkUrl100?.replaceAfterLast('/', "512x512bb.jpg"))
+            .load(songDto.artworkUrl100.replaceAfterLast('/', "512x512bb.jpg"))
             .placeholder(R.drawable.ic_track_placeholder).centerCrop().transform(
                 RoundedCorners(
                     TrackListViewHolder.dpToPx(
@@ -88,7 +88,7 @@ class MediaPlayerActivity : AppCompatActivity() {
         trackYearMediaPlayer.text = songDto.releaseDate?.subSequence(0, 4) ?: ""
         trackGenreMediaPlayer.text = songDto.primaryGenreName
         trackCountryMediaPlayer.text = songDto.country
-        previewUrl = songDto.previewUrl?.trim() ?: ""
+        previewUrl = songDto.previewUrl.trim()
 
         if (previewUrl != "") {
             preparePlayer()

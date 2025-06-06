@@ -2,7 +2,6 @@ package com.denica.playlistmaker.domain.models
 
 import android.os.Parcel
 import android.os.Parcelable
-import com.denica.playlistmaker.data.dto.SongDto
 
 data class Song(
     val trackId: Long,
@@ -23,7 +22,7 @@ data class Song(
         parcel.readLong(),
         parcel.readString() ?: "",
         parcel.readString() ?: "",
-        parcel?.readString() ?: "",
+        parcel.readString() ?: "",
         parcel.readString() ?: "",
         parcel.readString() ?: "",
         parcel.readString() ?: ""
@@ -47,12 +46,12 @@ data class Song(
         return 0
     }
 
-    companion object CREATOR : Parcelable.Creator<SongDto> {
-        override fun createFromParcel(parcel: Parcel): SongDto {
-            return SongDto(parcel)
+    companion object CREATOR : Parcelable.Creator<Song> {
+        override fun createFromParcel(parcel: Parcel): Song {
+            return Song(parcel)
         }
 
-        override fun newArray(size: Int): Array<SongDto?> {
+        override fun newArray(size: Int): Array<Song?> {
             return arrayOfNulls(size)
         }
     }

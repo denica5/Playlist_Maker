@@ -23,14 +23,11 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.denica.playlistmaker.Creator
-import com.denica.playlistmaker.ui.settings.PLAYLIST_MAKER_PREFERENCES
 import com.denica.playlistmaker.R
-import com.denica.playlistmaker.data.dto.SongDto
-import com.denica.playlistmaker.ui.search.OnItemClickListener
-
 import com.denica.playlistmaker.domain.api.SongInteractor
 import com.denica.playlistmaker.domain.models.Song
 import com.denica.playlistmaker.ui.search.mediaplayer.MediaPlayerActivity
+import com.denica.playlistmaker.ui.settings.PLAYLIST_MAKER_PREFERENCES
 import com.google.android.material.appbar.MaterialToolbar
 
 
