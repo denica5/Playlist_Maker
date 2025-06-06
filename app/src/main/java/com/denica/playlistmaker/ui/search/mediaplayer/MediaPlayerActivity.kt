@@ -1,4 +1,4 @@
-package com.denica.playlistmaker
+package com.denica.playlistmaker.ui.search.mediaplayer
 
 import android.media.MediaPlayer
 import android.os.Build
@@ -13,6 +13,10 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.denica.playlistmaker.R
+import com.denica.playlistmaker.domain.models.Song
+import com.denica.playlistmaker.ui.search.TRACK_KEY
+import com.denica.playlistmaker.ui.search.TrackListViewHolder
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -47,10 +51,10 @@ class MediaPlayerActivity : AppCompatActivity() {
             insets
         }
         mainHandler = Handler(Looper.getMainLooper())
-        val track: Track = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.getParcelableExtra(TRACK_KEY, Track::class.java) as Track
+        val songDto: Song = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent.getParcelableExtra(TRACK_KEY, Song::class.java) as Song
         } else {
-            intent.getParcelableExtra<Track>(TRACK_KEY) as Track
+            intent.getParcelableExtra<Song>(TRACK_KEY) as Song
         }
         arrowBackMediaPlayer = findViewById(R.id.arrow_back_media_player)
         trackImageMediaPlayer = findViewById(R.id.track_image_media_player)
@@ -68,7 +72,7 @@ class MediaPlayerActivity : AppCompatActivity() {
         }
 
         Glide.with(trackImageMediaPlayer)
-            .load(track.artworkUrl100.replaceAfterLast('/', "512x512bb.jpg"))
+            .load(songDto.artworkUrl100.replaceAfterLast('/', "512x512bb.jpg"))
             .placeholder(R.drawable.ic_track_placeholder).centerCrop().transform(
                 RoundedCorners(
                     TrackListViewHolder.dpToPx(
@@ -76,15 +80,15 @@ class MediaPlayerActivity : AppCompatActivity() {
                     )
                 )
             ).into(trackImageMediaPlayer)
-        trackNameMediaPlayer.text = track.trackName
-        trackArtistNameMediaPlayer.text = track.artistName
+        trackNameMediaPlayer.text = songDto.trackName
+        trackArtistNameMediaPlayer.text = songDto.artistName
         remainingTrackDurationMediaPlayer.text = dateFormat.format(0L)
-        trackDurationMediaPlayer.text = dateFormat.format(track.trackTimeMillis)
-        trackAlbumMediaPlayer.text = track.collectionName
-        trackYearMediaPlayer.text = track.releaseDate.subSequence(0, 4)
-        trackGenreMediaPlayer.text = track.primaryGenreName
-        trackCountryMediaPlayer.text = track.country
-        previewUrl = track.previewUrl.trim()
+        trackDurationMediaPlayer.text = dateFormat.format(songDto.trackTimeMillis)
+        trackAlbumMediaPlayer.text = songDto.collectionName
+        trackYearMediaPlayer.text = songDto.releaseDate?.subSequence(0, 4) ?: ""
+        trackGenreMediaPlayer.text = songDto.primaryGenreName
+        trackCountryMediaPlayer.text = songDto.country
+        previewUrl = songDto.previewUrl.trim()
 
         if (previewUrl != "") {
             preparePlayer()

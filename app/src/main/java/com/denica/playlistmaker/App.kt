@@ -2,6 +2,8 @@ package com.denica.playlistmaker
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
+import com.denica.playlistmaker.ui.settings.DARK_THEME_MODE_KEY
+import com.denica.playlistmaker.ui.settings.PLAYLIST_MAKER_PREFERENCES
 
 
 class App : Application() {

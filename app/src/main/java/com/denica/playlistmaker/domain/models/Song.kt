@@ -1,30 +1,16 @@
-package com.denica.playlistmaker
+package com.denica.playlistmaker.domain.models
 
 import android.os.Parcel
 import android.os.Parcelable
-import retrofit2.Call
-import retrofit2.http.GET
-import retrofit2.http.Query
-import java.io.Serializable
 
-interface ItunesApi {
-    @GET("/search?entity=song")
-    fun search(@Query("term") text: String): Call<SongResponse>
-}
-
-class SongResponse(
-    val resultCount: Int,
-    val results: List<Track>
-)
-
-class Track(
+data class Song(
     val trackId: Long,
     val trackName: String,
     val artistName: String,
     val trackTimeMillis: Long,
     val artworkUrl100: String,
     val collectionName: String,
-    val releaseDate: String,
+    val releaseDate: String?,
     val primaryGenreName: String,
     val country: String,
     val previewUrl: String
@@ -60,12 +46,12 @@ class Track(
         return 0
     }
 
-    companion object CREATOR : Parcelable.Creator<Track> {
-        override fun createFromParcel(parcel: Parcel): Track {
-            return Track(parcel)
+    companion object CREATOR : Parcelable.Creator<Song> {
+        override fun createFromParcel(parcel: Parcel): Song {
+            return Song(parcel)
         }
 
-        override fun newArray(size: Int): Array<Track?> {
+        override fun newArray(size: Int): Array<Song?> {
             return arrayOfNulls(size)
         }
     }
