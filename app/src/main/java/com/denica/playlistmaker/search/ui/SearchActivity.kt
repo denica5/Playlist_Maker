@@ -244,23 +244,6 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
-//    private fun showHistory(array: ArrayList<Song>, s: String?) {
-//        if (array.isNotEmpty()) {
-//            if (binding.searchEditText.hasFocus() && s?.isEmpty() == true) {
-//                binding.clearHistoryButton.isVisible = true
-//                binding.youSearchTextView.isVisible = true
-//                binding.trackListRc.adapter = historyAdapter
-//            } else {
-//                binding.clearHistoryButton.isVisible = false
-//                binding.youSearchTextView.isVisible = false
-//                binding.trackListRc.adapter = adapter
-//            }
-//        } else {
-//            binding.clearHistoryButton.isVisible = false
-//            binding.youSearchTextView.isVisible = false
-//            binding.trackListRc.adapter = adapter
-//        }
-//    }
 
     override fun onStop() {
         super.onStop()

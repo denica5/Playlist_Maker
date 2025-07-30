@@ -11,7 +11,11 @@ class SearchHistoryInteractorImpl(
         consumer.consume(repository.getHistory().data)
     }
 
-    override fun saveToHistory(songs: List<Song>) {
-        repository.saveToHistory(songs)
+    override fun saveToHistory(song: Song) {
+        repository.saveToHistory(song)
+    }
+
+    override fun saveListToHistory(songs: List<Song>) {
+        repository.saveListToHistory(songs)
     }
 }

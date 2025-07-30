@@ -1,10 +1,8 @@
 package com.denica.playlistmaker.search.ui
 
 import android.app.Application
-import android.content.Context
 import android.os.Handler
 import android.os.Looper
-
 import android.os.SystemClock
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -19,13 +17,14 @@ import com.denica.playlistmaker.search.domain.api.SearchHistoryInteractor
 import com.denica.playlistmaker.search.domain.api.SongInteractor
 import com.denica.playlistmaker.search.domain.models.Song
 
-class SearchViewModel(val context: Context) : ViewModel() {
+class SearchViewModel(
+    private val historyInteractor: SearchHistoryInteractor,
+    private val songInteractor: SongInteractor
+) : ViewModel() {
 
-    private val songInteractor = Creator.provideSongsInteractor()
+
     private val handler = Handler(Looper.getMainLooper())
-    val historyInteractor: SearchHistoryInteractor = Creator.provideSearchHistoryInteractor(context)
     private var latestSearchText: String? = null
-
     private val savedTracksArrayList = MutableLiveData<ArrayList<Song>>()
     fun getSavedTracksArrayList(): LiveData<ArrayList<Song>> = savedTracksArrayList
     private val stateLiveData = MutableLiveData<SearchState>()
@@ -96,20 +95,12 @@ class SearchViewModel(val context: Context) : ViewModel() {
 
 
     fun addTrack(song: Song): Int {
+        historyInteractor.saveToHistory(song)
         if (savedTracksArrayList.value?.contains(song) == true) {
             val position = savedTracksArrayList.value?.indexOf(song) ?: -1
-            savedTracksArrayList.value?.remove(song)
-            savedTracksArrayList.value?.add(0, song)
-            savedTracksArrayList.notifyObserver()
             return position
-        } else {
-            if ((savedTracksArrayList.value?.size ?: 0) >= 10) {
-                savedTracksArrayList.value?.removeAt(savedTracksArrayList.value?.lastIndex ?: 0)
-                savedTracksArrayList.value?.add(0, song)
-            } else {
-                savedTracksArrayList.value?.add(0, song)
-            }
         }
+        getHistory()
         savedTracksArrayList.notifyObserver()
         return -1
     }
@@ -119,7 +110,7 @@ class SearchViewModel(val context: Context) : ViewModel() {
     }
 
     fun saveHistory() {
-        savedTracksArrayList.value?.let { historyInteractor.saveToHistory(it.toList()) }
+        savedTracksArrayList.value?.let { historyInteractor.saveListToHistory(it.toList()) }
     }
 
     fun getHistory() {
@@ -142,7 +133,11 @@ class SearchViewModel(val context: Context) : ViewModel() {
             viewModelFactory {
                 initializer {
                     val app = (this[APPLICATION_KEY] as Application)
-                    SearchViewModel(app)
+                    SearchViewModel(
+                        Creator.provideSearchHistoryInteractor(
+                            app
+                        ), Creator.provideSongsInteractor()
+                    )
                 }
             }
 
@@ -152,7 +147,7 @@ class SearchViewModel(val context: Context) : ViewModel() {
 
     override fun onCleared() {
         super.onCleared()
-        savedTracksArrayList.value?.let { historyInteractor.saveToHistory(it.toList()) }
+        savedTracksArrayList.value?.let { historyInteractor.saveListToHistory(it.toList()) }
         handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
     }
 
