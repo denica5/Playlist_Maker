@@ -83,7 +83,9 @@ class SearchActivity : AppCompatActivity() {
 
         }
         binding.refreshButton.setOnClickListener {
-            if (clickDebounce()){ viewModel.searchRequest(binding.searchEditText.text.toString()) }
+            if (clickDebounce()) {
+                viewModel.searchRequest(binding.searchEditText.text.toString())
+            }
 
         }
 
@@ -164,22 +166,17 @@ class SearchActivity : AppCompatActivity() {
                     }
 
                     is SearchState.Content -> {
-                        if (it.data.isNotEmpty()) {
-                            adapter.itemList = it.data
-                            adapter.notifyDataSetChanged()
-                            clearTracks("")
-                        } else {
-                            clearTracks(getString(R.string.nothing_found))
-                        }
-//
+                        adapter.itemList = it.data
+                        adapter.notifyDataSetChanged()
+                        clearTracks("")
                     }
 
                     is SearchState.Empty -> {
-                        clearTracks(it.message)
+                        clearTracks(getString(it.message))
                     }
 
                     is SearchState.Error -> {
-                        clearTracks(it.message)
+                        clearTracks(getString(it.message))
                     }
                 }
             }
@@ -233,7 +230,7 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
-    fun showHistory() {
+    private fun showHistory() {
         if (viewModel.isSavedTracksArrayListNotEmpty()) {
             if (binding.searchEditText.hasFocus() && binding.searchEditText.text.isEmpty()) {
                 binding.clearHistoryButton.isVisible = true
@@ -268,11 +265,6 @@ class SearchActivity : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
         viewModel.saveHistory()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-
     }
 
     companion object {

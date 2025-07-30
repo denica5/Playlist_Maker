@@ -1,12 +1,11 @@
 package com.denica.playlistmaker.settings.domain.api
 
-import com.denica.playlistmaker.search.data.Resource
-import com.denica.playlistmaker.search.domain.models.Song
+import com.denica.playlistmaker.settings.domain.model.ThemeSettings
 
 interface SettingsInteractor {
-    fun saveSettings(isChecked: Boolean)
+    fun saveSettings(isChecked: ThemeSettings)
     fun getSettings(consumer: SettingsConsumer)
     interface SettingsConsumer {
-        fun consume(isChecked: Boolean)
+        fun consume(isChecked: ThemeSettings)
     }
 }

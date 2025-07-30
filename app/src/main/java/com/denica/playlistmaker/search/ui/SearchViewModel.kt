@@ -67,13 +67,13 @@ class SearchViewModel(val context: Context) : ViewModel() {
                             errorMessage != null -> {
                                 renderState(
                                     SearchState.Error(
-                                        message = context.getString(R.string.failed_search)
+                                        message = R.string.failed_search
                                     )
                                 )
                             }
 
                             songs.isEmpty() -> {
-                                renderState(SearchState.Empty(context.getString(R.string.nothing_found)))
+                                renderState(SearchState.Empty(R.string.nothing_found))
                             }
 
                             else -> {
@@ -146,7 +146,7 @@ class SearchViewModel(val context: Context) : ViewModel() {
                 }
             }
 
-        private const val SEARCH_DEBOUNCE_DELAY = 2000L
+        private const val SEARCH_DEBOUNCE_DELAY = 3000L
         private val SEARCH_REQUEST_TOKEN = Any()
     }
 

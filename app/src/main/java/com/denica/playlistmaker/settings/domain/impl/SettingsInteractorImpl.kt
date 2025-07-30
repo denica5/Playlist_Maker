@@ -1,10 +1,11 @@
-package com.denica.playlistmaker.settings.domain
+package com.denica.playlistmaker.settings.domain.impl
 
 import com.denica.playlistmaker.settings.domain.api.SettingsInteractor
 import com.denica.playlistmaker.settings.domain.api.SettingsRepository
+import com.denica.playlistmaker.settings.domain.model.ThemeSettings
 
-class SettingsInteractorImpl(val repository: SettingsRepository) : SettingsInteractor {
-    override fun saveSettings(isChecked: Boolean) {
+class SettingsInteractorImpl(private val repository: SettingsRepository) : SettingsInteractor {
+    override fun saveSettings(isChecked: ThemeSettings) {
         repository.saveSettings(isChecked)
     }
 

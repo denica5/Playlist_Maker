@@ -2,7 +2,6 @@ package com.denica.playlistmaker.mediaplayer.ui
 
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -75,7 +74,7 @@ class MediaPlayerActivity : AppCompatActivity() {
         }
         viewModel.getMediaPlayerState()
             .observe(this) {
-                binding.remainingTrackDurationMediaPlayer.text = it.countTimer ?: "00:00"
+                binding.remainingTrackDurationMediaPlayer.text = it.countTimer
                 when (it.playerState) {
                     MediaPlayerViewModel.STATE_PLAYING -> binding.playTrackMediaPlayer.setImageResource(
                         R.drawable.ic_stop_track
@@ -85,16 +84,9 @@ class MediaPlayerActivity : AppCompatActivity() {
                         R.drawable.ic_play_track
                     )
                 }
-                str(it.toString())
+
             }
     }
 
-    fun str(string: String){
-        Log.d("ISMAAAA", string)
-    }
 
-    override fun onPause() {
-        super.onPause()
-
-    }
 }
