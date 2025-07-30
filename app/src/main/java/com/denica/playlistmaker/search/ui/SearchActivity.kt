@@ -83,7 +83,7 @@ class SearchActivity : AppCompatActivity() {
 
         }
         binding.refreshButton.setOnClickListener {
-            viewModel.searchRequest(binding.searchEditText.text.toString())
+            if (clickDebounce()){ viewModel.searchRequest(binding.searchEditText.text.toString()) }
 
         }
 
@@ -199,6 +199,7 @@ class SearchActivity : AppCompatActivity() {
     private fun clearTracks(text: String) {
 
         if (text.isNotEmpty()) {
+            adapter.itemList = emptyList()
             adapter.notifyDataSetChanged()
         }
         when (text) {

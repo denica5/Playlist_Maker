@@ -13,18 +13,10 @@ import com.denica.playlistmaker.search.domain.impl.SearchHistoryInteractorImpl
 import com.denica.playlistmaker.search.domain.impl.SongInteractorImpl
 import com.denica.playlistmaker.search.domain.models.Song
 import com.denica.playlistmaker.search.ui.SEARCH_HISTORY_KEY
-import com.denica.playlistmaker.settings.data.ExternalNavigationImpl
 import com.denica.playlistmaker.settings.data.SettingsRepositoryImpl
-import com.denica.playlistmaker.settings.data.ShareRepositoryImpl
-import com.denica.playlistmaker.settings.domain.ExternalNavigation
-import com.denica.playlistmaker.settings.domain.impl.SettingsInteractorImpl
+import com.denica.playlistmaker.settings.domain.SettingsInteractorImpl
 import com.denica.playlistmaker.settings.domain.api.SettingsInteractor
 import com.denica.playlistmaker.settings.domain.api.SettingsRepository
-import com.denica.playlistmaker.settings.domain.api.ShareRepository
-import com.denica.playlistmaker.settings.domain.api.SharingInteractor
-import com.denica.playlistmaker.settings.domain.impl.SharingInteractorImpl
-import com.denica.playlistmaker.settings.domain.model.ThemeSettings
-import com.denica.playlistmaker.settings.ui.DARK
 import com.denica.playlistmaker.settings.ui.DARK_THEME_MODE_KEY
 import com.google.gson.reflect.TypeToken
 
@@ -54,27 +46,14 @@ object Creator {
 
     private fun getSettingsRepository(context: Context): SettingsRepository {
         return SettingsRepositoryImpl(
-            com.denica.playlistmaker.settings.data.storage.PrefsStorageClient<ThemeSettings>(
-                context,
-                DARK,
-                object : TypeToken<ThemeSettings>() {}.type
+            com.denica.playlistmaker.settings.data.storage.PrefsStorageClient<Boolean>(
+            context,
+                DARK_THEME_MODE_KEY,
+                object :TypeToken<Boolean>() {}.type
             )
         )
     }
-
-    fun provideSettingsInteractor(context: Context): SettingsInteractor {
+    private fun provideSettingsInteractor(context: Context) : SettingsInteractor {
         return SettingsInteractorImpl(getSettingsRepository(context))
-    }
-
-    private fun getShareRepository(context: Context): ShareRepository {
-        return ShareRepositoryImpl(context = context)
-    }
-
-    private fun getExternalNavigation(context: Context): ExternalNavigation {
-        return ExternalNavigationImpl(context)
-    }
-
-    fun provideShareInteractor(context: Context): SharingInteractor {
-        return SharingInteractorImpl(getExternalNavigation(context), getShareRepository(context))
     }
 }

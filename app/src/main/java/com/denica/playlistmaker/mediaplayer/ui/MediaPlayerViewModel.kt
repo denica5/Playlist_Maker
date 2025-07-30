@@ -17,11 +17,9 @@ class MediaPlayerViewModel(private val previewUrl: String) : ViewModel() {
     private var mediaPlayer = MediaPlayer()
 
 
-    private val mediaPlayerStateLiveData = MutableLiveData(STATE_DEFAULT)
-    fun observePlayerState(): LiveData<Int> = mediaPlayerStateLiveData
 
-    private val mediaPlayerTimerLiveData = MutableLiveData("00:00")
-    fun observeProgressTime(): LiveData<String> = mediaPlayerTimerLiveData
+    private val mediaPlayerState = MutableLiveData(MediaPlayerState(STATE_DEFAULT, "00:00"))
+    fun getMediaPlayerState(): LiveData<MediaPlayerState> = mediaPlayerState
     private val mainHandler = Handler(Looper.getMainLooper())
     private val dateFormat by lazy { SimpleDateFormat("mm:ss", Locale.getDefault()) }
     private fun startTimer() {
@@ -33,7 +31,7 @@ class MediaPlayerViewModel(private val previewUrl: String) : ViewModel() {
     private val createUpdateTimerTask = object : Runnable {
         override fun run() {
             mainHandler.postDelayed(this, 200)
-            mediaPlayerTimerLiveData.postValue(dateFormat.format(mediaPlayer.currentPosition))
+            mediaPlayerState.postValue(mediaPlayerState.value?.copy(countTimer = dateFormat.format(mediaPlayer.currentPosition)))
         }
 
 
@@ -43,40 +41,40 @@ class MediaPlayerViewModel(private val previewUrl: String) : ViewModel() {
         if (previewUrl != "") {
             preparePlayer()
         }
+
     }
 
     private fun preparePlayer() {
         mediaPlayer.setDataSource(previewUrl)
         mediaPlayer.prepareAsync()
         mediaPlayer.setOnPreparedListener {
-            mediaPlayerStateLiveData.postValue(STATE_PREPARED)
+            mediaPlayerState.postValue(mediaPlayerState.value?.copy(playerState = STATE_PREPARED, countTimer = "00:00"))
         }
         mediaPlayer.setOnCompletionListener {
-            mediaPlayerStateLiveData.postValue(STATE_PREPARED)
             resetTimer()
         }
     }
 
     private fun startPlayer() {
         mediaPlayer.start()
-        mediaPlayerStateLiveData.postValue(STATE_PLAYING)
+        mediaPlayerState.postValue(mediaPlayerState.value?.copy(playerState = STATE_PLAYING))
         startTimer()
     }
 
-    fun pausePlayer() {
+    private fun pausePlayer() {
         mainHandler.removeCallbacks(createUpdateTimerTask)
         mediaPlayer.pause()
-        mediaPlayerStateLiveData.postValue(STATE_PAUSED)
-
+        mediaPlayerState.postValue(mediaPlayerState.value?.copy(playerState = STATE_PAUSED))
     }
 
     private fun resetTimer() {
         mainHandler.removeCallbacks(createUpdateTimerTask)
-        mediaPlayerTimerLiveData.postValue("00:00")
+        mediaPlayerState.postValue(mediaPlayerState.value?.copy(playerState = STATE_PREPARED, countTimer = "00:00"))
+
     }
 
     fun onPlayButtonClicked() {
-        when (mediaPlayerStateLiveData.value) {
+        when (mediaPlayerState.value?.playerState) {
             STATE_PLAYING -> {
                 pausePlayer()
             }
@@ -99,7 +97,6 @@ class MediaPlayerViewModel(private val previewUrl: String) : ViewModel() {
         const val STATE_PREPARED = 1
         const val STATE_PLAYING = 2
         const val STATE_PAUSED = 3
-        private const val DELAY = 1000L
     }
 
     override fun onCleared() {

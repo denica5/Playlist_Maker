@@ -2,6 +2,7 @@ package com.denica.playlistmaker.mediaplayer.ui
 
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -43,8 +44,8 @@ class MediaPlayerActivity : AppCompatActivity() {
         }
         previewUrl = songDto.previewUrl.trim()
         viewModel = ViewModelProvider(this, MediaPlayerViewModel.getFactory(previewUrl)).get(
-                MediaPlayerViewModel::class.java
-            )
+            MediaPlayerViewModel::class.java
+        )
         binding.arrowBackMediaPlayer.setOnClickListener {
             finish()
         }
@@ -72,22 +73,10 @@ class MediaPlayerActivity : AppCompatActivity() {
         binding.playTrackMediaPlayer.setOnClickListener {
             viewModel.onPlayButtonClicked()
         }
-        viewModel.observePlayerState()
+        viewModel.getMediaPlayerState()
             .observe(this) {
-                setPlayTrackImage()
-            }
-        viewModel.observeProgressTime()
-            .observe(this) {
-                binding.remainingTrackDurationMediaPlayer.text = it
-            }
-
-    }
-
-
-    private fun setPlayTrackImage() {
-        viewModel.observePlayerState()
-            .observe(this) {
-                when (it) {
+                binding.remainingTrackDurationMediaPlayer.text = it.countTimer ?: "00:00"
+                when (it.playerState) {
                     MediaPlayerViewModel.STATE_PLAYING -> binding.playTrackMediaPlayer.setImageResource(
                         R.drawable.ic_stop_track
                     )
@@ -96,9 +85,13 @@ class MediaPlayerActivity : AppCompatActivity() {
                         R.drawable.ic_play_track
                     )
                 }
+                str(it.toString())
             }
     }
 
+    fun str(string: String){
+        Log.d("ISMAAAA", string)
+    }
 
     override fun onPause() {
         super.onPause()

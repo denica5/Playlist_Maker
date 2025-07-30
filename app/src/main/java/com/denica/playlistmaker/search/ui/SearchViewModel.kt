@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+
 import android.os.SystemClock
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -47,8 +48,6 @@ class SearchViewModel(val context: Context) : ViewModel() {
             SEARCH_REQUEST_TOKEN,
             postTime,
         )
-        handler.removeCallbacks(searchRunnable)
-        handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
     }
 
     fun searchRequest(newSearchText: String) {
