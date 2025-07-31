@@ -1,5 +1,6 @@
-package com.denica.playlistmaker.search.data
+package com.denica.playlistmaker.search.data.storage
 
+import com.denica.playlistmaker.search.data.network.Resource
 import com.denica.playlistmaker.search.domain.api.SearchHistoryRepository
 import com.denica.playlistmaker.search.domain.models.Song
 

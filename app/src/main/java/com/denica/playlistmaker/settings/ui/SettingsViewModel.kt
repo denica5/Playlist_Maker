@@ -1,14 +1,8 @@
 package com.denica.playlistmaker.settings.ui
 
-import android.app.Application
 import android.content.Intent
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.denica.playlistmaker.creator.Creator
 import com.denica.playlistmaker.settings.domain.api.SettingsInteractor
 import com.denica.playlistmaker.settings.domain.api.SharingInteractor
 import com.denica.playlistmaker.settings.domain.model.ThemeSettings
@@ -43,14 +37,6 @@ class SettingsViewModel(
     }
 
     companion object {
-        fun getFactory(): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val app = (this[APPLICATION_KEY] as Application)
-                SettingsViewModel(
-                    Creator.provideSettingsInteractor(app),
-                    Creator.provideShareInteractor(app)
-                )
-            }
-        }
+
     }
 }

@@ -13,12 +13,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.denica.playlistmaker.R
 import com.denica.playlistmaker.databinding.ActivitySearchBinding
 import com.denica.playlistmaker.search.domain.models.Song
 import com.denica.playlistmaker.mediaplayer.ui.MediaPlayerActivity
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 const val TRACK_KEY = "TRACK_KEY"
@@ -26,7 +26,7 @@ const val TRACK_KEY = "TRACK_KEY"
 class SearchActivity : AppCompatActivity() {
     private var searchText = ""
     private lateinit var binding: ActivitySearchBinding
-    lateinit var viewModel: SearchViewModel
+    val viewModel by viewModel<SearchViewModel>()
     private var isClickAllowed = true
     private lateinit var adapter: TrackListAdapter
     private lateinit var historyAdapter: TrackListAdapter
@@ -62,9 +62,6 @@ class SearchActivity : AppCompatActivity() {
                 }
             }
         }
-        viewModel =
-            ViewModelProvider(this, SearchViewModel.getFactory()).get(SearchViewModel::class.java)
-
         adapter = TrackListAdapter(itemClickListener)
         historyAdapter = TrackListAdapter(itemClickListener)
 

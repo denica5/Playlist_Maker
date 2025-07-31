@@ -6,7 +6,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.denica.playlistmaker.R
@@ -14,6 +13,8 @@ import com.denica.playlistmaker.databinding.ActivityMediaPlayerBinding
 import com.denica.playlistmaker.search.domain.models.Song
 import com.denica.playlistmaker.search.ui.TRACK_KEY
 import com.denica.playlistmaker.search.ui.TrackListViewHolder
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -23,7 +24,7 @@ class MediaPlayerActivity : AppCompatActivity() {
     private lateinit var previewUrl: String
     private val dateFormat by lazy { SimpleDateFormat("mm:ss", Locale.getDefault()) }
     private lateinit var binding: ActivityMediaPlayerBinding
-    private lateinit var viewModel: MediaPlayerViewModel
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,9 +43,9 @@ class MediaPlayerActivity : AppCompatActivity() {
             intent.getParcelableExtra<Song>(TRACK_KEY) as Song
         }
         previewUrl = songDto.previewUrl.trim()
-        viewModel = ViewModelProvider(this, MediaPlayerViewModel.getFactory(previewUrl)).get(
-            MediaPlayerViewModel::class.java
-        )
+        val viewModel by  viewModel<MediaPlayerViewModel>{
+            parametersOf(previewUrl)
+        }
         binding.arrowBackMediaPlayer.setOnClickListener {
             finish()
         }
