@@ -26,4 +26,11 @@
     <string name="label_track_year_media_player">Год</string>
     <string name="label_track_genre_media_player">Жанр</string>
     <string name="label_track_country_media_player">Страна</string>
+    <string name="media_library_text_header">Медиатека</string>
+    <string name="media_library_favourite_tracks_label">Избранные треки</string>
+    <string name="media_library_playlists_label">Плейлисты</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="media_library_favourite_tracks_empty">Ваша медиатека пуста</string>
+    <string name="media_library_playlists_empty">Вы не создали ни одного плейлиста</string>
+    <string name="media_library_button_add_new_playlist">Новый плейлист</string>
 </resources>
