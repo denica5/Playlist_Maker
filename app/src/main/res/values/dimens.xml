@@ -10,6 +10,4 @@
     <dimen name="settings_start_padding_16dp">16dp</dimen>
     <dimen name="settings_text_16sp">16sp</dimen>
     <dimen name="main_bottom_padding_8dp">8dp</dimen>
-    <dimen name="media_library_tab_layout_text_size_14sp">14sp</dimen>
-
 </resources>

@@ -1,7 +1,5 @@
 package com.denica.playlistmaker.di
 
-import com.denica.playlistmaker.mediaLibrary.ui.FavouriteTracksViewModel
-import com.denica.playlistmaker.mediaLibrary.ui.PlaylistViewModel
 import com.denica.playlistmaker.mediaplayer.ui.MediaPlayerViewModel
 import com.denica.playlistmaker.search.ui.SearchViewModel
 import com.denica.playlistmaker.settings.ui.SettingsViewModel
@@ -18,11 +16,5 @@ val viewModelModule = module {
     }
     viewModel {
         SettingsViewModel(get(), get())
-    }
-    viewModel {
-        FavouriteTracksViewModel()
-    }
-    viewModel {
-        PlaylistViewModel()
     }
 }

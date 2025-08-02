@@ -19,6 +19,6 @@
     <color name="track_item_text_color">@color/black</color>
     <color name="ic_arrow_forward">#AEAFB4</color>
     <color name="media_player_icons_background">#AEAFB4</color>
-    <color name="colorBack">#FFFFFFFF</color>
+
 </resources>
 
