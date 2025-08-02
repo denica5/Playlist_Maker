@@ -8,7 +8,7 @@
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/settings_header"
-        style="@style/SettingsHeaderStyle"
+        style="@style/HeaderStyle"
         app:navigationIcon="@drawable/ic_arrow_back"
         app:title="@string/header_settings"
 

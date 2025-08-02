@@ -8,7 +8,7 @@
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/search_header"
-        style="@style/SettingsHeaderStyle"
+        style="@style/HeaderStyle"
         app:navigationIcon="@drawable/ic_arrow_back"
         app:title="@string/search_text_header" />
 
@@ -109,12 +109,12 @@
     <ProgressBar
         android:id="@+id/search_progress_bar"
         android:layout_width="wrap_content"
-        android:layout_marginTop="140dp"
-        android:layout_gravity="center_horizontal"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="140dp"
         android:indeterminateTint="@color/blue"
-        android:visibility="gone"
-        />
+        android:visibility="gone" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/track_list_rc"
         android:layout_width="match_parent"
