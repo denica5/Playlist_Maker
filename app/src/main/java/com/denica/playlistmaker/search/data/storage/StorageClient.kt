@@ -1,4 +1,4 @@
-package com.denica.playlistmaker.search.data
+package com.denica.playlistmaker.search.data.storage
 
 interface StorageClient<T> {
     fun storeData(data: T)

@@ -1,6 +1,6 @@
 package com.denica.playlistmaker.search.domain.impl
 
-import com.denica.playlistmaker.search.data.Resource
+import com.denica.playlistmaker.search.data.network.Resource
 import com.denica.playlistmaker.search.domain.api.SongInteractor
 import com.denica.playlistmaker.search.domain.api.SongRepository
 import java.util.concurrent.Executors
