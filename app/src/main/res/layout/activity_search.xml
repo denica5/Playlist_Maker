@@ -109,12 +109,12 @@
     <ProgressBar
         android:id="@+id/search_progress_bar"
         android:layout_width="wrap_content"
-        android:layout_marginTop="140dp"
-        android:layout_gravity="center_horizontal"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="140dp"
         android:indeterminateTint="@color/blue"
-        android:visibility="gone"
-        />
+        android:visibility="gone" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/track_list_rc"
         android:layout_width="match_parent"

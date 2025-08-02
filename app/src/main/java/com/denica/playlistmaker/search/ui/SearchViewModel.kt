@@ -101,6 +101,7 @@ class SearchViewModel(
 
     fun clearHistory() {
         savedTracksArrayList.value?.clear()
+        saveHistory()
     }
 
     fun saveHistory() {
