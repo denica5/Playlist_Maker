@@ -1,39 +1,40 @@
 package com.denica.playlistmaker.settings.ui
 
+import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import com.denica.playlistmaker.App
-import com.denica.playlistmaker.R
-import com.denica.playlistmaker.databinding.ActivitySettingsBinding
+import com.denica.playlistmaker.BindingFragment
+import com.denica.playlistmaker.databinding.FragmentSettingsBinding
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 const val PLAYLIST_MAKER_PREFERENCES = "playlist_maker_preferences"
 const val DARK_THEME_MODE_KEY = "dark_theme_mode_key"
 
-class SettingsActivity : AppCompatActivity() {
+class SettingsFragment : BindingFragment<FragmentSettingsBinding>() {
 
-    private lateinit var binding: ActivitySettingsBinding
+    private val applicationContext: Context by inject()
     val viewModel by viewModel<SettingsViewModel>()
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        binding = ActivitySettingsBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.settings)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+    override fun createBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentSettingsBinding {
+        return FragmentSettingsBinding.inflate(inflater, container, false)
+    }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
+//        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.settings)) { v, insets ->
+//            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+//            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+//            insets
+//        }
 
-        binding.settingsHeader.setNavigationOnClickListener {
-            finish()
-        }
         binding.darkThemeSwitch.isChecked =
             resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
         binding.shareAppCategory.setOnClickListener {
@@ -51,6 +52,6 @@ class SettingsActivity : AppCompatActivity() {
             (applicationContext as App).switchTheme(checked)
             viewModel.saveSettings(binding.darkThemeSwitch.isChecked)
         }
-
     }
+
 }

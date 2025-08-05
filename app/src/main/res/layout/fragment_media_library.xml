@@ -7,12 +7,12 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="?attr/colorPrimary"
-    tools:context=".mediaLibrary.ui.MediaLibraryActivity">
+    tools:context=".mediaLibrary.ui.MediaLibraryFragment">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/media_library_header"
         style="@style/HeaderStyle"
-        app:navigationIcon="@drawable/ic_arrow_back"
+
         app:title="@string/media_library_text_header"
 
         />

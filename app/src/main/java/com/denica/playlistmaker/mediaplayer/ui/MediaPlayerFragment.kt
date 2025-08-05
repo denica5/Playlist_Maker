@@ -1,54 +1,45 @@
 package com.denica.playlistmaker.mediaplayer.ui
 
-import android.os.Build
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.denica.playlistmaker.BindingFragment
 import com.denica.playlistmaker.R
-import com.denica.playlistmaker.databinding.ActivityMediaPlayerBinding
+import com.denica.playlistmaker.databinding.FragmentMediaPlayerBinding
 import com.denica.playlistmaker.search.domain.models.Song
-import com.denica.playlistmaker.search.ui.TRACK_KEY
 import com.denica.playlistmaker.search.ui.TrackListViewHolder
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class MediaPlayerActivity : AppCompatActivity() {
+class MediaPlayerFragment : BindingFragment<FragmentMediaPlayerBinding>() {
 
 
+    private val args by navArgs<MediaPlayerFragmentArgs>()
     private lateinit var previewUrl: String
     private val dateFormat by lazy { SimpleDateFormat("mm:ss", Locale.getDefault()) }
-    private lateinit var binding: ActivityMediaPlayerBinding
 
+    override fun createBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentMediaPlayerBinding {
+        return FragmentMediaPlayerBinding.inflate(inflater, container, false)
+    }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        binding = ActivityMediaPlayerBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.media_player)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        val songDto: Song = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.getParcelableExtra(TRACK_KEY, Song::class.java) as Song
-        } else {
-            intent.getParcelableExtra<Song>(TRACK_KEY) as Song
-        }
+        val songDto: Song = args.song
         previewUrl = songDto.previewUrl.trim()
-        val viewModel by  viewModel<MediaPlayerViewModel>{
+        val viewModel by viewModel<MediaPlayerViewModel> {
             parametersOf(previewUrl)
         }
-        binding.arrowBackMediaPlayer.setOnClickListener {
-            finish()
-        }
+
 
         Glide.with(binding.trackImageMediaPlayer)
             .load(songDto.artworkUrl100.replaceAfterLast('/', "512x512bb.jpg"))
@@ -74,7 +65,7 @@ class MediaPlayerActivity : AppCompatActivity() {
             viewModel.onPlayButtonClicked()
         }
         viewModel.getMediaPlayerState()
-            .observe(this) {
+            .observe(viewLifecycleOwner) {
                 binding.remainingTrackDurationMediaPlayer.text = it.countTimer
                 when (it.playerState) {
                     MediaPlayerViewModel.STATE_PLAYING -> binding.playTrackMediaPlayer.setImageResource(
@@ -87,6 +78,11 @@ class MediaPlayerActivity : AppCompatActivity() {
                 }
 
             }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
     }
 
 

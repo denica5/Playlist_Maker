@@ -13,6 +13,9 @@ glide = "4.16.0"
 glide-processor = "4.14.2"
 retrofit = "3.0.0"
 koin = "4.1.0"
+navigationFragmentKtx = "2.9.3"
+navigationUiKtx = "2.9.3"
+navigationSafeArgsGradlePlugin = "2.9.3"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -28,8 +31,12 @@ glide-processor = { group = "com.github.bumptech.glide", name = "compiler", vers
 retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
 retrofit-gson-convertert = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
 koin = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
+androidx-navigation-fragment-ktx = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigationFragmentKtx" }
+androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigationUiKtx" }
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+androidx-navigation-safeargs = {id = "androidx.navigation.safeargs", version.ref = "navigationSafeArgsGradlePlugin"}
 
