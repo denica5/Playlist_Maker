@@ -1,4 +1,4 @@
-package com.denica.playlistmaker.mediaLibrary.ui
+package com.denica.playlistmaker
 
 import android.os.Bundle
 import android.view.LayoutInflater

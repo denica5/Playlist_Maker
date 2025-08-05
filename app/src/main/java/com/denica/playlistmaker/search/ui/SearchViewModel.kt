@@ -128,7 +128,9 @@ class SearchViewModel(
         private const val SEARCH_DEBOUNCE_DELAY = 3000L
         private val SEARCH_REQUEST_TOKEN = Any()
     }
-
+    fun removeSearchRequest(){
+        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
+    }
     override fun onCleared() {
         super.onCleared()
         savedTracksArrayList.value?.let { historyInteractor.saveListToHistory(it.toList()) }
@@ -142,4 +144,5 @@ class SearchViewModel(
     fun <T> MutableLiveData<T>.notifyObserver() {
         this.value = this.value
     }
+
 }

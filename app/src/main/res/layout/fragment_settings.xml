@@ -4,12 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/settings"
     style="@style/SettingsLayout"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".settings.ui.SettingsFragment">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/settings_header"
         style="@style/HeaderStyle"
-        app:navigationIcon="@drawable/ic_arrow_back"
+
         app:title="@string/header_settings"
 
         />
