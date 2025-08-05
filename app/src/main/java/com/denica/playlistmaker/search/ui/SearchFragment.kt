@@ -72,7 +72,9 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
         viewModel.getSavedTracksArrayList()
             .observe(viewLifecycleOwner) { historyAdapter.itemList = it }
         binding.searchEditText.setText(searchText)
+
         binding.searchClearIcX.setOnClickListener {
+            viewModel.removeSearchRequest()
             binding.searchEditText.setText("")
             try {
                 val imm =
@@ -140,7 +142,7 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
         binding.searchEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 if (binding.searchEditText.text.isNotEmpty()) {
-                    viewModel.searchDebounce(binding.searchEditText.text.toString())
+                    viewModel.searchRequest(binding.searchEditText.text.toString())
                 } else {
                     clearTracks(getString(R.string.nothing_found))
                 }
@@ -180,11 +182,6 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
                     }
                 }
             }
-    }
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-
     }
 
 
@@ -252,6 +249,7 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
     override fun onStop() {
         super.onStop()
         viewModel.saveHistory()
+        viewModel.removeSearchRequest()
     }
 
     companion object {

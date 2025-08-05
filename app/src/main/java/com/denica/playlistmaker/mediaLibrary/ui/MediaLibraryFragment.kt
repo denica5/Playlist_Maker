@@ -17,33 +17,35 @@ class MediaLibraryFragment : BindingFragment<FragmentMediaLibraryBinding>() {
         return FragmentMediaLibraryBinding.inflate(inflater, container, false)
     }
 
-    private lateinit var tabMediator: TabLayoutMediator
+    private var _tabMediator: TabLayoutMediator? = null
+    private val tabMediator: TabLayoutMediator get() = _tabMediator!!
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-//        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.media_library)) { v, insets ->
-//            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-//            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-//            insets
-//        }
-
         binding.viewPager.adapter = MediaLibraryViewPagerAdapter(childFragmentManager, lifecycle)
-        tabMediator = TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
+        tabMediator.attach()
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        super.onCreateView(inflater, container, savedInstanceState)
+        _tabMediator =  TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
             when (position) {
                 0 -> tab.text = getString(R.string.media_library_favourite_tracks_label)
                 1 -> tab.text = getString(R.string.media_library_playlists_label)
             }
         }
 
-        tabMediator.attach()
-    }
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
+        return binding.root
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+
+    override fun onDestroyView() {
         tabMediator.detach()
+        _tabMediator = null
+        super.onDestroyView()
     }
 }
