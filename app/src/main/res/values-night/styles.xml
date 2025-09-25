@@ -112,5 +112,8 @@
         <item name = "android:layout_gravity">end</item>
         <item name="android:tint">@color/black</item>
     </style>
-
+    <style name="bottom" parent="Widget.MaterialComponents.BottomNavigationView">
+        <item name="colorPrimary">@color/blue</item>
+        <item name="colorOnSurface">?attr/colorPrimary</item>
+    </style>
 </resources>
