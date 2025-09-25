@@ -7,7 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.denica.playlistmaker.App
-import com.denica.playlistmaker.BindingFragment
+import com.denica.playlistmaker.utils.BindingFragment
 import com.denica.playlistmaker.databinding.FragmentSettingsBinding
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel

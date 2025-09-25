@@ -29,7 +29,7 @@ val dataModule = module {
             .create(ItunesApi::class.java)
     }
     single<NetworkClient> {
-        RetrofitNetworkClient(get())
+        RetrofitNetworkClient(get(), androidContext())
     }
     single<StorageClient<ArrayList<Song>>> {
         com.denica.playlistmaker.search.data.storage.PrefsStorageClient(

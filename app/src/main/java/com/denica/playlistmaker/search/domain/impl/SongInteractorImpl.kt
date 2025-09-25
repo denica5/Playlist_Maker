@@ -3,20 +3,22 @@ package com.denica.playlistmaker.search.domain.impl
 import com.denica.playlistmaker.search.data.network.Resource
 import com.denica.playlistmaker.search.domain.api.SongInteractor
 import com.denica.playlistmaker.search.domain.api.SongRepository
-import java.util.concurrent.Executors
+import com.denica.playlistmaker.search.domain.models.Song
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class SongInteractorImpl(private val repository: SongRepository) : SongInteractor {
 
-    private val executor = Executors.newCachedThreadPool()
-    override fun searchSong(expression: String, consumer: SongInteractor.SongConsumer) {
-        executor.execute {
-            when(val resource = repository.searchSong(expression)) {
-                is Resource.Success -> {
-                    consumer.consume(resource.data, null)
+
+    override fun searchSong(expression: String): Flow<Pair<List<Song>?, String?>> {
+        return repository.searchSong(expression).map { result ->
+            when (result) {
+                is Resource.Success<*> -> {
+                    Pair(result.data, null)
                 }
 
-                is Resource.Error -> {
-                    consumer.consume(null, resource.message)
+                is Resource.Error<*> -> {
+                    Pair(null, result.message)
                 }
             }
         }

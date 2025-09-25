@@ -31,7 +31,7 @@ class SearchHistoryRepositoryImpl(
     }
 
     override fun getHistory(): Resource<List<Song>> {
-        val movies = storage.getData() ?: listOf()
-        return Resource.Success(movies)
+        val songs = storage.getData() ?: listOf()
+        return Resource.Success(songs)
     }
 }
