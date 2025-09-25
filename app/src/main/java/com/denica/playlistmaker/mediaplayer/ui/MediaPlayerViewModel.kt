@@ -11,9 +11,7 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class MediaPlayerViewModel(private val previewUrl: String) : ViewModel() {
-
-    private var mediaPlayer = MediaPlayer()
+class MediaPlayerViewModel(private val previewUrl: String, private val mediaPlayer: MediaPlayer) : ViewModel() {
 
 
     private val playerState = MutableLiveData<PlayerState>(PlayerState.Default())
@@ -47,9 +45,8 @@ class MediaPlayerViewModel(private val previewUrl: String) : ViewModel() {
             )
         }
         mediaPlayer.setOnCompletionListener {
-            playerState.postValue(
-                PlayerState.Prepared()
-            )
+            timerJob?.cancel()
+            playerState.postValue(PlayerState.Prepared())
         }
     }
 
