@@ -1,101 +1,101 @@
 package com.denica.playlistmaker.mediaplayer.ui
 
 import android.media.MediaPlayer
-import android.os.Handler
-import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class MediaPlayerViewModel(private val previewUrl: String) : ViewModel() {
-
-    private var mediaPlayer = MediaPlayer()
+class MediaPlayerViewModel(private val previewUrl: String, private val mediaPlayer: MediaPlayer) : ViewModel() {
 
 
-
-    private val mediaPlayerState = MutableLiveData(MediaPlayerState(STATE_DEFAULT, "00:00"))
-    fun getMediaPlayerState(): LiveData<MediaPlayerState> = mediaPlayerState
-    private val mainHandler = Handler(Looper.getMainLooper())
+    private val playerState = MutableLiveData<PlayerState>(PlayerState.Default())
+    fun getPlayerState(): LiveData<PlayerState> = playerState
     private val dateFormat by lazy { SimpleDateFormat("mm:ss", Locale.getDefault()) }
+    private var timerJob: Job? = null
     private fun startTimer() {
-        mainHandler.post(
-            createUpdateTimerTask
-        )
-    }
+        timerJob = viewModelScope.launch {
+            while (mediaPlayer.isPlaying) {
+                delay(300L)
+                playerState.postValue(PlayerState.Playing(getCurrentPlayerPosition()))
+            }
 
-    private val createUpdateTimerTask = object : Runnable {
-        override fun run() {
-            mainHandler.postDelayed(this, 200)
-            mediaPlayerState.postValue(mediaPlayerState.value?.copy(countTimer = dateFormat.format(mediaPlayer.currentPosition)))
         }
-
-
     }
+
 
     init {
         if (previewUrl != "") {
-            preparePlayer()
+            initMediaPlayer()
         }
 
     }
 
-    private fun preparePlayer() {
+    private fun initMediaPlayer() {
         mediaPlayer.setDataSource(previewUrl)
         mediaPlayer.prepareAsync()
         mediaPlayer.setOnPreparedListener {
-            mediaPlayerState.postValue(mediaPlayerState.value?.copy(playerState = STATE_PREPARED, countTimer = "00:00"))
+            playerState.postValue(
+                PlayerState.Prepared()
+            )
         }
         mediaPlayer.setOnCompletionListener {
-            resetTimer()
+            timerJob?.cancel()
+            playerState.postValue(PlayerState.Prepared())
         }
     }
 
     private fun startPlayer() {
         mediaPlayer.start()
-        mediaPlayerState.postValue(mediaPlayerState.value?.copy(playerState = STATE_PLAYING))
+        playerState.postValue(PlayerState.Playing(getCurrentPlayerPosition()))
         startTimer()
     }
 
     private fun pausePlayer() {
-        mainHandler.removeCallbacks(createUpdateTimerTask)
         mediaPlayer.pause()
-        mediaPlayerState.postValue(mediaPlayerState.value?.copy(playerState = STATE_PAUSED))
+        timerJob?.cancel()
+        playerState.postValue(PlayerState.Paused(getCurrentPlayerPosition()))
     }
 
-    private fun resetTimer() {
-        mainHandler.removeCallbacks(createUpdateTimerTask)
-        mediaPlayerState.postValue(mediaPlayerState.value?.copy(playerState = STATE_PREPARED, countTimer = "00:00"))
-
+    private fun releasePlayer() {
+        mediaPlayer.stop()
+        mediaPlayer.release()
+        playerState.value = PlayerState.Default()
     }
 
     fun onPlayButtonClicked() {
-        when (mediaPlayerState.value?.playerState) {
-            STATE_PLAYING -> {
+        when (playerState.value) {
+            is PlayerState.Playing -> {
                 pausePlayer()
             }
 
-            STATE_PREPARED, STATE_PAUSED -> {
+            is PlayerState.Prepared, is PlayerState.Paused -> {
                 startPlayer()
             }
+
+            else -> {}
         }
     }
 
+    private fun getCurrentPlayerPosition(): String {
+        return dateFormat.format(mediaPlayer.currentPosition)
+            ?: "00:00"
+    }
 
     companion object {
 
 
-        const val STATE_DEFAULT = 0
-        const val STATE_PREPARED = 1
-        const val STATE_PLAYING = 2
-        const val STATE_PAUSED = 3
+
     }
 
     override fun onCleared() {
         super.onCleared()
-        mediaPlayer.release()
-        mainHandler.removeCallbacks(createUpdateTimerTask)
+        releasePlayer()
     }
 }
 

@@ -2,14 +2,16 @@ package com.denica.playlistmaker.search.ui
 
 import android.os.Handler
 import android.os.Looper
-import android.os.SystemClock
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.denica.playlistmaker.R
 import com.denica.playlistmaker.search.domain.api.SearchHistoryInteractor
 import com.denica.playlistmaker.search.domain.api.SongInteractor
 import com.denica.playlistmaker.search.domain.models.Song
+import com.denica.playlistmaker.utils.debounce
+import kotlinx.coroutines.launch
 
 class SearchViewModel(
     private val historyInteractor: SearchHistoryInteractor,
@@ -24,6 +26,10 @@ class SearchViewModel(
     private val stateLiveData = MutableLiveData<SearchState>()
     fun getState(): LiveData<SearchState> = stateLiveData
 
+    private val songSearchDebounce =
+        debounce<String>(SEARCH_DEBOUNCE_DELAY, viewModelScope, true) { changedText ->
+            searchRequest(changedText)
+        }
 
     fun searchDebounce(changedText: String) {
         if (latestSearchText == changedText) {
@@ -31,55 +37,51 @@ class SearchViewModel(
         }
 
         this.latestSearchText = changedText
-        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
 
-        val searchRunnable = Runnable { searchRequest(changedText) }
+        songSearchDebounce(changedText)
 
-        val postTime = SystemClock.uptimeMillis() + SEARCH_DEBOUNCE_DELAY
-        handler.postAtTime(
-            searchRunnable,
-            SEARCH_REQUEST_TOKEN,
-            postTime,
-        )
+
     }
 
     fun searchRequest(newSearchText: String) {
         if (newSearchText.isNotEmpty()) {
             stateLiveData.postValue(SearchState.Loading)
-        }
-        songInteractor.searchSong(
-            newSearchText,
-            object : SongInteractor.SongConsumer {
-                override fun consume(foundSongs: List<Song>?, errorMessage: String?) {
-                    handler.post {
-                        val songs = mutableListOf<Song>()
-                        if (foundSongs != null) {
-                            songs.addAll(foundSongs)
-                        }
-                        when {
-                            errorMessage != null -> {
-                                renderState(
-                                    SearchState.Error(
-                                        message = R.string.failed_search
-                                    )
-                                )
-                            }
-
-                            songs.isEmpty() -> {
-                                renderState(SearchState.Empty(R.string.nothing_found))
-                            }
-
-                            else -> {
-                                renderState(
-                                    SearchState.Content(
-                                        songs
-                                    )
-                                )
-                            }
-                        }
+            viewModelScope.launch {
+                songInteractor.searchSong(newSearchText)
+                    .collect { pair ->
+                        processResult(pair.first, pair.second)
                     }
-                }
-            })
+            }
+        }
+
+    }
+
+    fun processResult(foundSongs: List<Song>?, errorMessage: String?) {
+        val songs = mutableListOf<Song>()
+        if (foundSongs != null) {
+            songs.addAll(foundSongs)
+        }
+        when {
+            errorMessage != null -> {
+                renderState(
+                    SearchState.Error(
+                        message = R.string.failed_search
+                    )
+                )
+            }
+
+            songs.isEmpty() -> {
+                renderState(SearchState.Empty(R.string.nothing_found))
+            }
+
+            else -> {
+                renderState(
+                    SearchState.Content(
+                        songs
+                    )
+                )
+            }
+        }
     }
 
 
@@ -90,13 +92,13 @@ class SearchViewModel(
 
     fun addTrack(song: Song): Int {
         historyInteractor.saveToHistory(song)
+        var position = -1
         if (savedTracksArrayList.value?.contains(song) == true) {
-            val position = savedTracksArrayList.value?.indexOf(song) ?: -1
-            return position
+            position = savedTracksArrayList.value?.indexOf(song) ?: -1
         }
         getHistory()
         savedTracksArrayList.notifyObserver()
-        return -1
+        return position
     }
 
     fun clearHistory() {
@@ -128,9 +130,11 @@ class SearchViewModel(
         private const val SEARCH_DEBOUNCE_DELAY = 3000L
         private val SEARCH_REQUEST_TOKEN = Any()
     }
-    fun removeSearchRequest(){
-        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
+
+    fun removeSearchList() {
+        renderState(SearchState.Content(emptyList<Song>()))
     }
+
     override fun onCleared() {
         super.onCleared()
         savedTracksArrayList.value?.let { historyInteractor.saveListToHistory(it.toList()) }

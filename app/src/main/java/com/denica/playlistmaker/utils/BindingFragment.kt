@@ -1,4 +1,4 @@
-package com.denica.playlistmaker
+package com.denica.playlistmaker.utils
 
 import android.os.Bundle
 import android.view.LayoutInflater

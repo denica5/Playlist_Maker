@@ -1,5 +1,6 @@
 package com.denica.playlistmaker.di
 
+import android.media.MediaPlayer
 import com.denica.playlistmaker.mediaLibrary.ui.FavouriteTracksViewModel
 import com.denica.playlistmaker.mediaLibrary.ui.PlaylistViewModel
 import com.denica.playlistmaker.mediaplayer.ui.MediaPlayerViewModel
@@ -10,7 +11,7 @@ import org.koin.dsl.module
 
 val viewModelModule = module {
     viewModel { (previewUrl: String) ->
-        MediaPlayerViewModel(previewUrl)
+        MediaPlayerViewModel(previewUrl, MediaPlayer())
     }
 
     viewModel {

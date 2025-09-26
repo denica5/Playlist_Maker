@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.denica.playlistmaker.BindingFragment
+import com.denica.playlistmaker.utils.BindingFragment
 import com.denica.playlistmaker.R
 import com.denica.playlistmaker.databinding.FragmentMediaPlayerBinding
 import com.denica.playlistmaker.search.domain.models.Song
@@ -64,19 +64,35 @@ class MediaPlayerFragment : BindingFragment<FragmentMediaPlayerBinding>() {
         binding.playTrackMediaPlayer.setOnClickListener {
             viewModel.onPlayButtonClicked()
         }
-        viewModel.getMediaPlayerState()
+        viewModel.getPlayerState()
             .observe(viewLifecycleOwner) {
-                binding.remainingTrackDurationMediaPlayer.text = it.countTimer
-                when (it.playerState) {
-                    MediaPlayerViewModel.STATE_PLAYING -> binding.playTrackMediaPlayer.setImageResource(
-                        R.drawable.ic_stop_track
-                    )
+                when (it) {
+                    is PlayerState.Default -> {
+                        binding.playTrackMediaPlayer.setImageResource(
+                            R.drawable.ic_play_track
+                        )
+                        binding.remainingTrackDurationMediaPlayer.text = it.progress
+                    }
+                    is PlayerState.Prepared -> {
+                        binding.playTrackMediaPlayer.setImageResource(
+                            R.drawable.ic_play_track
+                        )
+                        binding.remainingTrackDurationMediaPlayer.text = it.progress
+                    }
+                    is PlayerState.Playing -> {
+                        binding.playTrackMediaPlayer.setImageResource(
+                            R.drawable.ic_stop_track
+                        )
+                        binding.remainingTrackDurationMediaPlayer.text = it.progress
+                    }
+                    is PlayerState.Paused -> {
+                        binding.playTrackMediaPlayer.setImageResource(
+                            R.drawable.ic_play_track
+                        )
+                        binding.remainingTrackDurationMediaPlayer.text = it.progress
+                    }
 
-                    MediaPlayerViewModel.STATE_PAUSED, MediaPlayerViewModel.STATE_DEFAULT, MediaPlayerViewModel.STATE_PREPARED -> binding.playTrackMediaPlayer.setImageResource(
-                        R.drawable.ic_play_track
-                    )
                 }
-
             }
     }
 
@@ -85,5 +101,9 @@ class MediaPlayerFragment : BindingFragment<FragmentMediaPlayerBinding>() {
 
     }
 
+    override fun onPause() {
+        super.onPause()
+
+    }
 
 }

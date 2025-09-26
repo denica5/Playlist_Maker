@@ -1,12 +1,11 @@
 package com.denica.playlistmaker.search.domain.api
 
 import com.denica.playlistmaker.search.domain.models.Song
+import kotlinx.coroutines.flow.Flow
 
 interface SongInteractor {
-    fun searchSong(expression: String, consumer: SongConsumer)
+    fun searchSong(expression: String): Flow<Pair<List<Song>?, String?>>
 
-    interface SongConsumer {
-        fun consume(foundSongs: List<Song>?, errorMessage: String?)
-    }
+
 
 }
