@@ -4,7 +4,6 @@ import com.denica.playlistmaker.mediaLibrary.data.db.FavouriteSongDatabase
 import com.denica.playlistmaker.search.data.network.Resource
 import com.denica.playlistmaker.search.domain.api.SearchHistoryRepository
 import com.denica.playlistmaker.search.domain.models.Song
-import kotlinx.coroutines.coroutineScope
 
 class SearchHistoryRepositoryImpl(
     private val storage: StorageClient<ArrayList<Song>>,
