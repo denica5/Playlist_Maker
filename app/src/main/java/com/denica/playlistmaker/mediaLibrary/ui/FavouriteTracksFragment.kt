@@ -54,30 +54,33 @@ class FavouriteTracksFragment : BindingFragment<FragmentFavouriteTracksBinding>(
         adapter = TrackListAdapter(
             onSongClickDebounce
         )
-        binding.favouriteRecyclerView.adapter = adapter
+        binding.recycler.adapter = adapter
         viewModel.observeFavouriteState().observe(viewLifecycleOwner) {
             when (it) {
                 is FavouriteTracksState.Loading -> {
                     binding.favouriteProgressBar.isVisible = true
                     binding.placeholder.isVisible = false
-                    binding.favouriteRecyclerView.isVisible = false
+                    binding.recycler.isVisible = false
                 }
 
                 is FavouriteTracksState.Empty -> {
                     binding.favouriteProgressBar.isVisible = false
                     binding.placeholder.isVisible = true
-                    binding.favouriteRecyclerView.isVisible = false
+                    binding.recycler.isVisible = false
                 }
 
                 is FavouriteTracksState.Content -> {
                     binding.favouriteProgressBar.isVisible = false
                     binding.placeholder.isVisible = false
-                    binding.favouriteRecyclerView.isVisible = true
+                    binding.recycler.isVisible = true
                     adapter.itemList = it.data
                     adapter.notifyDataSetChanged()
                 }
             }
         }
+
+
+
 
 
     }

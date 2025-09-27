@@ -11,13 +11,15 @@ class SearchHistoryRepositoryImpl(
     private val favouriteSongDatabase: FavouriteSongDatabase
 ) : SearchHistoryRepository {
 
-    override fun saveListToHistory(songs: List<Song>) {
+    override suspend fun saveListToHistory(songs: List<Song>) {
         val savedSongs: ArrayList<Song> = arrayListOf()
         savedSongs.addAll(songs)
+        val ids = getFavouriteIds()
+        songs.map { it.isFavourite = ids.contains(it.trackId) }
         storage.storeData(savedSongs)
     }
 
-    override fun saveToHistory(song: Song): Int {
+    override suspend fun saveToHistory(song: Song): Int {
         var position = -1
         val savedSongs: ArrayList<Song> = storage.getData() ?: arrayListOf()
         if (savedSongs.contains(song)) {
@@ -43,7 +45,7 @@ class SearchHistoryRepositoryImpl(
         return Resource.Success(songs)
     }
 
-    suspend fun getFavouriteIds() : List<Long> {
+    suspend fun getFavouriteIds(): List<Long> {
         return favouriteSongDatabase.songDao().getFavouriteSongsIds()
     }
 }

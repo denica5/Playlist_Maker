@@ -48,8 +48,7 @@ class SearchViewModel(
         if (newSearchText.isNotEmpty()) {
             stateLiveData.postValue(SearchState.Loading)
             viewModelScope.launch {
-                songInteractor.searchSong(newSearchText)
-                    .collect { pair ->
+                songInteractor.searchSong(newSearchText).collect { pair ->
                         processResult(pair.first, pair.second)
                     }
             }
@@ -87,14 +86,21 @@ class SearchViewModel(
 
 
     fun addTrack(song: Song): Int {
-        val position = historyInteractor.saveToHistory(song)
-        getHistory()
+        var position = -1
+        viewModelScope.launch {
+            position = historyInteractor.saveToHistory(song)
+            getHistory()
+        }
+
         return position
     }
 
     fun clearHistory() {
-        historyInteractor.saveListToHistory(emptyList())
-        getHistory()
+        viewModelScope.launch {
+            historyInteractor.saveListToHistory(emptyList())
+            getHistory()
+        }
+
     }
 
     fun getHistory() {

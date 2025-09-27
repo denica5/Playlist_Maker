@@ -29,7 +29,7 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
     private lateinit var adapter: TrackListAdapter
     private lateinit var historyAdapter: TrackListAdapter
 
-    private lateinit var onSongClickDebounce: (Song) -> Unit
+    private lateinit var onSearchSongClickDebounce: (Song) -> Unit
 
     override fun createBinding(
         inflater: LayoutInflater,
@@ -50,7 +50,7 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
 //        }
 
 
-        onSongClickDebounce =
+        onSearchSongClickDebounce =
             debounce<Song>(CLICK_DEBOUNCE_DELAY, viewLifecycleOwner.lifecycleScope, false)
             { song ->
                 var position = -1
@@ -69,9 +69,8 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
             }
 
 
-
-        adapter = TrackListAdapter(onSongClickDebounce)
-        historyAdapter = TrackListAdapter(onSongClickDebounce)
+        adapter = TrackListAdapter(onSearchSongClickDebounce)
+        historyAdapter = TrackListAdapter(onSearchSongClickDebounce)
 
         viewModel.getSearchHistoryState()
             .observe(viewLifecycleOwner) {
@@ -79,7 +78,6 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
                     is SearchHistoryState.Content -> historyAdapter.itemList = it.data
                     is SearchHistoryState.Empty -> { historyAdapter.itemList = emptyList()}
                 }
-
             }
         binding.searchEditText.setText(searchText)
 
@@ -249,6 +247,11 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
     override fun onStop() {
         super.onStop()
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.getHistory()
     }
 
     companion object {
