@@ -4,8 +4,8 @@ import com.denica.playlistmaker.search.domain.models.Song
 
 interface SearchHistoryInteractor {
 
-    fun getHistory(consumer: HistoryConsumer)
-    fun saveToHistory(song: Song)
+    suspend fun getHistory(consumer: HistoryConsumer)
+    fun saveToHistory(song: Song): Int
     fun saveListToHistory(songs: List<Song>)
 
     interface HistoryConsumer {

@@ -1,5 +1,7 @@
 package com.denica.playlistmaker.mediaplayer.ui
 
+import android.graphics.Color
+import android.graphics.ColorFilter
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -21,7 +23,7 @@ class MediaPlayerFragment : BindingFragment<FragmentMediaPlayerBinding>() {
 
 
     private val args by navArgs<MediaPlayerFragmentArgs>()
-    private lateinit var previewUrl: String
+
     private val dateFormat by lazy { SimpleDateFormat("mm:ss", Locale.getDefault()) }
 
     override fun createBinding(
@@ -35,9 +37,8 @@ class MediaPlayerFragment : BindingFragment<FragmentMediaPlayerBinding>() {
         super.onViewCreated(view, savedInstanceState)
 
         val songDto: Song = args.song
-        previewUrl = songDto.previewUrl.trim()
         val viewModel by viewModel<MediaPlayerViewModel> {
-            parametersOf(previewUrl)
+            parametersOf(songDto)
         }
 
 
@@ -73,18 +74,21 @@ class MediaPlayerFragment : BindingFragment<FragmentMediaPlayerBinding>() {
                         )
                         binding.remainingTrackDurationMediaPlayer.text = it.progress
                     }
+
                     is PlayerState.Prepared -> {
                         binding.playTrackMediaPlayer.setImageResource(
                             R.drawable.ic_play_track
                         )
                         binding.remainingTrackDurationMediaPlayer.text = it.progress
                     }
+
                     is PlayerState.Playing -> {
                         binding.playTrackMediaPlayer.setImageResource(
                             R.drawable.ic_stop_track
                         )
                         binding.remainingTrackDurationMediaPlayer.text = it.progress
                     }
+
                     is PlayerState.Paused -> {
                         binding.playTrackMediaPlayer.setImageResource(
                             R.drawable.ic_play_track
@@ -94,6 +98,17 @@ class MediaPlayerFragment : BindingFragment<FragmentMediaPlayerBinding>() {
 
                 }
             }
+        binding.addToFavouriteTrackMediaPlayer.setOnClickListener {
+            viewModel.onFavouriteClick(songDto)
+        }
+        viewModel.getFavourite().observe(viewLifecycleOwner) {
+            binding.addToFavouriteTrackMediaPlayer.setImageResource(
+                if (it)
+                    R.drawable.ic_add_to_favourite_fill
+                else
+                    R.drawable.ic_add_to_favourite
+            )
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

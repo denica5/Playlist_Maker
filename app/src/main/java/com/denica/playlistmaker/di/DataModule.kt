@@ -1,6 +1,8 @@
 package com.denica.playlistmaker.di
 
 import android.content.Context
+import androidx.room.Room
+import com.denica.playlistmaker.mediaLibrary.data.db.FavouriteSongDatabase
 import com.denica.playlistmaker.search.data.network.ITUNES_BASE_URL
 import com.denica.playlistmaker.search.data.network.ItunesApi
 import com.denica.playlistmaker.search.data.network.NetworkClient
@@ -57,5 +59,10 @@ val dataModule = module {
 
     single<ExternalNavigation> {
         ExternalNavigationImpl(androidContext())
+    }
+
+    single<FavouriteSongDatabase> {
+        Room.databaseBuilder(androidContext(), FavouriteSongDatabase::class.java, "FavouriteSongDatabase.db")
+            .build()
     }
 }

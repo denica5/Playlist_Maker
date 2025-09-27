@@ -17,6 +17,7 @@ navigationFragmentKtx = "2.9.3"
 navigationUiKtx = "2.9.3"
 navigationSafeArgsGradlePlugin = "2.9.3"
 coroutines = "1.3.9"
+room = "2.8.1"
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -33,11 +34,15 @@ retrofit-gson-convertert = { group = "com.squareup.retrofit2", name = "converter
 koin = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
 androidx-navigation-fragment-ktx = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigationFragmentKtx" }
 androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigationUiKtx" }
-jetbrains-kotlinx-coroutines = {group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android" ,version = "coroutines"}
+jetbrains-kotlinx-coroutines = {group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android" ,version.ref = "coroutines"}
+androidx-room-ktx = {group = "androidx.room", name = "room-ktx", version.ref = "room"}
+androidx-room-kapt = {group = "androidx.room", name = "room-compiler", version.ref = "room"}
+androidx-room-runtime = {group = "androidx.room", name = "room-runtime", version.ref = "room"}
 
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 androidx-navigation-safeargs = {id = "androidx.navigation.safeargs", version.ref = "navigationSafeArgsGradlePlugin"}
+
 

@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.androidx.navigation.safeargs)
+    id("kotlin-kapt")
 }
 
 android {
@@ -49,8 +50,9 @@ dependencies {
     implementation(libs.glide)
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
-
-
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    kapt(libs.androidx.room.kapt)
     annotationProcessor(libs.glide.processor)
     implementation(libs.retrofit)
     implementation(libs.retrofit.gson.convertert)

@@ -1,6 +1,9 @@
 package com.denica.playlistmaker.di
 
 import com.denica.playlistmaker.App
+import com.denica.playlistmaker.mediaLibrary.data.FavouriteSongRepositoryImpl
+import com.denica.playlistmaker.mediaLibrary.data.db.FavouriteSongDbConverter
+import com.denica.playlistmaker.mediaLibrary.domain.FavouriteSongRepository
 import com.denica.playlistmaker.search.data.network.SongRepositoryImpl
 import com.denica.playlistmaker.search.data.storage.SearchHistoryRepositoryImpl
 import com.denica.playlistmaker.search.domain.api.SearchHistoryRepository
@@ -15,10 +18,10 @@ import org.koin.dsl.module
 
 val repositoryModule = module {
     single<SongRepository> {
-        SongRepositoryImpl(get())
+        SongRepositoryImpl(get(), get())
     }
     single<SearchHistoryRepository> {
-        SearchHistoryRepositoryImpl(get())
+        SearchHistoryRepositoryImpl(get(), get())
     }
     single<SettingsRepository> {
         SettingsRepositoryImpl(get())
@@ -30,6 +33,12 @@ val repositoryModule = module {
 
     single {
         androidApplication().applicationContext as App
+    }
+    factory {
+        FavouriteSongDbConverter()
+    }
+    single<FavouriteSongRepository> {
+        FavouriteSongRepositoryImpl(get(), get())
     }
 
 }
