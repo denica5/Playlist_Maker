@@ -45,7 +45,7 @@ class FavouriteTracksFragment : BindingFragment<FragmentFavouriteTracksBinding>(
             viewLifecycleOwner.lifecycleScope,
             false
         ) { song ->
-            Log.d("Fragment", "${findNavController().currentDestination?.id}")
+
             findNavController().navigate(
                 MediaLibraryFragmentDirections.actionMediaLibraryFragmentToMediaPlayerFragment(
                     song
