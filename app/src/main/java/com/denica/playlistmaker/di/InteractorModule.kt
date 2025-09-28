@@ -1,7 +1,7 @@
 package com.denica.playlistmaker.di
 
-import com.denica.playlistmaker.mediaLibrary.domain.FavouriteSongInteractor
-import com.denica.playlistmaker.mediaLibrary.domain.FavouriteSongInteractorImpl
+import com.denica.playlistmaker.mediaLibrary.domain.DbSongInteractor
+import com.denica.playlistmaker.mediaLibrary.domain.DbSongInteractorImpl
 import com.denica.playlistmaker.search.domain.api.SearchHistoryInteractor
 import com.denica.playlistmaker.search.domain.api.SongInteractor
 import com.denica.playlistmaker.search.domain.impl.SearchHistoryInteractorImpl
@@ -20,14 +20,14 @@ val interactorModule = module {
         SearchHistoryInteractorImpl(get())
     }
 
-    single<SettingsInteractor> {
+    factory<SettingsInteractor> {
         SettingsInteractorImpl(get())
     }
-    single<SharingInteractor> {
+    factory<SharingInteractor> {
         SharingInteractorImpl(get(), get())
     }
 
-    single<FavouriteSongInteractor> {
-        FavouriteSongInteractorImpl(get())
+    factory<DbSongInteractor> {
+        DbSongInteractorImpl(get())
     }
 }

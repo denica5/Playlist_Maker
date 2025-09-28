@@ -1,6 +1,6 @@
 package com.denica.playlistmaker.search.data.storage
 
-import com.denica.playlistmaker.mediaLibrary.data.db.FavouriteSongDatabase
+import com.denica.playlistmaker.mediaLibrary.data.db.AppDatabase
 import com.denica.playlistmaker.search.data.network.Resource
 import com.denica.playlistmaker.search.domain.api.SearchHistoryRepository
 import com.denica.playlistmaker.search.domain.models.Song
@@ -9,7 +9,7 @@ import kotlinx.coroutines.withContext
 
 class SearchHistoryRepositoryImpl(
     private val storage: StorageClient<ArrayList<Song>>,
-    private val favouriteSongDatabase: FavouriteSongDatabase
+    private val appDatabase: AppDatabase
 ) : SearchHistoryRepository {
 
     var ids = emptyList<Long>()
@@ -48,7 +48,7 @@ class SearchHistoryRepositoryImpl(
 
     suspend fun getFavouriteIds() {
         withContext(Dispatchers.IO) {
-            ids = favouriteSongDatabase.songDao().getFavouriteSongsIds()
+            ids = appDatabase.songDao().getFavouriteSongsIds()
         }
     }
 }

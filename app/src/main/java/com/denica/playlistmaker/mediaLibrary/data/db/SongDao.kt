@@ -7,15 +7,15 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 
 @Dao
-interface FavouriteSongDao {
+interface SongDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun addSongToFavourite(song: FavouriteSongEntity)
+    suspend fun addSongToFavourite(song: SongEntity)
 
     @Delete
-    suspend fun deleteSongFromFavourite(song: FavouriteSongEntity)
+    suspend fun deleteSongFromFavourite(song: SongEntity)
 
-    @Query("SELECT * FROM song_table")
-    suspend fun getFavouriteSongs(): List<FavouriteSongEntity>
+    @Query("SELECT * FROM song_table ORDER BY createAt ASC")
+    suspend fun getFavouriteSongs(): List<SongEntity>
 
     @Query("SELECT trackId FROM song_table")
     suspend fun getFavouriteSongsIds(): List<Long>

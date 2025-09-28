@@ -7,19 +7,20 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.denica.playlistmaker.R
+import com.denica.playlistmaker.mediaLibrary.domain.DbSongInteractor
 import com.denica.playlistmaker.search.domain.api.SearchHistoryInteractor
 import com.denica.playlistmaker.search.domain.api.SongInteractor
 import com.denica.playlistmaker.search.domain.models.Song
 import com.denica.playlistmaker.utils.debounce
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class SearchViewModel(
     private val historyInteractor: SearchHistoryInteractor,
-    private val songInteractor: SongInteractor
+    private val songInteractor: SongInteractor,
+    private val dbSongInteractor: DbSongInteractor
 ) : ViewModel() {
 
-
+    var ids = emptyList<Long>()
     private val handler = Handler(Looper.getMainLooper())
     private var latestSearchText: String? = null
     private val searchHistoryState = MutableLiveData<SearchHistoryState>()
@@ -49,8 +50,8 @@ class SearchViewModel(
             stateLiveData.postValue(SearchState.Loading)
             viewModelScope.launch {
                 songInteractor.searchSong(newSearchText).collect { pair ->
-                        processResult(pair.first, pair.second)
-                    }
+                    processResult(pair.first, pair.second)
+                }
             }
         }
 
@@ -59,6 +60,10 @@ class SearchViewModel(
     fun processResult(foundSongs: List<Song>?, errorMessage: String?) {
         val songs = mutableListOf<Song>()
         if (foundSongs != null) {
+            getFavouriteIds()
+            foundSongs.map {
+                it.apply { it.isFavourite = ids.contains(it.trackId) }
+            }
             songs.addAll(foundSongs)
         }
         when {
@@ -75,6 +80,7 @@ class SearchViewModel(
             }
 
             else -> {
+                getFavouriteIds()
                 renderSearchState(
                     SearchState.Content(
                         songs
@@ -84,6 +90,11 @@ class SearchViewModel(
         }
     }
 
+    fun getFavouriteIds() {
+        viewModelScope.launch {
+            ids = dbSongInteractor.getFavouriteSongsIds()
+        }
+    }
 
     fun addTrack(song: Song): Int {
         var position = -1
@@ -104,18 +115,18 @@ class SearchViewModel(
     }
 
     fun getHistory() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             historyInteractor.getHistory(object : SearchHistoryInteractor.HistoryConsumer {
                 override fun consume(searchHistory: List<Song>?) {
 
                     if (searchHistory != null) {
                         if (searchHistory.isEmpty()) {
-                            renderSearchHistoryState(SearchHistoryState.Empty("Empty"))
+                            renderSearchHistoryState(SearchHistoryState.Empty)
                         } else {
                             renderSearchHistoryState(SearchHistoryState.Content(searchHistory))
                         }
                     } else {
-                        renderSearchHistoryState(SearchHistoryState.Empty("Empty"))
+                        renderSearchHistoryState(SearchHistoryState.Empty)
                     }
                 }
 

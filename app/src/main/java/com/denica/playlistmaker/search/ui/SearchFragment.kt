@@ -42,14 +42,6 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
         super.onViewCreated(view, savedInstanceState)
 
 
-//
-//        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.search)) { v, insets ->
-//            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-//            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-//            insets
-//        }
-
-
         onSearchSongClickDebounce =
             debounce<Song>(CLICK_DEBOUNCE_DELAY, viewLifecycleOwner.lifecycleScope, false)
             { song ->

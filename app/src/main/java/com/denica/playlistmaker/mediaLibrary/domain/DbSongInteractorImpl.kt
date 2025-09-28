@@ -4,7 +4,7 @@ import com.denica.playlistmaker.search.domain.models.Song
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class FavouriteSongInteractorImpl(val repository: FavouriteSongRepository): FavouriteSongInteractor {
+class DbSongInteractorImpl(val repository: DbSongRepository): DbSongInteractor {
     override suspend fun addSongToFavourite(song: Song) {
         repository.addSongToFavourite(song)
     }
@@ -15,5 +15,9 @@ class FavouriteSongInteractorImpl(val repository: FavouriteSongRepository): Favo
 
     override fun getFavouriteSongs(): Flow<List<Song>> {
          return repository.getFavouriteSongs().map { it.reversed() }
+    }
+
+    override suspend fun getFavouriteSongsIds(): List<Long> {
+        return repository.getFavouriteSongsIds()
     }
 }

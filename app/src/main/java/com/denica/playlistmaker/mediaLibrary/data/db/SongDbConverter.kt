@@ -2,9 +2,9 @@ package com.denica.playlistmaker.mediaLibrary.data.db
 
 import com.denica.playlistmaker.search.domain.models.Song
 
-class FavouriteSongDbConverter {
-    fun map(song: Song): FavouriteSongEntity {
-        return FavouriteSongEntity(
+class SongDbConverter {
+    fun map(song: Song): SongEntity {
+        return SongEntity(
             song.trackId,
             song.trackName,
             song.artistName,
@@ -19,7 +19,7 @@ class FavouriteSongDbConverter {
             )
     }
 
-    fun map(song: FavouriteSongEntity): Song {
+    fun map(song: SongEntity, isFavourite: Boolean): Song {
         return Song(
             song.trackId,
             song.trackName,
@@ -31,7 +31,7 @@ class FavouriteSongDbConverter {
             song.primaryGenreName,
             song.country,
             song.previewUrl,
-            true
+            isFavourite
         )
     }
 }

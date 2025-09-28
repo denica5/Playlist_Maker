@@ -4,8 +4,8 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "song_table")
-data class FavouriteSongEntity(
-    @PrimaryKey
+data class SongEntity(
+    @PrimaryKey(autoGenerate = true)
     val trackId: Long,
     val trackName: String,
     val artistName: String,
@@ -15,6 +15,7 @@ data class FavouriteSongEntity(
     val releaseDate: String,
     val primaryGenreName: String,
     val country: String,
-    val previewUrl: String
+    val previewUrl: String,
+    val createAt: Long = System.currentTimeMillis()
 ) {
 }

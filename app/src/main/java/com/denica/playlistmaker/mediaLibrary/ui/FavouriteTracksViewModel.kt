@@ -1,16 +1,15 @@
 package com.denica.playlistmaker.mediaLibrary.ui
 
-import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.denica.playlistmaker.mediaLibrary.domain.FavouriteSongInteractor
+import com.denica.playlistmaker.mediaLibrary.domain.DbSongInteractor
 import com.denica.playlistmaker.search.domain.models.Song
 import kotlinx.coroutines.launch
 
 class FavouriteTracksViewModel(
-    private val favouriteSongInteractor: FavouriteSongInteractor
+    private val dbSongInteractor: DbSongInteractor
 ) : ViewModel() {
 
     private val favouriteStateLiveData = MutableLiveData<FavouriteTracksState>()
@@ -20,7 +19,7 @@ class FavouriteTracksViewModel(
     fun getFavouriteSongs() {
         renderState(FavouriteTracksState.Loading)
         viewModelScope.launch {
-            favouriteSongInteractor.getFavouriteSongs().collect { songs ->
+            dbSongInteractor.getFavouriteSongs().collect { songs ->
                 processResult(songs)
             }
         }
@@ -28,7 +27,7 @@ class FavouriteTracksViewModel(
 
     private fun processResult(songs: List<Song>) {
         if (songs.isEmpty()) {
-            renderState(FavouriteTracksState.Empty("Empty"))
+            renderState(FavouriteTracksState.Empty)
         } else {
             renderState(FavouriteTracksState.Content(songs))
         }

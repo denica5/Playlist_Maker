@@ -1,7 +1,5 @@
 package com.denica.playlistmaker.mediaplayer.ui
 
-import android.graphics.Color
-import android.graphics.ColorFilter
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,11 +7,11 @@ import android.view.ViewGroup
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.denica.playlistmaker.utils.BindingFragment
 import com.denica.playlistmaker.R
 import com.denica.playlistmaker.databinding.FragmentMediaPlayerBinding
 import com.denica.playlistmaker.search.domain.models.Song
 import com.denica.playlistmaker.search.ui.TrackListViewHolder
+import com.denica.playlistmaker.utils.BindingFragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import java.text.SimpleDateFormat
@@ -65,6 +63,10 @@ class MediaPlayerFragment : BindingFragment<FragmentMediaPlayerBinding>() {
         binding.playTrackMediaPlayer.setOnClickListener {
             viewModel.onPlayButtonClicked()
         }
+        binding.arrowBackMediaPlayer.setOnClickListener {
+            parentFragmentManager.popBackStack()
+        }
+
         viewModel.getPlayerState()
             .observe(viewLifecycleOwner) {
                 when (it) {
