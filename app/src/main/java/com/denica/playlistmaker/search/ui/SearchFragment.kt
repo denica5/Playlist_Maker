@@ -250,8 +250,9 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
     }
 
     override fun onResume() {
-        super.onResume()
         viewModel.getHistory()
+        super.onResume()
+
     }
 
     companion object {

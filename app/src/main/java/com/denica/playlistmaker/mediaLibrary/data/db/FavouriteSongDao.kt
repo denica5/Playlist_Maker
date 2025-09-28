@@ -15,7 +15,7 @@ interface FavouriteSongDao {
     suspend fun deleteSongFromFavourite(song: FavouriteSongEntity)
 
     @Query("SELECT * FROM song_table")
-    suspend fun getFavouriteSongs() : List<FavouriteSongEntity>
+    suspend fun getFavouriteSongs(): List<FavouriteSongEntity>
 
     @Query("SELECT trackId FROM song_table")
     suspend fun getFavouriteSongsIds(): List<Long>

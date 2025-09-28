@@ -1,17 +1,19 @@
 package com.denica.playlistmaker.mediaLibrary.ui
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.denica.playlistmaker.utils.BindingFragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.denica.playlistmaker.databinding.FragmentFavouriteTracksBinding
 import com.denica.playlistmaker.search.domain.models.Song
 import com.denica.playlistmaker.search.ui.SearchFragment
 import com.denica.playlistmaker.search.ui.TrackListAdapter
+import com.denica.playlistmaker.utils.BindingFragment
 import com.denica.playlistmaker.utils.debounce
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -20,7 +22,7 @@ class FavouriteTracksFragment : BindingFragment<FragmentFavouriteTracksBinding>(
 
     val viewModel by viewModel<FavouriteTracksViewModel>()
 
-    private lateinit var adapter: TrackListAdapter
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,23 +40,24 @@ class FavouriteTracksFragment : BindingFragment<FragmentFavouriteTracksBinding>(
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.getFavouriteSongs()
-
         val onSongClickDebounce = debounce<Song>(
             SearchFragment.CLICK_DEBOUNCE_DELAY,
             viewLifecycleOwner.lifecycleScope,
             false
         ) { song ->
+            Log.d("Fragment", "${findNavController().currentDestination?.id}")
             findNavController().navigate(
-                FavouriteTracksFragmentDirections.actionFavouriteTracksFragmentToMediaPlayerFragment(
+                MediaLibraryFragmentDirections.actionMediaLibraryFragmentToMediaPlayerFragment(
                     song
                 )
             )
 
         }
-        adapter = TrackListAdapter(
+        val adapter = TrackListAdapter(
             onSongClickDebounce
         )
         binding.recycler.adapter = adapter
+        binding.recycler.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL,false)
         viewModel.observeFavouriteState().observe(viewLifecycleOwner) {
             when (it) {
                 is FavouriteTracksState.Loading -> {

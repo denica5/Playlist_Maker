@@ -24,7 +24,11 @@
         android:id="@+id/mediaLibraryFragment"
         android:name="com.denica.playlistmaker.mediaLibrary.ui.MediaLibraryFragment"
         android:label="fragment_media_library"
-        tools:layout="@layout/fragment_media_library" />
+        tools:layout="@layout/fragment_media_library" >
+        <action
+            android:id="@+id/action_mediaLibraryFragment_to_mediaPlayerFragment"
+            app:destination="@id/mediaPlayerFragment" />
+    </fragment>
     <fragment
         android:id="@+id/mediaPlayerFragment"
         android:name="com.denica.playlistmaker.mediaplayer.ui.MediaPlayerFragment"
