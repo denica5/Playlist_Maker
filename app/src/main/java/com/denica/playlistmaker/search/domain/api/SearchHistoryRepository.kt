@@ -4,7 +4,7 @@ import com.denica.playlistmaker.search.data.network.Resource
 import com.denica.playlistmaker.search.domain.models.Song
 
 interface SearchHistoryRepository {
-    fun saveListToHistory(songs: List<Song>)
-    fun saveToHistory(song: Song)
-    fun getHistory(): Resource<List<Song>>
+    suspend fun saveListToHistory(songs: List<Song>)
+    suspend fun saveToHistory(song: Song): Int
+    suspend fun getHistory(): Resource<List<Song>>
 }

@@ -19,6 +19,7 @@ import com.denica.playlistmaker.databinding.FragmentSearchBinding
 import com.denica.playlistmaker.search.domain.models.Song
 import com.denica.playlistmaker.utils.BindingFragment
 import com.denica.playlistmaker.utils.debounce
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
@@ -28,7 +29,7 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
     private lateinit var adapter: TrackListAdapter
     private lateinit var historyAdapter: TrackListAdapter
 
-    private lateinit var onSongClickDebounce: (Song) -> Unit
+    private lateinit var onSearchSongClickDebounce: (Song) -> Unit
 
     override fun createBinding(
         inflater: LayoutInflater,
@@ -41,18 +42,11 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
         super.onViewCreated(view, savedInstanceState)
 
 
-//
-//        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.search)) { v, insets ->
-//            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-//            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-//            insets
-//        }
-
-
-        onSongClickDebounce =
+        onSearchSongClickDebounce =
             debounce<Song>(CLICK_DEBOUNCE_DELAY, viewLifecycleOwner.lifecycleScope, false)
             { song ->
-                val position = viewModel.addTrack(song)
+                var position = -1
+                viewLifecycleOwner.lifecycleScope.launch { position = viewModel.addTrack(song) }
 
                 findNavController().navigate(
                     SearchFragmentDirections.actionSearchFragment2ToMediaPlayerFragment(
@@ -67,12 +61,16 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
             }
 
 
+        adapter = TrackListAdapter(onSearchSongClickDebounce)
+        historyAdapter = TrackListAdapter(onSearchSongClickDebounce)
 
-        adapter = TrackListAdapter(onSongClickDebounce)
-        historyAdapter = TrackListAdapter(onSongClickDebounce)
-
-        viewModel.getSavedTracksArrayList()
-            .observe(viewLifecycleOwner) { historyAdapter.itemList = it }
+        viewModel.getSearchHistoryState()
+            .observe(viewLifecycleOwner) {
+                when (it) {
+                    is SearchHistoryState.Content -> historyAdapter.itemList = it.data
+                    is SearchHistoryState.Empty -> { historyAdapter.itemList = emptyList()}
+                }
+            }
         binding.searchEditText.setText(searchText)
 
         binding.searchClearIcX.setOnClickListener {
@@ -186,7 +184,6 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
     }
 
 
-
     private fun clearTracks(text: String) {
 
         if (text.isNotEmpty()) {
@@ -241,7 +238,13 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
 
     override fun onStop() {
         super.onStop()
-        viewModel.saveHistory()
+
+    }
+
+    override fun onResume() {
+        viewModel.getHistory()
+        super.onResume()
+
     }
 
     companion object {

@@ -5,7 +5,9 @@
     android:id="@+id/media_player_scrollView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".mediaplayer.ui.MediaPlayerFragment">
+    tools:context=".mediaplayer.ui.MediaPlayerFragment"
+    android:paddingBottom="20dp"
+    >
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/main"
@@ -15,17 +17,28 @@
 
 
         <ImageView
+            android:id="@+id/arrow_back_media_player"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:padding="8dp"
+            android:src="@drawable/ic_arrow_back"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <ImageView
             android:id="@+id/track_image_media_player"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginHorizontal="24dp"
+            android:layout_marginTop="26dp"
             android:layout_marginBottom="24dp"
-            android:layout_marginTop="24dp"
             app:layout_constraintBottom_toTopOf="@+id/track_name_media_player"
             app:layout_constraintDimensionRatio="H,1:1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/arrow_back_media_player"
             tools:src="@drawable/ic_track_placeholder" />
 
         <TextView
@@ -101,12 +114,13 @@
             android:layout_marginTop="54dp"
             android:layout_marginEnd="24dp"
             android:background="@drawable/dot"
-
             app:layout_constraintEnd_toEndOf="parent"
             android:backgroundTint="@color/media_player_icons_background"
             app:layout_constraintStart_toEndOf="@id/play_track_media_player"
             app:layout_constraintTop_toBottomOf="@+id/track_artist_name_media_player"
-            app:srcCompat="@drawable/ic_add_to_favourite" />
+            app:srcCompat="@drawable/ic_add_to_favourite"
+
+            />
 
         <TextView
             android:id="@+id/remaining_track_duration_media_player"
@@ -225,6 +239,7 @@
             style="@style/MediaPlayerText"
             android:layout_marginTop="8.5dp"
             android:layout_marginBottom="20dp"
+
             app:layout_constraintBaseline_toBaselineOf="@id/label_country_media_player"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/label_country_media_player"

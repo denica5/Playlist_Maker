@@ -5,17 +5,27 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.denica.playlistmaker.mediaLibrary.domain.DbSongInteractor
+import com.denica.playlistmaker.search.domain.models.Song
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class MediaPlayerViewModel(private val previewUrl: String, private val mediaPlayer: MediaPlayer) : ViewModel() {
+class MediaPlayerViewModel(
+    private val song: Song,
+    private val mediaPlayer: MediaPlayer,
+    private val dbSongInteractor: DbSongInteractor
+) : ViewModel() {
 
 
     private val playerState = MutableLiveData<PlayerState>(PlayerState.Default())
     fun getPlayerState(): LiveData<PlayerState> = playerState
+    val previewUrl = song.previewUrl.trim()
+
+    private val isFavourite = MutableLiveData(song.isFavourite)
+    fun getFavourite(): LiveData<Boolean> = isFavourite
     private val dateFormat by lazy { SimpleDateFormat("mm:ss", Locale.getDefault()) }
     private var timerJob: Job? = null
     private fun startTimer() {
@@ -34,6 +44,20 @@ class MediaPlayerViewModel(private val previewUrl: String, private val mediaPlay
             initMediaPlayer()
         }
 
+    }
+
+    fun onFavouriteClick(song: Song) {
+        viewModelScope.launch {
+            if (song.isFavourite) {
+                dbSongInteractor.deleteSongFromFavourite(song)
+                isFavourite.postValue(!song.isFavourite)
+                song.isFavourite = !song.isFavourite
+            } else {
+                dbSongInteractor.addSongToFavourite(song)
+                isFavourite.postValue(!song.isFavourite)
+                song.isFavourite = !song.isFavourite
+            }
+        }
     }
 
     private fun initMediaPlayer() {
@@ -88,7 +112,6 @@ class MediaPlayerViewModel(private val previewUrl: String, private val mediaPlay
     }
 
     companion object {
-
 
 
     }

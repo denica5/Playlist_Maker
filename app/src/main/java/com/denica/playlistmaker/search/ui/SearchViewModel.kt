@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.denica.playlistmaker.R
+import com.denica.playlistmaker.mediaLibrary.domain.DbSongInteractor
 import com.denica.playlistmaker.search.domain.api.SearchHistoryInteractor
 import com.denica.playlistmaker.search.domain.api.SongInteractor
 import com.denica.playlistmaker.search.domain.models.Song
@@ -15,14 +16,15 @@ import kotlinx.coroutines.launch
 
 class SearchViewModel(
     private val historyInteractor: SearchHistoryInteractor,
-    private val songInteractor: SongInteractor
+    private val songInteractor: SongInteractor,
+    private val dbSongInteractor: DbSongInteractor
 ) : ViewModel() {
 
-
+    var ids = emptyList<Long>()
     private val handler = Handler(Looper.getMainLooper())
     private var latestSearchText: String? = null
-    private val savedTracksArrayList = MutableLiveData<ArrayList<Song>>()
-    fun getSavedTracksArrayList(): LiveData<ArrayList<Song>> = savedTracksArrayList
+    private val searchHistoryState = MutableLiveData<SearchHistoryState>()
+    fun getSearchHistoryState(): LiveData<SearchHistoryState> = searchHistoryState
     private val stateLiveData = MutableLiveData<SearchState>()
     fun getState(): LiveData<SearchState> = stateLiveData
 
@@ -47,10 +49,9 @@ class SearchViewModel(
         if (newSearchText.isNotEmpty()) {
             stateLiveData.postValue(SearchState.Loading)
             viewModelScope.launch {
-                songInteractor.searchSong(newSearchText)
-                    .collect { pair ->
-                        processResult(pair.first, pair.second)
-                    }
+                songInteractor.searchSong(newSearchText).collect { pair ->
+                    processResult(pair.first, pair.second)
+                }
             }
         }
 
@@ -59,11 +60,15 @@ class SearchViewModel(
     fun processResult(foundSongs: List<Song>?, errorMessage: String?) {
         val songs = mutableListOf<Song>()
         if (foundSongs != null) {
+            getFavouriteIds()
+            foundSongs.map {
+                it.apply { it.isFavourite = ids.contains(it.trackId) }
+            }
             songs.addAll(foundSongs)
         }
         when {
             errorMessage != null -> {
-                renderState(
+                renderSearchState(
                     SearchState.Error(
                         message = R.string.failed_search
                     )
@@ -71,11 +76,12 @@ class SearchViewModel(
             }
 
             songs.isEmpty() -> {
-                renderState(SearchState.Empty(R.string.nothing_found))
+                renderSearchState(SearchState.Empty(R.string.nothing_found))
             }
 
             else -> {
-                renderState(
+                getFavouriteIds()
+                renderSearchState(
                     SearchState.Content(
                         songs
                     )
@@ -84,44 +90,59 @@ class SearchViewModel(
         }
     }
 
-
-    fun isSavedTracksArrayListNotEmpty(): Boolean {
-        return savedTracksArrayList.value?.isNotEmpty() ?: false
+    fun getFavouriteIds() {
+        viewModelScope.launch {
+            ids = dbSongInteractor.getFavouriteSongsIds()
+        }
     }
 
-
     fun addTrack(song: Song): Int {
-        historyInteractor.saveToHistory(song)
         var position = -1
-        if (savedTracksArrayList.value?.contains(song) == true) {
-            position = savedTracksArrayList.value?.indexOf(song) ?: -1
+        viewModelScope.launch {
+            position = historyInteractor.saveToHistory(song)
+            getHistory()
         }
-        getHistory()
-        savedTracksArrayList.notifyObserver()
+
         return position
     }
 
     fun clearHistory() {
-        savedTracksArrayList.value?.clear()
-        saveHistory()
-    }
+        viewModelScope.launch {
+            historyInteractor.saveListToHistory(emptyList())
+            getHistory()
+        }
 
-    fun saveHistory() {
-        savedTracksArrayList.value?.let { historyInteractor.saveListToHistory(it.toList()) }
     }
 
     fun getHistory() {
-        historyInteractor.getHistory(object : SearchHistoryInteractor.HistoryConsumer {
-            override fun consume(searchHistory: List<Song>?) {
-                savedTracksArrayList.value?.clear()
-                savedTracksArrayList.value?.addAll((searchHistory?.toTypedArray() ?: emptyArray()))
-            }
-        })
+        viewModelScope.launch {
+            historyInteractor.getHistory(object : SearchHistoryInteractor.HistoryConsumer {
+                override fun consume(searchHistory: List<Song>?) {
+
+                    if (searchHistory != null) {
+                        if (searchHistory.isEmpty()) {
+                            renderSearchHistoryState(SearchHistoryState.Empty)
+                        } else {
+                            renderSearchHistoryState(SearchHistoryState.Content(searchHistory))
+                        }
+                    } else {
+                        renderSearchHistoryState(SearchHistoryState.Empty)
+                    }
+                }
+
+            })
+        }
+    }
+
+    fun isSavedTracksArrayListNotEmpty(): Boolean {
+        return when (getSearchHistoryState().value) {
+            is SearchHistoryState.Empty -> false
+            else -> true
+        }
     }
 
 
     init {
-        savedTracksArrayList.value = ArrayList()
         getHistory()
     }
 
@@ -132,21 +153,22 @@ class SearchViewModel(
     }
 
     fun removeSearchList() {
-        renderState(SearchState.Content(emptyList<Song>()))
+        renderSearchState(SearchState.Content(emptyList<Song>()))
     }
 
     override fun onCleared() {
         super.onCleared()
-        savedTracksArrayList.value?.let { historyInteractor.saveListToHistory(it.toList()) }
+
         handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
     }
 
-    private fun renderState(state: SearchState) {
+    private fun renderSearchState(state: SearchState) {
         stateLiveData.postValue(state)
     }
 
-    fun <T> MutableLiveData<T>.notifyObserver() {
-        this.value = this.value
+    private fun renderSearchHistoryState(state: SearchHistoryState) {
+        searchHistoryState.postValue(state)
     }
+
 
 }
