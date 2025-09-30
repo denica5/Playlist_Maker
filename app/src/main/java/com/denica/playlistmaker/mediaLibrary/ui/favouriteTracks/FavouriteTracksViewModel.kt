@@ -1,4 +1,4 @@
-package com.denica.playlistmaker.mediaLibrary.ui
+package com.denica.playlistmaker.mediaLibrary.ui.favouriteTracks
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

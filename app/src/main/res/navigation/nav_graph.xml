@@ -28,6 +28,9 @@
         <action
             android:id="@+id/action_mediaLibraryFragment_to_mediaPlayerFragment"
             app:destination="@id/mediaPlayerFragment" />
+        <action
+            android:id="@+id/action_mediaLibraryFragment_to_createPlaylistFragment"
+            app:destination="@id/createPlaylistFragment" />
     </fragment>
     <fragment
         android:id="@+id/mediaPlayerFragment"
@@ -39,13 +42,9 @@
             app:argType="com.denica.playlistmaker.search.domain.models.Song" />
     </fragment>
     <fragment
-        android:id="@+id/favouriteTracksFragment"
-        android:name="com.denica.playlistmaker.mediaLibrary.ui.FavouriteTracksFragment"
-        android:label="fragment_favourite_tracks"
-        tools:layout="@layout/fragment_favourite_tracks" >
-        <action
-            android:id="@+id/action_favouriteTracksFragment_to_mediaPlayerFragment"
-            app:destination="@id/mediaPlayerFragment" />
-    </fragment>
+        android:id="@+id/createPlaylistFragment"
+        android:name="com.denica.playlistmaker.mediaLibrary.ui.playlist.CreatePlaylistFragment"
+        android:label="fragment_create_playlist"
+        tools:layout="@layout/fragment_create_playlist" />
 
 </navigation>

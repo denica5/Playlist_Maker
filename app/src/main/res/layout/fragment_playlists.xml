@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:visibility="visible"
-    tools:context=".mediaLibrary.ui.PlaylistFragment">
+    tools:context=".mediaLibrary.ui.playlist.PlaylistFragment">
 
     <Button
         android:id="@+id/media_library_button_add_new_playlist"

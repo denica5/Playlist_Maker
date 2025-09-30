@@ -1,4 +1,4 @@
-package com.denica.playlistmaker.mediaLibrary.ui
+package com.denica.playlistmaker.mediaLibrary.ui.playlist
 
 import androidx.lifecycle.ViewModel
 

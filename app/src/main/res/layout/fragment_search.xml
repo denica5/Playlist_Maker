@@ -7,7 +7,7 @@
     tools:context=".search.ui.SearchFragment">
 
     <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/search_header"
+        android:id="@+id/create_playlist_header"
         style="@style/HeaderStyle"
         app:title="@string/search_text_header" />
 

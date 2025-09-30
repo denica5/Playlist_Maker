@@ -1,8 +1,8 @@
 package com.denica.playlistmaker.di
 
 import android.media.MediaPlayer
-import com.denica.playlistmaker.mediaLibrary.ui.FavouriteTracksViewModel
-import com.denica.playlistmaker.mediaLibrary.ui.PlaylistViewModel
+import com.denica.playlistmaker.mediaLibrary.ui.favouriteTracks.FavouriteTracksViewModel
+import com.denica.playlistmaker.mediaLibrary.ui.playlist.PlaylistViewModel
 import com.denica.playlistmaker.mediaplayer.ui.MediaPlayerViewModel
 import com.denica.playlistmaker.search.domain.models.Song
 import com.denica.playlistmaker.search.ui.SearchViewModel

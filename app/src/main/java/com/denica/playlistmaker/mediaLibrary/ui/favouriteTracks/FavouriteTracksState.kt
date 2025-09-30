@@ -1,4 +1,4 @@
-package com.denica.playlistmaker.mediaLibrary.ui
+package com.denica.playlistmaker.mediaLibrary.ui.favouriteTracks
 
 import com.denica.playlistmaker.search.domain.models.Song
 

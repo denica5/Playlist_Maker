@@ -1,7 +1,6 @@
-package com.denica.playlistmaker.mediaLibrary.ui
+package com.denica.playlistmaker.mediaLibrary.ui.favouriteTracks
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,13 +9,13 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.denica.playlistmaker.databinding.FragmentFavouriteTracksBinding
+import com.denica.playlistmaker.mediaLibrary.ui.MediaLibraryFragmentDirections
 import com.denica.playlistmaker.search.domain.models.Song
 import com.denica.playlistmaker.search.ui.SearchFragment
 import com.denica.playlistmaker.search.ui.TrackListAdapter
 import com.denica.playlistmaker.utils.BindingFragment
 import com.denica.playlistmaker.utils.debounce
 import org.koin.androidx.viewmodel.ext.android.viewModel
-
 
 class FavouriteTracksFragment : BindingFragment<FragmentFavouriteTracksBinding>() {
 
@@ -41,7 +40,7 @@ class FavouriteTracksFragment : BindingFragment<FragmentFavouriteTracksBinding>(
 
         viewModel.getFavouriteSongs()
         val onSongClickDebounce = debounce<Song>(
-            SearchFragment.CLICK_DEBOUNCE_DELAY,
+            SearchFragment.Companion.CLICK_DEBOUNCE_DELAY,
             viewLifecycleOwner.lifecycleScope,
             false
         ) { song ->
@@ -57,7 +56,8 @@ class FavouriteTracksFragment : BindingFragment<FragmentFavouriteTracksBinding>(
             onSongClickDebounce
         )
         binding.recycler.adapter = adapter
-        binding.recycler.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL,false)
+        binding.recycler.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         viewModel.observeFavouriteState().observe(viewLifecycleOwner) {
             when (it) {
                 is FavouriteTracksState.Loading -> {

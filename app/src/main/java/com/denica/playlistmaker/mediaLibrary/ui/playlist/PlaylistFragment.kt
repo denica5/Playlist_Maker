@@ -1,11 +1,14 @@
-package com.denica.playlistmaker.mediaLibrary.ui
+package com.denica.playlistmaker.mediaLibrary.ui.playlist
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import com.denica.playlistmaker.utils.BindingFragment
 import com.denica.playlistmaker.databinding.FragmentPlaylistsBinding
+import com.denica.playlistmaker.mediaLibrary.ui.MediaLibraryFragmentDirections
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
@@ -26,6 +29,11 @@ class PlaylistFragment : BindingFragment<FragmentPlaylistsBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.mediaLibraryButtonAddNewPlaylist.setOnClickListener {
+            findNavController().navigate(
+                MediaLibraryFragmentDirections.actionMediaLibraryFragmentToCreatePlaylistFragment()
+            )
+        }
 
     }
 
