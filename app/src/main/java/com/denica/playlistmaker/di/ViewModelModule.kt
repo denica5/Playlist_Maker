@@ -2,6 +2,7 @@ package com.denica.playlistmaker.di
 
 import android.media.MediaPlayer
 import com.denica.playlistmaker.mediaLibrary.ui.favouriteTracks.FavouriteTracksViewModel
+import com.denica.playlistmaker.mediaLibrary.ui.playlist.CreatePlaylistViewModel
 import com.denica.playlistmaker.mediaLibrary.ui.playlist.PlaylistViewModel
 import com.denica.playlistmaker.mediaplayer.ui.MediaPlayerViewModel
 import com.denica.playlistmaker.search.domain.models.Song
@@ -26,5 +27,8 @@ val viewModelModule = module {
     }
     viewModel {
         PlaylistViewModel()
+    }
+    viewModel {
+        CreatePlaylistViewModel(get())
     }
 }

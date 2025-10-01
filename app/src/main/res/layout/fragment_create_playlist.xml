@@ -24,6 +24,7 @@
         android:layout_marginTop="26dp"
         android:src="@drawable/ic_add_photo_create_playlist"
         app:layout_constraintDimensionRatio="H,1:1"
+
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/create_playlist_header" />
@@ -34,8 +35,14 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         android:layout_marginTop="32dp"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        app:boxStrokeColor="@color/blue"
+        android:textAppearance="@style/TextInputLayoutHintTextAppearance"
+        app:boxBackgroundMode="outline"
+        app:boxStrokeColor="@color/text_input_color"
+        app:boxStrokeWidth="2dp"
+        app:boxStrokeWidthFocused="2dp"
+        android:hint="@string/create_playlist_name_label"
+        app:hintTextColor="@color/blue"
+        app:hintTextAppearance="@style/TextInputLayoutHintTextAppearance"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/create_playlist_image">
@@ -55,13 +62,12 @@
         android:layout_marginHorizontal="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
-        android:hint="Описание"
-        android:textAppearance="@style/TextInputLayoutHintTextAppearance"
+        android:hint="@string/create_playlist_description_label"
+        android:textAppearance="@style/TextInputLayoutTextAppearance"
         app:boxBackgroundMode="outline"
-        app:boxStrokeColor="@color/blue"
+        app:boxStrokeColor="@color/text_input_color"
         app:boxStrokeWidth="2dp"
         app:boxStrokeWidthFocused="2dp"
-
         app:hintTextAppearance="@style/TextInputLayoutHintTextAppearance"
         app:hintTextColor="@color/blue"
         app:layout_constraintEnd_toEndOf="parent"
@@ -75,7 +81,7 @@
             android:layout_height="wrap_content"
             android:textColor="?attr/colorOnSecondary"
             android:textColorHint="?attr/colorOnSecondary"
-            android:fontFamily=""
+
             tools:text="" />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -90,6 +96,7 @@
         android:enabled="false"
         android:text="@string/create_playlist_label_button_create"
         android:textColor="@color/white"
+        style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

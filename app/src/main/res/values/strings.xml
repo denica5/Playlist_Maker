@@ -35,4 +35,10 @@
     <string name="media_library_button_add_new_playlist">Новый плейлист</string>
     <string name="create_playlist_header">Новый плейлист</string>
     <string name="create_playlist_label_button_create">Создать</string>
+    <string name="create_playlist_alert_neutral_button_text">Отмена</string>
+    <string name="create_playlist_description_label">Описание</string>
+    <string name="create_playlist_name_label">Название</string>
+    <string name="create_playlist_alert_title">Завершить создание плейлиста?</string>
+    <string name="create_playlist_alert_message">Все несохраненные данные будут потеряны</string>
+    <string name="create_playlist_alert_positive_button">Завершить</string>
 </resources>
