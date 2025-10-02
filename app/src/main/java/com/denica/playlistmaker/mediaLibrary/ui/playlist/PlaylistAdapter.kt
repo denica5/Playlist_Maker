@@ -32,7 +32,9 @@ class PlaylistAdapter(val onItemClickListener: (Playlist) -> Unit) :
         position: Int
     ) {
         holder.bind(itemList[position])
-
+        holder.itemView.setOnClickListener {
+            onItemClickListener(itemList[holder.bindingAdapterPosition])
+        }
     }
 
     override fun getItemCount(): Int {

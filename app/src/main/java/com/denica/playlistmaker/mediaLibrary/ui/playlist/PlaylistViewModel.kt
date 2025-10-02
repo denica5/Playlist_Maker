@@ -6,8 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.denica.playlistmaker.mediaLibrary.domain.DbPlaylistInteractor
 import com.denica.playlistmaker.mediaLibrary.domain.Playlist
-import com.denica.playlistmaker.mediaLibrary.ui.favouriteTracks.FavouriteTracksState
-import com.denica.playlistmaker.search.domain.models.Song
 import kotlinx.coroutines.launch
 
 class PlaylistViewModel(val playlistInteractor: DbPlaylistInteractor) : ViewModel() {

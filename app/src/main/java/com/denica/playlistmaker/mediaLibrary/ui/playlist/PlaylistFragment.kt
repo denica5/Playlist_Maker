@@ -6,14 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
-import com.denica.playlistmaker.utils.BindingFragment
 import com.denica.playlistmaker.databinding.FragmentPlaylistsBinding
 import com.denica.playlistmaker.mediaLibrary.domain.Playlist
 import com.denica.playlistmaker.mediaLibrary.ui.MediaLibraryFragmentDirections
 import com.denica.playlistmaker.search.ui.SearchFragment
+import com.denica.playlistmaker.utils.BindingFragment
 import com.denica.playlistmaker.utils.debounce
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
