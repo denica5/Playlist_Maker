@@ -41,4 +41,12 @@
     <string name="create_playlist_alert_title">Завершить создание плейлиста?</string>
     <string name="create_playlist_alert_message">Все несохраненные данные будут потеряны</string>
     <string name="create_playlist_alert_positive_button">Завершить</string>
+    <string name="create_playlist_create_succes">Плейлист %1$s создан</string>
+    <string name="media_player_track_deleted_from_playelist">Трек Удален</string>
+    <string name="media_player_track_added_to_playlist">Трек Добавлен</string>
+    <string name="media_player_error_to_interact_with_playlist">Произошла ошибка</string>
+    <string name="playlist_track_pluralize_11_19">%1$d треков</string>
+    <string name="playlist_track_pluralize_1">%1$d трек</string>
+    <string name="playlist_track_pluralize_2_4">%1$d трека</string>
+    <string name="playlist_track_pluralize_last">%1$d треков</string>
 </resources>

@@ -42,6 +42,10 @@ class DbPlaylistRepositoryImpl(
 
     }
 
+    override suspend fun addTrackToPlayList(playlistId: Long, trackId: Long): Int {
+        return playlistDao.addTrackToPlayList(playlistId, trackId)
+    }
+
     private fun convertFromPlaylistEntity(playlists: List<PlaylistEntity>): List<Playlist> {
         return playlists.map {
             playlistDbConverter.map(it)

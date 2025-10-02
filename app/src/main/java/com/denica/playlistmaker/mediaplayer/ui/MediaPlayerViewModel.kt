@@ -1,11 +1,15 @@
 package com.denica.playlistmaker.mediaplayer.ui
 
 import android.media.MediaPlayer
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.denica.playlistmaker.mediaLibrary.domain.DbPlaylistInteractor
 import com.denica.playlistmaker.mediaLibrary.domain.DbSongInteractor
+import com.denica.playlistmaker.mediaLibrary.domain.Playlist
+import com.denica.playlistmaker.mediaLibrary.ui.playlist.PlaylistState
 import com.denica.playlistmaker.search.domain.models.Song
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -16,12 +20,17 @@ import java.util.Locale
 class MediaPlayerViewModel(
     private val song: Song,
     private val mediaPlayer: MediaPlayer,
-    private val dbSongInteractor: DbSongInteractor
+    private val dbSongInteractor: DbSongInteractor,
+    private val playlistInteractor: DbPlaylistInteractor
 ) : ViewModel() {
 
 
     private val playerState = MutableLiveData<PlayerState>(PlayerState.Default())
     fun getPlayerState(): LiveData<PlayerState> = playerState
+    private val playlistState: MutableLiveData<PlaylistState> = MutableLiveData(PlaylistState.Empty)
+    fun observePlaylistState(): LiveData<PlaylistState> = playlistState
+    private val addOrRemoveState: MutableLiveData<Int> = MutableLiveData<Int>()
+    fun observeAddOrRemoveState(): LiveData<Int> = addOrRemoveState
     val previewUrl = song.previewUrl.trim()
 
     private val isFavourite = MutableLiveData(song.isFavourite)
@@ -43,7 +52,7 @@ class MediaPlayerViewModel(
         if (previewUrl != "") {
             initMediaPlayer()
         }
-
+        getPlaylists()
     }
 
     fun onFavouriteClick(song: Song) {
@@ -72,6 +81,35 @@ class MediaPlayerViewModel(
             timerJob?.cancel()
             playerState.postValue(PlayerState.Prepared())
         }
+    }
+
+    fun getPlaylists() {
+
+        viewModelScope.launch {
+            renderState(PlaylistState.Loading)
+            playlistInteractor.getPlaylistList().collect { playlists ->
+                processResult(playlists)
+            }
+        }
+    }
+
+    fun addTrackToPlaylist(playlistId: Long, trackId: Long) {
+        viewModelScope.launch {
+            addOrRemoveState.postValue(playlistInteractor.addTrackToPlayList(playlistId, trackId))
+            getPlaylists()
+        }
+    }
+
+    private fun processResult(playlists: List<Playlist>) {
+        if (playlists.isEmpty()) {
+            renderState(PlaylistState.Empty)
+        } else {
+            renderState(PlaylistState.Content(playlists))
+        }
+    }
+
+    private fun renderState(state: PlaylistState) {
+        playlistState.postValue(state)
     }
 
     private fun startPlayer() {

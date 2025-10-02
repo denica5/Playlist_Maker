@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.denica.playlistmaker.R
 import com.denica.playlistmaker.databinding.TrackItemBinding
@@ -32,8 +33,7 @@ class TrackListAdapter(val onItemClickListener: (Song) -> Unit) :
     override fun onBindViewHolder(holder: TrackListViewHolder, position: Int) {
         holder.bind(itemList[position])
         holder.itemView.setOnClickListener {
-
-            onItemClickListener(itemList[holder.adapterPosition])
+            onItemClickListener(itemList[holder.bindingAdapterPosition])
 
         }
     }
@@ -51,7 +51,9 @@ class TrackListViewHolder(val binding: TrackItemBinding) : RecyclerView.ViewHold
     fun bind(songDto: Song) {
         Glide.with(itemView.context).load(songDto.artworkUrl100)
             .placeholder(R.drawable.ic_track_placeholder).centerCrop()
-            .transform(RoundedCorners(dpToPx(2f, itemView.context))).into(binding.trackImage)
+            .transform(RoundedCorners(dpToPx(2f, itemView.context)))
+            .skipMemoryCache(true)
+            .into(binding.trackImage)
         binding.trackName.text = songDto.trackName.trim()
         binding.trackArtistName.text = songDto.artistName.trim()
         binding.remainingTrackDurationMediaPlayer.text =

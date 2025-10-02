@@ -11,11 +11,11 @@ import kotlinx.coroutines.launch
 
 class CreatePlaylistViewModel(val playlistInteractor: DbPlaylistInteractor) : ViewModel() {
 
-    private val isImagePicked: MutableLiveData<Pair<Boolean, Uri>> = MutableLiveData()
-    fun isImagePicked(): LiveData<Pair<Boolean, Uri>> = isImagePicked
+    private val isImagePicked: MutableLiveData<Pair<Boolean, String>> = MutableLiveData(Pair(false, ""))
+    fun isImagePicked(): LiveData<Pair<Boolean, String>> = isImagePicked
 
     fun pickImage(uri: Uri) {
-        isImagePicked.postValue(Pair(true, uri))
+        isImagePicked.postValue(Pair(true, uri.toString()))
     }
 
     fun createPlaylist(name: String, description: String, imagePath: String): Playlist {

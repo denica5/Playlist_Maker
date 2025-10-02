@@ -23,8 +23,8 @@ class DbPlaylistInteractorImpl(val repository: DbPlaylistRepository) : DbPlaylis
         return repository.getPlaylist(playlistId)
     }
 
-    override suspend fun addTrackToPlayList(playlistId: Long, trackId: Long) {
-        repository.addTrackToPlayList(playlistId, trackId)
+    override suspend fun addTrackToPlayList(playlistId: Long, trackId: Long): Int {
+        return repository.addTrackToPlayList(playlistId, trackId)
     }
 
     override suspend fun removeTrackToPlayList(playlistId: Long, trackId: Long) {

@@ -1,5 +1,6 @@
 package com.denica.playlistmaker.mediaLibrary.ui.playlist
 
+import android.content.ContentResolver
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -11,6 +12,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -26,6 +28,8 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
 import java.io.FileOutputStream
 import kotlin.getValue
+import androidx.core.net.toUri
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
 
 
 class CreatePlaylistFragment : BindingFragment<FragmentCreatePlaylistBinding>() {
@@ -81,9 +85,7 @@ class CreatePlaylistFragment : BindingFragment<FragmentCreatePlaylistBinding>() 
             registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
                 if (uri != null) {
                     Glide.with(binding.createPlaylistImage).load(uri)
-
-                        .centerCrop()
-                        .transform(
+                        .transform(CenterCrop(),
                             RoundedCorners(
                                 TrackListViewHolder.dpToPx(
                                     8f,
@@ -93,8 +95,7 @@ class CreatePlaylistFragment : BindingFragment<FragmentCreatePlaylistBinding>() 
                         ).into(binding.createPlaylistImage)
                     viewModel.pickImage(uri)
                 } else {
-//                    Toast.makeText(requireContext(), R.string.failed_search, Toast.LENGTH_SHORT)
-//                        .show()
+
                 }
 
             }
@@ -138,12 +139,9 @@ class CreatePlaylistFragment : BindingFragment<FragmentCreatePlaylistBinding>() 
     }
 
     private fun isShowAlert(): Boolean {
-        var isPicked = false
-        viewModel.isImagePicked().observe(viewLifecycleOwner) {
-            isPicked = it.first
-        }
 
-        return isPicked && binding.createPlaylistNameEditText.text?.isNotEmpty() ?: false
+
+        return binding.createPlaylistNameEditText.text?.isNotEmpty() ?: false
     }
 
     private fun createPlaylist() {
@@ -153,29 +151,42 @@ class CreatePlaylistFragment : BindingFragment<FragmentCreatePlaylistBinding>() 
                 viewModel.addPlaylist(
                     name,
                     binding.createPlaylistDescriptionEditText.text.toString(),
-                    saveToInternal(name, it.second)
+                    if (it.second != "") {
+                        saveToInternal(name, it.second.toUri())
+                    } else Uri.Builder()
+                        .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
+                        .authority(resources.getResourcePackageName(R.drawable.ic_track_placeholder))
+                        .appendPath(resources.getResourceTypeName(R.drawable.ic_track_placeholder))
+                        .appendPath(resources.getResourceEntryName(R.drawable.ic_track_placeholder))
+                        .build().toString()
                 )
             }
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.create_playlist_create_succes, name), Toast.LENGTH_SHORT
+            )
+                .show()
+
         }
     }
 
 
-private fun saveToInternal(fileName: String, uri: Uri): String {
-    val file =
-        File(requireContext().getDir("playlistImages", Context.MODE_PRIVATE), "$fileName.jpg")
-    val inputStream = requireContext().contentResolver.openInputStream(uri)
-    val outputStream = FileOutputStream(file)
-    BitmapFactory.decodeStream(inputStream)
-        .compress(Bitmap.CompressFormat.JPEG, 30, outputStream)
-    return file.absolutePath
-}
+    private fun saveToInternal(fileName: String, uri: Uri): String {
+        val file =
+            File(requireContext().getDir("playlistImages", Context.MODE_PRIVATE), "$fileName.jpg")
+        val inputStream = requireContext().contentResolver.openInputStream(uri)
+        val outputStream = FileOutputStream(file)
+        BitmapFactory.decodeStream(inputStream)
+            .compress(Bitmap.CompressFormat.JPEG, 30, outputStream)
+        return file.absolutePath
+    }
 
-companion object {
+    companion object {
 
-    @JvmStatic
-    fun newInstance(param1: String, param2: String) =
-        CreatePlaylistFragment().apply {
+        @JvmStatic
+        fun newInstance(param1: String, param2: String) =
+            CreatePlaylistFragment().apply {
 
-        }
-}
+            }
+    }
 }

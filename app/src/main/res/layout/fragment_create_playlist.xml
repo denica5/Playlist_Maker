@@ -24,7 +24,6 @@
         android:layout_marginTop="26dp"
         android:src="@drawable/ic_add_photo_create_playlist"
         app:layout_constraintDimensionRatio="H,1:1"
-
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/create_playlist_header" />

@@ -17,8 +17,7 @@ interface DbPlaylistRepository {
     suspend fun getPlaylist(playlistId: Long): Playlist?
 
 
-    suspend fun addTrackToPlayList(playlistId: Long, trackId: Long) {
-    }
+    suspend fun addTrackToPlayList(playlistId: Long, trackId: Long): Int
 
     suspend fun removeTrackToPlayList(playlistId: Long, trackId: Long) {
 

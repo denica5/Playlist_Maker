@@ -25,15 +25,19 @@ interface PlaylistDao {
     suspend fun getPlaylist(playlistId: Long): PlaylistEntity?
 
     @Transaction
-    suspend fun addTrackToPlayList(playlistId: Long, trackId: Long) {
-        val playlist = getPlaylist(playlistId) ?: return
-        if (trackId in playlist.trackIds) return
+    suspend fun addTrackToPlayList(playlistId: Long, trackId: Long): Int {
+        val playlist = getPlaylist(playlistId) ?: return -1
+        if (trackId in playlist.trackIds) {
+            removeTrackToPlayList(playlistId, trackId)
+            return 0
+        }
         val updateTracksIds = playlist.trackIds + trackId
         val updatePlaylist = playlist.copy(
             trackIds = updateTracksIds,
             trackCount = updateTracksIds.size
         )
         updatePlaylist(updatePlaylist)
+        return 1
     }
 
     @Transaction
@@ -45,5 +49,6 @@ interface PlaylistDao {
             trackCount = updateTracksIds.size
         )
         updatePlaylist(updatePlaylist)
+
     }
 }
