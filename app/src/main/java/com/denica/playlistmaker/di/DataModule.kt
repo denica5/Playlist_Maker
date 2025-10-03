@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.denica.playlistmaker.mediaLibrary.data.db.SongDao
 import com.denica.playlistmaker.mediaLibrary.data.db.AppDatabase
 import com.denica.playlistmaker.mediaLibrary.data.db.PlaylistDao
+import com.denica.playlistmaker.mediaLibrary.data.db.PlaylistSongDao
 import com.denica.playlistmaker.search.data.network.ITUNES_BASE_URL
 import com.denica.playlistmaker.search.data.network.ItunesApi
 import com.denica.playlistmaker.search.data.network.NetworkClient
@@ -72,5 +73,8 @@ val dataModule = module {
     }
     single<PlaylistDao> {
         get<AppDatabase>().playlistDao()
+    }
+    single<PlaylistSongDao> {
+        get<AppDatabase>().playlistSongDao()
     }
 }

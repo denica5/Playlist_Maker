@@ -150,12 +150,9 @@ class MediaPlayerFragment : BindingFragment<FragmentMediaPlayerBinding>() {
         }
         viewModel.observeAddOrRemoveState()
             .observe(viewLifecycleOwner) {
-                val text = toastPlaylistAddOrRemove(it)
-                Toast.makeText(
-                    requireContext(),
-                    text,
-                    Toast.LENGTH_SHORT
-                ).show()
+
+                toastPlaylistAddOrRemove(it.playlistName, it.addResult)
+
 
             }
         val onPlaylistDebounce = debounce<Playlist>(
@@ -163,7 +160,8 @@ class MediaPlayerFragment : BindingFragment<FragmentMediaPlayerBinding>() {
             viewLifecycleOwner.lifecycleScope,
             false
         ) { playlist ->
-            viewModel.addTrackToPlaylist(playlist.id, songDto.trackId)
+            viewModel.addTrackToPlaylist(playlist, songDto.trackId)
+
         }
         val adapter = MediaPlayerBottomBehaviorAdapter(onPlaylistDebounce)
 
@@ -201,14 +199,28 @@ class MediaPlayerFragment : BindingFragment<FragmentMediaPlayerBinding>() {
 
     }
 
-    private fun toastPlaylistAddOrRemove(result: Int): Int {
-        return when (result) {
-            0 -> R.string.media_player_track_deleted_from_playelist
-            1 -> R.string.media_player_track_added_to_playlist
-            else -> {
-                R.string.media_player_error_to_interact_with_playlist
+    private fun toastPlaylistAddOrRemove(playlistName: String, result: Int) {
+        val text =
+            when (result) {
+                0 -> {
+                    getString(R.string.media_player_track_already_in_playlist, playlistName)
+
+                }
+
+                1 -> {
+                    bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+                    getString(R.string.media_player_track_added_to_playlist, playlistName)
+                }
+
+                else -> {
+                    getString(R.string.media_player_error_to_interact_with_playlist)
+                }
             }
-        }
+        Toast.makeText(
+            requireContext(),
+            text,
+            Toast.LENGTH_SHORT
+        ).show()
     }
 
 

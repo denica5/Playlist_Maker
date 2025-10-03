@@ -4,6 +4,7 @@ import com.denica.playlistmaker.App
 import com.denica.playlistmaker.mediaLibrary.data.DbPlaylistRepositoryImpl
 import com.denica.playlistmaker.mediaLibrary.data.DbSongRepositoryImpl
 import com.denica.playlistmaker.mediaLibrary.data.db.PlaylistDbConverter
+import com.denica.playlistmaker.mediaLibrary.data.db.PlaylistSongDbConverter
 import com.denica.playlistmaker.mediaLibrary.data.db.SongDbConverter
 import com.denica.playlistmaker.mediaLibrary.domain.DbPlaylistRepository
 import com.denica.playlistmaker.mediaLibrary.domain.DbSongRepository
@@ -43,10 +44,13 @@ val repositoryModule = module {
     factory {
         PlaylistDbConverter()
     }
+    factory {
+        PlaylistSongDbConverter()
+    }
     single<DbSongRepository> {
         DbSongRepositoryImpl(get(), get())
     }
     single<DbPlaylistRepository> {
-        DbPlaylistRepositoryImpl(get(), get())
+        DbPlaylistRepositoryImpl(get(), get(), get(), get())
     }
 }

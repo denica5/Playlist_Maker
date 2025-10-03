@@ -1,5 +1,6 @@
 package com.denica.playlistmaker.mediaLibrary.domain
 
+import com.denica.playlistmaker.search.domain.models.Song
 import kotlinx.coroutines.flow.Flow
 
 interface DbPlaylistInteractor {
@@ -11,9 +12,9 @@ interface DbPlaylistInteractor {
     suspend fun deletePlaylist(playlist: Playlist)
 
 
-    fun getPlaylistList(): Flow<List<Playlist>>
+     fun getPlaylistList(): Flow<List<Playlist>>
 
-
+    suspend fun addPlaylistSong(playlistSong: Song)
     suspend fun getPlaylist(playlistId: Long): Playlist?
 
 

@@ -1,5 +1,6 @@
 package com.denica.playlistmaker.mediaLibrary.domain
 
+import com.denica.playlistmaker.search.domain.models.Song
 import kotlinx.coroutines.flow.Flow
 
 class DbPlaylistInteractorImpl(val repository: DbPlaylistRepository) : DbPlaylistInteractor {
@@ -17,6 +18,10 @@ class DbPlaylistInteractorImpl(val repository: DbPlaylistRepository) : DbPlaylis
 
     override fun getPlaylistList(): Flow<List<Playlist>> {
         return repository.getPlaylistList()
+    }
+
+    override suspend fun addPlaylistSong(playlistSong: Song) {
+        repository.addPlaylistSong(playlistSong)
     }
 
     override suspend fun getPlaylist(playlistId: Long): Playlist? {

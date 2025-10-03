@@ -28,8 +28,10 @@ class MediaPlayerViewModel(
     fun getPlayerState(): LiveData<PlayerState> = playerState
     private val playlistState: MutableLiveData<PlaylistState> = MutableLiveData(PlaylistState.Empty)
     fun observePlaylistState(): LiveData<PlaylistState> = playlistState
-    private val addOrRemoveState: MutableLiveData<Int> = MutableLiveData<Int>()
-    fun observeAddOrRemoveState(): LiveData<Int> = addOrRemoveState
+    private val addOrRemoveState: MutableLiveData<AddedPlaylistState> =
+        MutableLiveData<AddedPlaylistState>()
+
+    fun observeAddOrRemoveState(): LiveData<AddedPlaylistState> = addOrRemoveState
     val previewUrl = song.previewUrl.trim()
 
     private val isFavourite = MutableLiveData(song.isFavourite)
@@ -92,9 +94,15 @@ class MediaPlayerViewModel(
         }
     }
 
-    fun addTrackToPlaylist(playlistId: Long, trackId: Long) {
+    fun addTrackToPlaylist(playlist: Playlist, trackId: Long) {
         viewModelScope.launch {
-            addOrRemoveState.postValue(playlistInteractor.addTrackToPlayList(playlistId, trackId))
+            addOrRemoveState.postValue(
+                AddedPlaylistState(
+                    playlist.name,
+                    playlistInteractor.addTrackToPlayList(playlist.id, trackId)
+                )
+            )
+            playlistInteractor.addPlaylistSong(song)
             getPlaylists()
         }
     }

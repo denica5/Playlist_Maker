@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface PlaylistDao {
@@ -19,7 +20,7 @@ interface PlaylistDao {
     suspend fun deletePlaylist(playlist: PlaylistEntity)
 
     @Query("SELECT * FROM playlist_table")
-    suspend fun getPlaylistList(): List<PlaylistEntity>
+     fun getPlaylistList(): Flow<List<PlaylistEntity>>
 
     @Query("SELECT * FROM playlist_table WHERE playlistId = :playlistId LIMIT 1")
     suspend fun getPlaylist(playlistId: Long): PlaylistEntity?
@@ -28,7 +29,7 @@ interface PlaylistDao {
     suspend fun addTrackToPlayList(playlistId: Long, trackId: Long): Int {
         val playlist = getPlaylist(playlistId) ?: return -1
         if (trackId in playlist.trackIds) {
-            removeTrackToPlayList(playlistId, trackId)
+
             return 0
         }
         val updateTracksIds = playlist.trackIds + trackId
