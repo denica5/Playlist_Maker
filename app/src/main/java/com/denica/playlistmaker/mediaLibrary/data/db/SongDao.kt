@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface SongDao {
@@ -15,7 +16,7 @@ interface SongDao {
     suspend fun deleteSongFromFavourite(song: SongEntity)
 
     @Query("SELECT * FROM song_table ORDER BY createAt ASC")
-    suspend fun getFavouriteSongs(): List<SongEntity>
+     fun getFavouriteSongs(): Flow<List<SongEntity>>
 
     @Query("SELECT trackId FROM song_table")
     suspend fun getFavouriteSongsIds(): List<Long>

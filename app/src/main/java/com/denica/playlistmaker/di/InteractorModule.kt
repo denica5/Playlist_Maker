@@ -1,5 +1,7 @@
 package com.denica.playlistmaker.di
 
+import com.denica.playlistmaker.mediaLibrary.domain.DbPlaylistInteractor
+import com.denica.playlistmaker.mediaLibrary.domain.DbPlaylistInteractorImpl
 import com.denica.playlistmaker.mediaLibrary.domain.DbSongInteractor
 import com.denica.playlistmaker.mediaLibrary.domain.DbSongInteractorImpl
 import com.denica.playlistmaker.search.domain.api.SearchHistoryInteractor
@@ -29,5 +31,8 @@ val interactorModule = module {
 
     factory<DbSongInteractor> {
         DbSongInteractorImpl(get())
+    }
+    factory<DbPlaylistInteractor> {
+        DbPlaylistInteractorImpl(get())
     }
 }

@@ -32,8 +32,7 @@ class TrackListAdapter(val onItemClickListener: (Song) -> Unit) :
     override fun onBindViewHolder(holder: TrackListViewHolder, position: Int) {
         holder.bind(itemList[position])
         holder.itemView.setOnClickListener {
-
-            onItemClickListener(itemList[holder.adapterPosition])
+            onItemClickListener(itemList[holder.bindingAdapterPosition])
 
         }
     }
@@ -51,7 +50,9 @@ class TrackListViewHolder(val binding: TrackItemBinding) : RecyclerView.ViewHold
     fun bind(songDto: Song) {
         Glide.with(itemView.context).load(songDto.artworkUrl100)
             .placeholder(R.drawable.ic_track_placeholder).centerCrop()
-            .transform(RoundedCorners(dpToPx(2f, itemView.context))).into(binding.trackImage)
+            .transform(RoundedCorners(dpToPx(2f, itemView.context)))
+            .skipMemoryCache(true)
+            .into(binding.trackImage)
         binding.trackName.text = songDto.trackName.trim()
         binding.trackArtistName.text = songDto.artistName.trim()
         binding.remainingTrackDurationMediaPlayer.text =

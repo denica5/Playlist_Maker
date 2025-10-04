@@ -5,8 +5,7 @@ import com.denica.playlistmaker.mediaLibrary.data.db.SongDbConverter
 import com.denica.playlistmaker.mediaLibrary.data.db.SongEntity
 import com.denica.playlistmaker.mediaLibrary.domain.DbSongRepository
 import com.denica.playlistmaker.search.domain.models.Song
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 
 class DbSongRepositoryImpl(
     private val songDao: SongDao,
@@ -21,10 +20,8 @@ class DbSongRepositoryImpl(
         songDao.deleteSongFromFavourite(songDbConverter.map(song))
     }
 
-    override fun getFavouriteSongs(): Flow<List<Song>> = flow {
-        val songs = songDao.getFavouriteSongs()
-        emit(convertFromFavouriteSongEntity(songs))
-    }
+    override  fun getFavouriteSongs() = songDao.getFavouriteSongs().map { convertFromFavouriteSongEntity(it) }
+
 
     override suspend fun getFavouriteSongsIds(): List<Long> {
         return songDao.getFavouriteSongsIds()
