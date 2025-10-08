@@ -13,7 +13,10 @@ import com.denica.playlistmaker.search.domain.models.Song
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class TrackListAdapter(val onItemClickListener: (Song) -> Unit) :
+class TrackListAdapter(
+    val onItemClickListener: (Song) -> Unit,
+    val onItemLongClickListener: (Song) -> Unit = {}
+) :
     RecyclerView.Adapter<TrackListViewHolder>() {
     var itemList: List<Song> = arrayListOf()
 
@@ -33,7 +36,10 @@ class TrackListAdapter(val onItemClickListener: (Song) -> Unit) :
         holder.bind(itemList[position])
         holder.itemView.setOnClickListener {
             onItemClickListener(itemList[holder.bindingAdapterPosition])
-
+        }
+        holder.itemView.setOnLongClickListener {
+            onItemLongClickListener(itemList[holder.bindingAdapterPosition])
+            true
         }
     }
 

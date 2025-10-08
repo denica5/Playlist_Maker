@@ -1,4 +1,4 @@
-package com.denica.playlistmaker.mediaLibrary.ui.playlist
+package com.denica.playlistmaker.mediaLibrary.ui.playlist.playlists
 
 import com.denica.playlistmaker.mediaLibrary.domain.Playlist
 

@@ -12,11 +12,13 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestOptions
 import com.denica.playlistmaker.R
 import com.denica.playlistmaker.databinding.FragmentMediaPlayerBinding
 import com.denica.playlistmaker.mediaLibrary.domain.Playlist
-import com.denica.playlistmaker.mediaLibrary.ui.playlist.PlaylistState
+import com.denica.playlistmaker.mediaLibrary.ui.playlist.playlists.PlaylistState
 import com.denica.playlistmaker.search.domain.models.Song
 import com.denica.playlistmaker.search.ui.SearchFragment
 import com.denica.playlistmaker.search.ui.TrackListViewHolder
@@ -84,6 +86,11 @@ class MediaPlayerFragment : BindingFragment<FragmentMediaPlayerBinding>() {
                         8f, binding.trackImageMediaPlayer.context
                     )
                 )
+            ).apply(
+                RequestOptions().diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(
+                        true
+                    )
             )
             .into(binding.trackImageMediaPlayer)
         binding.trackNameMediaPlayer.text = songDto.trackName

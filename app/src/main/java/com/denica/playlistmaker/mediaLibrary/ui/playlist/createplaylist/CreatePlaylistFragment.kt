@@ -1,4 +1,4 @@
-package com.denica.playlistmaker.mediaLibrary.ui.playlist
+package com.denica.playlistmaker.mediaLibrary.ui.playlist.createplaylist
 
 import android.content.ContentResolver
 import android.content.Context
@@ -16,26 +16,27 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.net.toUri
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestOptions
 import com.denica.playlistmaker.R
 import com.denica.playlistmaker.databinding.FragmentCreatePlaylistBinding
 import com.denica.playlistmaker.search.ui.TrackListViewHolder
 import com.denica.playlistmaker.utils.BindingFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.androidx.viewmodel.ext.android.getViewModel
 import java.io.File
 import java.io.FileOutputStream
-import kotlin.getValue
-import androidx.core.net.toUri
-import com.bumptech.glide.load.resource.bitmap.CenterCrop
 
+open class CreatePlaylistFragment : BindingFragment<FragmentCreatePlaylistBinding>() {
 
-class CreatePlaylistFragment : BindingFragment<FragmentCreatePlaylistBinding>() {
-    val viewModel by viewModel<CreatePlaylistViewModel>()
+    protected open lateinit var viewModel: CreatePlaylistViewModel
     lateinit var alert: MaterialAlertDialogBuilder
-    private val callback = object : OnBackPressedCallback(true) {
+    protected val callback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
 
             if (isShowAlert()) {
@@ -63,6 +64,9 @@ class CreatePlaylistFragment : BindingFragment<FragmentCreatePlaylistBinding>() 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        if (!::viewModel.isInitialized) {
+            viewModel = getViewModel<CreatePlaylistViewModel>()
+        }
         alert = MaterialAlertDialogBuilder(requireContext())
             .setTitle(getString(R.string.create_playlist_alert_title))
             .setMessage(getString(R.string.create_playlist_alert_message))
@@ -85,13 +89,19 @@ class CreatePlaylistFragment : BindingFragment<FragmentCreatePlaylistBinding>() 
             registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
                 if (uri != null) {
                     Glide.with(binding.createPlaylistImage).load(uri)
-                        .transform(CenterCrop(),
+                        .transform(
+                            CenterCrop(),
                             RoundedCorners(
-                                TrackListViewHolder.dpToPx(
+                                TrackListViewHolder.Companion.dpToPx(
                                     8f,
                                     binding.createPlaylistImage.context
                                 )
                             )
+                        ).apply(
+                            RequestOptions().diskCacheStrategy(DiskCacheStrategy.NONE)
+                                .skipMemoryCache(
+                                    true
+                                )
                         ).into(binding.createPlaylistImage)
                     viewModel.pickImage(uri)
                 } else {
@@ -138,7 +148,7 @@ class CreatePlaylistFragment : BindingFragment<FragmentCreatePlaylistBinding>() 
         }
     }
 
-    private fun isShowAlert(): Boolean {
+    protected fun isShowAlert(): Boolean {
 
 
         return binding.createPlaylistNameEditText.text?.isNotEmpty() ?: false
@@ -171,9 +181,12 @@ class CreatePlaylistFragment : BindingFragment<FragmentCreatePlaylistBinding>() 
     }
 
 
-    private fun saveToInternal(fileName: String, uri: Uri): String {
+    protected fun saveToInternal(fileName: String, uri: Uri): String {
         val file =
-            File(requireContext().getDir("playlistImages", Context.MODE_PRIVATE), "$fileName.jpg")
+            File(
+                requireContext().getDir(PLAYLIST_IMAGES_DIR_NAME, Context.MODE_PRIVATE),
+                "$fileName.jpg"
+            )
         val inputStream = requireContext().contentResolver.openInputStream(uri)
         val outputStream = FileOutputStream(file)
         BitmapFactory.decodeStream(inputStream)
@@ -182,6 +195,8 @@ class CreatePlaylistFragment : BindingFragment<FragmentCreatePlaylistBinding>() 
     }
 
     companion object {
+
+        const val PLAYLIST_IMAGES_DIR_NAME = "playlistImages"
 
         @JvmStatic
         fun newInstance(param1: String, param2: String) =

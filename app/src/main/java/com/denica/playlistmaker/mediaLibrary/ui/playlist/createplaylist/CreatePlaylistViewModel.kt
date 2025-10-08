@@ -1,4 +1,4 @@
-package com.denica.playlistmaker.mediaLibrary.ui.playlist
+package com.denica.playlistmaker.mediaLibrary.ui.playlist.createplaylist
 
 import android.net.Uri
 import androidx.lifecycle.LiveData
@@ -9,13 +9,16 @@ import com.denica.playlistmaker.mediaLibrary.domain.DbPlaylistInteractor
 import com.denica.playlistmaker.mediaLibrary.domain.Playlist
 import kotlinx.coroutines.launch
 
-class CreatePlaylistViewModel(val playlistInteractor: DbPlaylistInteractor) : ViewModel() {
+open class CreatePlaylistViewModel(open val playlistInteractor: DbPlaylistInteractor) :
+    ViewModel() {
 
-    private val isImagePicked: MutableLiveData<Pair<Boolean, String>> = MutableLiveData(Pair(false, ""))
+    protected open val isImagePicked: MutableLiveData<Pair<Boolean, String>> =
+        MutableLiveData(Pair(false, ""))
+
     fun isImagePicked(): LiveData<Pair<Boolean, String>> = isImagePicked
 
     fun pickImage(uri: Uri) {
-        isImagePicked.postValue(Pair(true, uri.toString()))
+        viewModelScope.launch { isImagePicked.postValue(Pair(true, uri.toString())) }
     }
 
     fun createPlaylist(name: String, description: String, imagePath: String): Playlist {

@@ -1,7 +1,6 @@
 package com.denica.playlistmaker.mediaLibrary.data.db
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
@@ -16,11 +15,11 @@ interface PlaylistDao {
     @Update
     suspend fun updatePlaylist(playlist: PlaylistEntity)
 
-    @Delete
-    suspend fun deletePlaylist(playlist: PlaylistEntity)
+    @Query("DELETE FROM playlist_table WHERE playlistId = :playlistId")
+    suspend fun deletePlaylist(playlistId: Long)
 
     @Query("SELECT * FROM playlist_table")
-     fun getPlaylistList(): Flow<List<PlaylistEntity>>
+    fun getPlaylistList(): Flow<List<PlaylistEntity>>
 
     @Query("SELECT * FROM playlist_table WHERE playlistId = :playlistId LIMIT 1")
     suspend fun getPlaylist(playlistId: Long): PlaylistEntity?

@@ -8,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.denica.playlistmaker.mediaLibrary.domain.DbPlaylistInteractor
 import com.denica.playlistmaker.mediaLibrary.domain.DbSongInteractor
 import com.denica.playlistmaker.mediaLibrary.domain.Playlist
-import com.denica.playlistmaker.mediaLibrary.ui.playlist.PlaylistState
+import com.denica.playlistmaker.mediaLibrary.ui.playlist.playlists.PlaylistState
 import com.denica.playlistmaker.search.domain.models.Song
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay

@@ -1,4 +1,4 @@
-package com.denica.playlistmaker.mediaLibrary.ui.playlist
+package com.denica.playlistmaker.mediaLibrary.ui.playlist.playlists
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -45,7 +45,9 @@ class PlaylistFragment : BindingFragment<FragmentPlaylistsBinding>() {
             viewLifecycleOwner.lifecycleScope,
             false
         ) { playlist ->
-
+            findNavController().navigate(
+                MediaLibraryFragmentDirections.actionMediaLibraryFragmentToPlaylistDetailFragment(playlist)
+            )
         }
         val adapter = PlaylistAdapter(onPlaylistDebounce)
         binding.playlistRecycler.adapter = adapter
@@ -78,6 +80,11 @@ class PlaylistFragment : BindingFragment<FragmentPlaylistsBinding>() {
     override fun onResume() {
         super.onResume()
         viewModel.getPlaylists()
+    }
+
+    override fun onStop() {
+        super.onStop()
+
     }
 
     companion object {
