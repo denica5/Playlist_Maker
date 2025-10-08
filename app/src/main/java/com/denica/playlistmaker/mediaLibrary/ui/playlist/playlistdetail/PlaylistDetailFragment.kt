@@ -184,11 +184,7 @@ class PlaylistDetailFragment : BindingFragment<FragmentPlaylistDetailBinding>() 
             )
         } else {
             binding.imagePlaylistDetail.setPadding(0)
-//            Glide.with(binding.imagePlaylistDetail)
-//                .load(uri)
-//                .placeholder(R.drawable.ic_track_placeholder)
-//                .transform(CenterCrop())
-//                .into(binding.imagePlaylistDetail)
+
             setGlide(
                 uri,
                 binding.imagePlaylistDetail,
