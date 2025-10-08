@@ -178,8 +178,28 @@
         <item name="android:layout_marginHorizontal">16dp</item>
     </style>
 
-    <style name="AlertTheme" parent="MaterialAlertDialog.Material3">
-        <item name="backgroundTint">?attr/colorSecondary</item>
+    <style name="AlertTheme">
+        <item name="buttonBarPositiveButtonStyle">@style/Alert.Button.Positive</item>
+        <item name="buttonBarNeutralButtonStyle">@style/Alert.Button.Neutral</item>
+        <item name="buttonBarNegativeButtonStyle">@style/Alert.Button.Negative</item>
+        <item name="android:background">@drawable/alert_dialog_background</item>
+        <item name="shapeAppearance">@style/RoundShapeAppearance</item>
+    </style>
+    <style name="Alert.Button.Positive" parent="Widget.MaterialComponents.Button.TextButton">
+
         <item name="android:textColor">@color/blue</item>
     </style>
+
+    <style name="Alert.Button.Neutral" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">@color/blue</item>
+    </style>
+    <style name="Alert.Button.Negative" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">@color/blue</item>
+    </style>
+    <style name="RoundShapeAppearance" parent="ShapeAppearance.MaterialComponents.MediumComponent">
+
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">4dp</item>
+    </style>
+
 </resources>

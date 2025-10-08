@@ -12,7 +12,7 @@ interface PlaylistSongDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun addPlaylistSong(playlistSongEntity: PlaylistSongEntity)
 
-    @Query("SELECT * FROM playlist_song_table WHERE trackId IN (:tracksIds)")
+    @Query("SELECT * FROM playlist_song_table WHERE trackId IN (:tracksIds) ORDER BY createAt DESC")
     fun getPlaylistSongsByIds(tracksIds: List<Long>): Flow<List<PlaylistSongEntity>>
 
     @Query("DELETE FROM playlist_song_table WHERE trackId = :trackId")

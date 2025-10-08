@@ -1,10 +1,12 @@
 package com.denica.playlistmaker.mediaLibrary.ui.playlist.playlistdetail
 
 import android.content.Intent
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.core.view.isVisible
@@ -14,6 +16,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.MultiTransformation
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
@@ -68,9 +71,7 @@ class PlaylistDetailFragment : BindingFragment<FragmentPlaylistDetailBinding>() 
         viewModel = getViewModel<PlaylistDetailViewModel>(
             parameters = { parametersOf(playlistViewModel) }
         )
-        binding.arrowBackPlaylistDetail.setOnClickListener {
-            findNavController().navigateUp()
-        }
+
         overflowMenuBottomSheetBehavior =
             BottomSheetBehavior.from(binding.overflowMenuBottomSheetPlaylistDetail).apply {
                 state =
@@ -110,41 +111,7 @@ class PlaylistDetailFragment : BindingFragment<FragmentPlaylistDetailBinding>() 
             )
 
         }
-        viewModel.getPlaylistState().observe(viewLifecycleOwner) { playlist ->
-            setImagePlaylistOverflowMenu(playlist.imagePath)
-            binding.playlistNameOverflowMenuBottomSheetPlaylistDetail.text = playlist.name
-            setImagePlaylistDetail(uri = playlist.imagePath)
-            binding.namePlaylistDetail.text = playlist.name
-            binding.descriptionPlaylistDetail.text = playlist.description
-            binding.deletePlaylistTextOverflowMenuBottomSheetPlaylistDetail.setOnClickListener {
-                overflowMenuBottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-                MaterialAlertDialogBuilder(requireContext())
-                    .setTitle(
-                        getString(
-                            R.string.delete_playlist_alert_playlist_detail,
-                            playlist.name
-                        )
-                    )
-                    .setNegativeButton("Нет") { dialog, which ->
-                        dialog.cancel()
-                    }
-                    .setPositiveButton("Да") { dialog, which ->
-                        viewModel.deletePlaylist()
-                        viewLifecycleOwner.lifecycleScope.launch {
-                            viewModel.navigateUpEvent.collect {
-                                findNavController().navigateUp()
-                            }
-                        }
-                    }.show()
-            }
-            binding.editTextOverflowMenuBottomSheetPlaylistDetail.setOnClickListener {
-                findNavController().navigate(
-                    PlaylistDetailFragmentDirections.actionPlaylistDetailFragmentToEditPlaylistFragment(
-                        playlist
-                    )
-                )
-            }
-        }
+        setupUI()
 
 
         val onSongLongClickDebounce = debounce<Song>(
@@ -152,7 +119,7 @@ class PlaylistDetailFragment : BindingFragment<FragmentPlaylistDetailBinding>() 
             viewLifecycleOwner.lifecycleScope,
             false
         ) { song ->
-            MaterialAlertDialogBuilder(requireContext())
+            MaterialAlertDialogBuilder(requireContext(), R.style.AlertTheme)
                 .setTitle(getString(R.string.delete_track_from_playlist_alert_playlist_detail))
                 .setNegativeButton("Нет") { dialog, which ->
                     dialog.cancel()
@@ -168,110 +135,16 @@ class PlaylistDetailFragment : BindingFragment<FragmentPlaylistDetailBinding>() 
             requireContext(),
             LinearLayoutManager.VERTICAL, false
         )
-        viewModel.getPlaylistSongState().observe(viewLifecycleOwner) { content ->
-            when (content) {
-                is PlaylistSongState.Content -> {
-                    adapter.itemList = content.data
-                    adapter.notifyDataSetChanged()
-                    binding.allTracksDurationPlaylistDetail.text = getString(
-                        R.string.all_tracks_duration_playlist_detail,
-                        content.allTracksDuration
-                    )
-                    binding.tracksCountPaylistDetail.text =
-                        MediaPlayerBottomBehaviorViewHolder.pluralizeTracks(
-                            content.data.size,
-                            requireContext()
-                        )
-                    binding.playlistTracksCountOverflowMenuBottomSheetPlaylistDetail.text =
-                        MediaPlayerBottomBehaviorViewHolder.pluralizeTracks(
-                            content.data.size,
-                            requireContext()
-                        )
-                    viewModel.getPlaylistState().observe(viewLifecycleOwner) { playlist ->
-                        binding.icSharePlaylistDetail.setOnClickListener {
-                            shareIntent(content.data, playlist.name)
-                        }
-                        binding.shareTextOverflowMenuBottomSheetPlaylistDetail.setOnClickListener {
-                            shareIntent(content.data, playlist.name)
-                        }
-                    }
-                }
 
-                PlaylistSongState.Empty -> {
-                    adapter.itemList = emptyList()
-                    adapter.notifyDataSetChanged()
-                    binding.allTracksDurationPlaylistDetail.text = getString(
-                        R.string.all_tracks_duration_playlist_detail,
-                        "0"
-                    )
-                    binding.tracksCountPaylistDetail.text =
-                        getString(R.string.tracks_count_playlist_detail, 0)
-                    binding.playlistTracksCountOverflowMenuBottomSheetPlaylistDetail.text =
-                        getString(R.string.tracks_count_playlist_detail, 0)
-                    binding.icSharePlaylistDetail.setOnClickListener {
-                        Toast.makeText(
-                            requireContext(),
-                            getString(R.string.playlist_dont_have_tracks_playlist_detail),
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-
-                    binding.shareTextOverflowMenuBottomSheetPlaylistDetail.setOnClickListener {
-                        Toast.makeText(
-                            requireContext(),
-                            getString(R.string.playlist_dont_have_tracks_playlist_detail),
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
-
-                PlaylistSongState.Loading -> {
-                    binding.allTracksDurationPlaylistDetail.text = getString(
-                        R.string.all_tracks_duration_playlist_detail,
-                        "0"
-                    )
-                    binding.tracksCountPaylistDetail.text =
-                        getString(R.string.tracks_count_playlist_detail, 0)
-                }
-            }
-        }
-
-
-        binding.icOverflowMenuPlaylistDetail.setOnClickListener {
-            overflowMenuBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-        }
-
+        setupChangedUI(adapter)
 
     }
 
-    fun setImagePlaylistOverflowMenu(uri: String) {
-        Glide.with(binding.imageOverflowMenuBottomSheetPlaylistDetail)
-            .load(uri)
-            .placeholder(R.drawable.ic_track_placeholder)
-            .transform(
-                CenterCrop(),
-                RoundedCorners(
-                    dpToPx(
-                        2f,
-                        binding.imageOverflowMenuBottomSheetPlaylistDetail.context
-                    )
-                )
-            ).apply(
-                RequestOptions().diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .skipMemoryCache(
-                        true
-                    )
-            )
-            .into(binding.imageOverflowMenuBottomSheetPlaylistDetail)
-    }
 
     fun shareIntent(songs: List<Song>, playlistName: String) {
         val value = StringBuilder().append(playlistName).append("\n")
             .append(
-                getString(
-                    R.string.tracks_count_playlist_detail,
-                    songs.size
-                )
+                MediaPlayerBottomBehaviorViewHolder.pluralizeTracks(songs.size, requireContext())
             ).append("\n")
         songs.forEachIndexed { index, song ->
             value.append(
@@ -303,36 +176,163 @@ class PlaylistDetailFragment : BindingFragment<FragmentPlaylistDetailBinding>() 
                     R.dimen.image_padding
                 )
             )
-            Glide.with(binding.imagePlaylistDetail)
-                .asDrawable()
-                .load(uri)
-                .placeholder(R.drawable.ic_track_placeholder)
-                .transform(CenterCrop())
-                .apply(
-                    RequestOptions().diskCacheStrategy(DiskCacheStrategy.NONE)
-                        .skipMemoryCache(
-                            true
-                        )
-                )
-                .into(binding.imagePlaylistDetail)
+            setGlide(
+                uri,
+                binding.imagePlaylistDetail,
+                MultiTransformation(CenterCrop()),
+                R.drawable.ic_track_placeholder
+            )
         } else {
             binding.imagePlaylistDetail.setPadding(0)
-            Glide.with(binding.imagePlaylistDetail)
-                .load(uri)
-                .placeholder(R.drawable.ic_track_placeholder)
-                .transform(CenterCrop())
-                .apply(
-                    RequestOptions().diskCacheStrategy(DiskCacheStrategy.NONE)
-                        .skipMemoryCache(
-                            true
-                        )
-                )
-                .into(binding.imagePlaylistDetail)
+//            Glide.with(binding.imagePlaylistDetail)
+//                .load(uri)
+//                .placeholder(R.drawable.ic_track_placeholder)
+//                .transform(CenterCrop())
+//                .into(binding.imagePlaylistDetail)
+            setGlide(
+                uri,
+                binding.imagePlaylistDetail,
+                MultiTransformation(CenterCrop()),
+                R.drawable.ic_track_placeholder
+            )
         }
+    }
+
+    fun setupChangedUI(adapter: TrackListAdapter) {
+        viewModel.getPlaylistSongState().observe(viewLifecycleOwner) { content ->
+            when (content) {
+                is PlaylistSongState.Content -> {
+                    adapter.itemList = content.data
+                    adapter.notifyDataSetChanged()
+                    binding.allTracksDurationPlaylistDetail.text = getString(
+                        R.string.all_tracks_duration_playlist_detail,
+                        content.allTracksDuration
+                    )
+                    binding.tracksCountPaylistDetail.text =
+                        MediaPlayerBottomBehaviorViewHolder.pluralizeTracks(
+                            content.data.size,
+                            requireContext()
+                        )
+                    binding.playlistTracksCountOverflowMenuBottomSheetPlaylistDetail.text =
+                        MediaPlayerBottomBehaviorViewHolder.pluralizeTracks(
+                            content.data.size,
+                            requireContext()
+                        )
+                    viewModel.getPlaylistState().observe(viewLifecycleOwner) { playlist ->
+                        binding.icSharePlaylistDetail.setOnClickListener {
+                            shareIntent(content.data, playlist.name)
+                        }
+                        binding.sharePlaylistOverflowMenuBottomSheetPlaylistDetail.setOnClickListener {
+                            shareIntent(content.data, playlist.name)
+                        }
+                    }
+                    binding.bottomBehaviorPlaylistsRecycle.isVisible = true
+                    binding.emptyTracksPlaceholderBottomSheetPlaylistDetail.isVisible = false
+                }
+
+                PlaylistSongState.Empty -> {
+                    adapter.itemList = emptyList()
+                    adapter.notifyDataSetChanged()
+                    binding.allTracksDurationPlaylistDetail.text = getString(
+                        R.string.all_tracks_duration_playlist_detail,
+                        "0"
+                    )
+                    binding.tracksCountPaylistDetail.text =
+                        getString(R.string.tracks_count_playlist_detail, 0)
+                    binding.playlistTracksCountOverflowMenuBottomSheetPlaylistDetail.text =
+                        getString(R.string.tracks_count_playlist_detail, 0)
+                    binding.icSharePlaylistDetail.setOnClickListener {
+                        Toast.makeText(
+                            requireContext(),
+                            getString(R.string.playlist_dont_have_tracks_playlist_detail),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+
+                    binding.sharePlaylistOverflowMenuBottomSheetPlaylistDetail.setOnClickListener {
+                        Toast.makeText(
+                            requireContext(),
+                            getString(R.string.playlist_dont_have_tracks_playlist_detail),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    binding.bottomBehaviorPlaylistsRecycle.isVisible = false
+                    binding.emptyTracksPlaceholderBottomSheetPlaylistDetail.isVisible = true
+                }
+
+                PlaylistSongState.Loading -> {
+                    binding.allTracksDurationPlaylistDetail.text = getString(
+                        R.string.all_tracks_duration_playlist_detail,
+                        "0"
+                    )
+                    binding.tracksCountPaylistDetail.text =
+                        getString(R.string.tracks_count_playlist_detail, 0)
+                }
+            }
+        }
+    }
+
+    fun setupUI() {
+        binding.icOverflowMenuPlaylistDetail.setOnClickListener {
+            overflowMenuBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        }
+        binding.arrowBackPlaylistDetail.setOnClickListener {
+            findNavController().navigateUp()
+        }
+        viewModel.getPlaylistState().observe(viewLifecycleOwner) { playlist ->
+            setGlide(
+                playlist.imagePath, binding.imageOverflowMenuBottomSheetPlaylistDetail,
+                MultiTransformation(
+                    CenterCrop(),
+                    RoundedCorners(
+                        dpToPx(
+                            2f,
+                            binding.imageOverflowMenuBottomSheetPlaylistDetail.context
+                        )
+                    )
+                ),
+                R.drawable.ic_track_placeholder
+            )
+
+            binding.playlistNameOverflowMenuBottomSheetPlaylistDetail.text = playlist.name
+            setImagePlaylistDetail(uri = playlist.imagePath)
+            binding.namePlaylistDetail.text = playlist.name
+            binding.descriptionPlaylistDetail.text = playlist.description
+            binding.deletePlaylistOverflowMenuBottomSheetPlaylistDetail.setOnClickListener {
+                overflowMenuBottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+                MaterialAlertDialogBuilder(requireContext(), R.style.AlertTheme)
+                    .setTitle(
+                        getString(
+                            R.string.delete_playlist_alert_playlist_detail,
+                            playlist.name
+                        )
+                    )
+                    .setNegativeButton(getString(R.string.negative_button_alert_playlist_detail)) { dialog, which ->
+                        dialog.cancel()
+                    }
+                    .setPositiveButton(getString(R.string.positive_button_alert_playlist_detail)) { dialog, which ->
+                        viewModel.deletePlaylist()
+                        viewLifecycleOwner.lifecycleScope.launch {
+                            viewModel.navigateUpEvent.collect {
+                                findNavController().navigateUp()
+                            }
+                        }
+                    }.show()
+            }
+            binding.editPlaylistOverflowMenuBottomSheetPlaylistDetail.setOnClickListener {
+                findNavController().navigate(
+                    PlaylistDetailFragmentDirections.actionPlaylistDetailFragmentToEditPlaylistFragment(
+                        playlist
+                    )
+                )
+            }
+        }
+
     }
 
     override fun onResume() {
         super.onResume()
+        viewModel.getPlaylistToUpdateUI()
         overflowMenuBottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
     }
 
@@ -348,5 +348,26 @@ class PlaylistDetailFragment : BindingFragment<FragmentPlaylistDetailBinding>() 
         fun newInstance() = PlaylistDetailFragment().apply {
 
         }
+
+        fun setGlide(
+            uri: String,
+            bindingImage: ImageView,
+            transformation: MultiTransformation<Bitmap>,
+            placeHolder: Int
+        ) {
+
+            Glide.with(bindingImage)
+                .load(uri)
+                .placeholder(placeHolder)
+                .transform(transformation)
+                .apply(
+                    RequestOptions().diskCacheStrategy(DiskCacheStrategy.NONE)
+                        .skipMemoryCache(
+                            true
+                        )
+                )
+                .into(bindingImage)
+        }
     }
+
 }
