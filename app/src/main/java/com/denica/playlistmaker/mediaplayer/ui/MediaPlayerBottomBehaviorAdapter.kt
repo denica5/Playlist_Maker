@@ -5,8 +5,10 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestOptions
 import com.denica.playlistmaker.R
 import com.denica.playlistmaker.databinding.BottomBehaviorPlaylistItemBinding
 import com.denica.playlistmaker.mediaLibrary.domain.Playlist
@@ -54,6 +56,11 @@ class MediaPlayerBottomBehaviorViewHolder(val binding: BottomBehaviorPlaylistIte
             .transform(
                 CenterCrop(),
                 RoundedCorners(TrackListViewHolder.dpToPx(2f, itemView.context))
+            ).apply(
+                RequestOptions().diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(
+                        true
+                    )
             )
             .into(binding.playlistImage)
 
@@ -79,6 +86,7 @@ class MediaPlayerBottomBehaviorViewHolder(val binding: BottomBehaviorPlaylistIte
                     R.string.playlist_track_pluralize_2_4,
                     tracksCounts
                 )
+
                 else -> context.getString(R.string.playlist_track_pluralize_last, tracksCounts)
             }
         }

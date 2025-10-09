@@ -31,6 +31,9 @@
         <action
             android:id="@+id/action_mediaLibraryFragment_to_createPlaylistFragment"
             app:destination="@id/createPlaylistFragment" />
+        <action
+            android:id="@+id/action_mediaLibraryFragment_to_playlistDetailFragment"
+            app:destination="@id/playlistDetailFragment" />
     </fragment>
     <fragment
         android:id="@+id/mediaPlayerFragment"
@@ -46,8 +49,31 @@
     </fragment>
     <fragment
         android:id="@+id/createPlaylistFragment"
-        android:name="com.denica.playlistmaker.mediaLibrary.ui.playlist.CreatePlaylistFragment"
+        android:name="com.denica.playlistmaker.mediaLibrary.ui.playlist.createplaylist.CreatePlaylistFragment"
         android:label="fragment_create_playlist"
         tools:layout="@layout/fragment_create_playlist" />
+    <fragment
+        android:id="@+id/playlistDetailFragment"
+        android:name="com.denica.playlistmaker.mediaLibrary.ui.playlist.playlistdetail.PlaylistDetailFragment"
+        android:label="fragment_playlist_detail"
+        tools:layout="@layout/fragment_playlist_detail" >
+        <argument
+            android:name="Playlist"
+            app:argType="com.denica.playlistmaker.mediaLibrary.domain.Playlist" />
+        <action
+            android:id="@+id/action_playlistDetailFragment_to_mediaPlayerFragment"
+            app:destination="@id/mediaPlayerFragment" />
+        <action
+            android:id="@+id/action_playlistDetailFragment_to_editPlaylistFragment"
+            app:destination="@id/editPlaylistFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/editPlaylistFragment"
+        android:name="com.denica.playlistmaker.mediaLibrary.ui.playlist.EditPlaylistFragment"
+        android:label="EditPlaylistFragment" >
+        <argument
+            android:name="playlist"
+            app:argType="com.denica.playlistmaker.mediaLibrary.domain.Playlist" />
+    </fragment>
 
 </navigation>

@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     style="@style/MainLayout"
+
     tools:context=".main.ui.MainActivity">
 
     <androidx.fragment.app.FragmentContainerView

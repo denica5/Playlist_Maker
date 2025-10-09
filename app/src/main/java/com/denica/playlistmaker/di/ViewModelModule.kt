@@ -1,9 +1,12 @@
 package com.denica.playlistmaker.di
 
 import android.media.MediaPlayer
+import com.denica.playlistmaker.mediaLibrary.domain.Playlist
 import com.denica.playlistmaker.mediaLibrary.ui.favouriteTracks.FavouriteTracksViewModel
-import com.denica.playlistmaker.mediaLibrary.ui.playlist.CreatePlaylistViewModel
-import com.denica.playlistmaker.mediaLibrary.ui.playlist.PlaylistViewModel
+import com.denica.playlistmaker.mediaLibrary.ui.playlist.createplaylist.CreatePlaylistViewModel
+import com.denica.playlistmaker.mediaLibrary.ui.playlist.EditPlaylistViewmodel
+import com.denica.playlistmaker.mediaLibrary.ui.playlist.playlistdetail.PlaylistDetailViewModel
+import com.denica.playlistmaker.mediaLibrary.ui.playlist.playlists.PlaylistViewModel
 import com.denica.playlistmaker.mediaplayer.ui.MediaPlayerViewModel
 import com.denica.playlistmaker.search.domain.models.Song
 import com.denica.playlistmaker.search.ui.SearchViewModel
@@ -30,5 +33,11 @@ val viewModelModule = module {
     }
     viewModel {
         CreatePlaylistViewModel(get())
+    }
+    viewModel { (playlist: Playlist) ->
+        PlaylistDetailViewModel(get(), playlist)
+    }
+    viewModel {(playlist: Playlist) ->
+        EditPlaylistViewmodel(get(), playlist)
     }
 }

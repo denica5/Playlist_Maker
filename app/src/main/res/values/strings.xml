@@ -50,4 +50,17 @@
     <string name="playlist_track_pluralize_2_4">%1$d трека</string>
     <string name="playlist_track_pluralize_last">%1$d треков</string>
     <string name="media_player_track_already_in_playlist">Трек Уже Добавлен в плейлист %1$s</string>
+    <string name="all_tracks_duration_playlist_detail">%1$s минут</string>
+    <string name="tracks_count_playlist_detail">%1$d треков</string>
+    <string name="playlist_dont_have_tracks_playlist_detail">В этом плейлисте нет списка треков, которым можно поделиться</string>
+    <string name="share_playlist_fragment">Поделиться</string>
+    <string name="edit_text_overflow_menu_bottom_sheet_playlist_detail">Редактировать информацию</string>
+    <string name="delete_playlist_overflow_menu_bottom_sheet_playlist_detail">Удалить плейлист</string>
+    <string name="delete_track_from_playlist_alert_playlist_detail">Хотите удалить трек?</string>
+    <string name="delete_playlist_alert_playlist_detail">Хотите удалить плейлист «%1$s»?</string>
+    <string name="playlist_header_edit_edit_fragment">Редактировать</string>
+    <string name="save_edit_playlist_button_edit_fragment">Сохранить</string>
+    <string name="negative_button_alert_playlist_detail">Нет</string>
+    <string name="positive_button_alert_playlist_detail">Да</string>
+    <string name="empty_tracks_placeholder_bottom_sheet_playlist_detail">В этом плейлисте нету треков</string>
 </resources>

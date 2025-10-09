@@ -12,7 +12,7 @@ class Converters {
     }
 
     @TypeConverter
-    fun fromTrackIdList(value: String): List<Long> {
+    fun toTrackIdList(value: String): List<Long> {
         val type = object : TypeToken<List<Long>>() {}.type
         return Gson().fromJson(value, type)
     }
