@@ -98,7 +98,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/track_artist_name_media_player"
                 app:srcCompat="@drawable/ic_add_to_playlist" />
 
-            <ImageButton
+            <com.denica.playlistmaker.mediaplayer.ui.PlaybackButtonView
                 android:id="@+id/play_track_media_player"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
@@ -106,10 +106,12 @@
                 android:backgroundTint="?attr/colorSecondary"
                 android:elevation="0dp"
                 android:stateListAnimator="@null"
+                app:imagePlayResId="@drawable/ic_play_track"
+                app:imageStopResId="@drawable/ic_stop_track"
                 app:layout_constraintEnd_toStartOf="@id/add_to_favourite_track_media_player"
                 app:layout_constraintStart_toEndOf="@id/add_to_playlist_media_player"
                 app:layout_constraintTop_toBottomOf="@+id/track_artist_name_media_player"
-                app:srcCompat="@drawable/ic_play_track" />
+                />
 
             <ImageButton
                 android:id="@+id/add_to_favourite_track_media_player"
