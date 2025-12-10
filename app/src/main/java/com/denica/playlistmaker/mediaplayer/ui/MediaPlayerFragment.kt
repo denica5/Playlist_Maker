@@ -104,7 +104,7 @@ class MediaPlayerFragment : BindingFragment<FragmentMediaPlayerBinding>() {
         binding.addToPlaylistMediaPlayer.setOnClickListener {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         }
-        binding.playTrackMediaPlayer.setOnClickListener {
+        binding.playTrackMediaPlayer.onToggle =  {
             viewModel.onPlayButtonClicked()
         }
         binding.arrowBackMediaPlayer.setOnClickListener {
@@ -115,30 +115,23 @@ class MediaPlayerFragment : BindingFragment<FragmentMediaPlayerBinding>() {
             .observe(viewLifecycleOwner) {
                 when (it) {
                     is PlayerState.Default -> {
-                        binding.playTrackMediaPlayer.setImageResource(
-                            R.drawable.ic_play_track
-                        )
+
                         binding.remainingTrackDurationMediaPlayer.text = it.progress
                     }
 
                     is PlayerState.Prepared -> {
-                        binding.playTrackMediaPlayer.setImageResource(
-                            R.drawable.ic_play_track
-                        )
                         binding.remainingTrackDurationMediaPlayer.text = it.progress
+                        binding.playTrackMediaPlayer.setPlayState(false)
+
                     }
 
                     is PlayerState.Playing -> {
-                        binding.playTrackMediaPlayer.setImageResource(
-                            R.drawable.ic_stop_track
-                        )
+
                         binding.remainingTrackDurationMediaPlayer.text = it.progress
                     }
 
                     is PlayerState.Paused -> {
-                        binding.playTrackMediaPlayer.setImageResource(
-                            R.drawable.ic_play_track
-                        )
+
                         binding.remainingTrackDurationMediaPlayer.text = it.progress
                     }
 
