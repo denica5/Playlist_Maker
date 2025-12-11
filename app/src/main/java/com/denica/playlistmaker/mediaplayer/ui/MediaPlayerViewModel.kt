@@ -1,6 +1,5 @@
 package com.denica.playlistmaker.mediaplayer.ui
 
-import android.media.MediaPlayer
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,23 +8,21 @@ import com.denica.playlistmaker.mediaLibrary.domain.DbPlaylistInteractor
 import com.denica.playlistmaker.mediaLibrary.domain.DbSongInteractor
 import com.denica.playlistmaker.mediaLibrary.domain.Playlist
 import com.denica.playlistmaker.mediaLibrary.ui.playlist.playlists.PlaylistState
+import com.denica.playlistmaker.mediaplayer.musicService.IMusicService
 import com.denica.playlistmaker.search.domain.models.Song
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 class MediaPlayerViewModel(
     private val song: Song,
-    private val mediaPlayer: MediaPlayer,
     private val dbSongInteractor: DbSongInteractor,
     private val playlistInteractor: DbPlaylistInteractor
 ) : ViewModel() {
 
-
-    private val playerState = MutableLiveData<PlayerState>(PlayerState.Default())
-    fun getPlayerState(): LiveData<PlayerState> = playerState
+    private var service: IMusicService? = null
+    private val playerState = MutableStateFlow<PlayerState>(PlayerState.Default())
+    fun getPlayerState(): StateFlow<PlayerState> = playerState
     private val playlistState: MutableLiveData<PlaylistState> = MutableLiveData(PlaylistState.Empty)
     fun observePlaylistState(): LiveData<PlaylistState> = playlistState
     private val addOrRemoveState: MutableLiveData<AddedPlaylistState> =
@@ -36,23 +33,9 @@ class MediaPlayerViewModel(
 
     private val isFavourite = MutableLiveData(song.isFavourite)
     fun getFavourite(): LiveData<Boolean> = isFavourite
-    private val dateFormat by lazy { SimpleDateFormat("mm:ss", Locale.getDefault()) }
-    private var timerJob: Job? = null
-    private fun startTimer() {
-        timerJob = viewModelScope.launch {
-            while (mediaPlayer.isPlaying) {
-                delay(300L)
-                playerState.postValue(PlayerState.Playing(getCurrentPlayerPosition()))
-            }
-
-        }
-    }
-
 
     init {
-        if (previewUrl != "") {
-            initMediaPlayer()
-        }
+
         getPlaylists()
     }
 
@@ -70,17 +53,13 @@ class MediaPlayerViewModel(
         }
     }
 
-    private fun initMediaPlayer() {
-        mediaPlayer.setDataSource(previewUrl)
-        mediaPlayer.prepareAsync()
-        mediaPlayer.setOnPreparedListener {
-            playerState.postValue(
-                PlayerState.Prepared()
-            )
-        }
-        mediaPlayer.setOnCompletionListener {
-            timerJob?.cancel()
-            playerState.postValue(PlayerState.Prepared())
+    fun onServiceConnected(service: IMusicService) {
+        this.service = service
+
+        viewModelScope.launch {
+            service.playerState.collect {
+                playerState.value = it
+            }
         }
     }
 
@@ -119,42 +98,34 @@ class MediaPlayerViewModel(
         playlistState.postValue(state)
     }
 
-    private fun startPlayer() {
-        mediaPlayer.start()
-        playerState.postValue(PlayerState.Playing(getCurrentPlayerPosition()))
-        startTimer()
-    }
 
-    private fun pausePlayer() {
-        mediaPlayer.pause()
-        timerJob?.cancel()
-        playerState.postValue(PlayerState.Paused(getCurrentPlayerPosition()))
-    }
 
-    private fun releasePlayer() {
-        mediaPlayer.stop()
-        mediaPlayer.release()
-        playerState.value = PlayerState.Default()
-    }
+
+
+
 
     fun onPlayButtonClicked() {
         when (playerState.value) {
             is PlayerState.Playing -> {
-                pausePlayer()
+                service?.pausePlayer()
             }
 
             is PlayerState.Prepared, is PlayerState.Paused -> {
-                startPlayer()
+                service?.startPlayer()
             }
 
             else -> {}
         }
     }
 
-    private fun getCurrentPlayerPosition(): String {
-        return dateFormat.format(mediaPlayer.currentPosition)
-            ?: "00:00"
+    fun showNotification() {
+        service?.showNotification()
     }
+    fun hideNotification() {
+        service?.hideNotification()
+    }
+
+
 
     companion object {
 
@@ -163,7 +134,7 @@ class MediaPlayerViewModel(
 
     override fun onCleared() {
         super.onCleared()
-        releasePlayer()
+
     }
 }
 
