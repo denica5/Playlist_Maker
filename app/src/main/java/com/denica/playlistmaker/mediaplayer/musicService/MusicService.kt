@@ -26,10 +26,7 @@ import java.util.Locale
 
 class MusicService : Service(), IMusicService {
 
-    companion object {
-        const val NOTIFICATION_CHANNEL_ID = "music_service_channel"
-        const val SERVICE_NOTIFICATION_ID = 100
-    }
+
 
     private val dateFormat by lazy { SimpleDateFormat("mm:ss", Locale.getDefault()) }
 
@@ -52,9 +49,13 @@ class MusicService : Service(), IMusicService {
         return binder
     }
 
+    override fun onUnbind(intent: Intent?): Boolean {
+
+        return super.onUnbind(intent)
+    }
+
     override fun onCreate() {
         super.onCreate()
-        mediaPlayer = MediaPlayer()
         createNotificationChannel()
     }
 
@@ -71,9 +72,10 @@ class MusicService : Service(), IMusicService {
     }
 
     private fun startTimer() {
+        timerJob?.cancel()
         timerJob = CoroutineScope(Dispatchers.Default).launch {
             while (mediaPlayer?.isPlaying == true) {
-                delay(300L)
+                delay(REMAINING_TIMER_DELAY)
                 _playerState.value = PlayerState.Playing(getCurrentPlayerPosition())
             }
 
@@ -93,21 +95,27 @@ class MusicService : Service(), IMusicService {
     }
 
     private fun releasePlayer() {
-        mediaPlayer?.stop()
-        mediaPlayer?.release()
         _playerState.value = PlayerState.Default()
+        timerJob?.cancel()
+        mediaPlayer?.stop()
+        mediaPlayer?.setOnPreparedListener(null)
+        mediaPlayer?.setOnCompletionListener(null)
+        mediaPlayer?.release()
+
     }
 
     private fun initMediaPlayer() {
-        mediaPlayer?.setDataSource(previewUrl)
-        mediaPlayer?.prepareAsync()
-        mediaPlayer?.setOnPreparedListener {
-            _playerState.value = PlayerState.Prepared()
-
-        }
-        mediaPlayer?.setOnCompletionListener {
-            timerJob?.cancel()
-            _playerState.value = PlayerState.Prepared()
+        releasePlayer()
+        mediaPlayer = MediaPlayer().apply {
+            setDataSource(previewUrl)
+            setOnPreparedListener {
+                _playerState.value = PlayerState.Prepared()
+            }
+            setOnCompletionListener {
+                timerJob?.cancel()
+                _playerState.value = PlayerState.Prepared()
+            }
+            prepareAsync()
         }
     }
 
@@ -127,8 +135,9 @@ class MusicService : Service(), IMusicService {
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         releasePlayer()
+        super.onDestroy()
+
     }
 
     private fun getCurrentPlayerPosition(): String {
@@ -141,11 +150,17 @@ class MusicService : Service(), IMusicService {
 
     private fun createServiceNotification(): Notification {
         return NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
-            .setContentTitle(artistName)
-            .setContentText(trackName)
+            .setContentTitle(getString(R.string.app_name))
+            .setContentText("$artistName - $trackName")
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setCategory(NotificationCompat.CATEGORY_SERVICE)
             .build()
+    }
+    companion object {
+        const val NOTIFICATION_CHANNEL_ID = "music_service_channel"
+        const val SERVICE_NOTIFICATION_ID = 100
+        const val REMAINING_TIMER_DELAY = 300L
+
     }
 }

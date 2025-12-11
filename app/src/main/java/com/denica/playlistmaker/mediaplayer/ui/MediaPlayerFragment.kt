@@ -5,6 +5,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
@@ -63,8 +64,6 @@ class MediaPlayerFragment : BindingFragment<FragmentMediaPlayerBinding>() {
         ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
         if (isGranted) {
-            // Если выдали разрешение — запускаем сервис.
-            viewModel.showNotification()
         } else {
 
             Toast.makeText(requireContext(), "Can't start foreground service!", Toast.LENGTH_LONG)
@@ -151,6 +150,7 @@ class MediaPlayerFragment : BindingFragment<FragmentMediaPlayerBinding>() {
         }
         binding.playTrackMediaPlayer.onToggle = {
             viewModel.onPlayButtonClicked()
+            showForegroundNotificationIfNeeded()
         }
         binding.arrowBackMediaPlayer.setOnClickListener {
             findNavController().navigateUp()
@@ -277,37 +277,56 @@ class MediaPlayerFragment : BindingFragment<FragmentMediaPlayerBinding>() {
     }
 
     override fun onResume() {
+
         super.onResume()
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
     }
 
     override fun onPause() {
-        super.onPause()
-        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
 
+        super.onPause()
+
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
     }
 
     override fun onStop() {
+
         super.onStop()
-        if (viewModel.getPlayerState().value is PlayerState.Playing) {
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-            } else {
-                // На версиях ниже Android 13 —
-                // можно сразу стартовать сервис.
-                viewModel.showNotification()
-            }
+        if (viewModel.getPlayerState().value is PlayerState.Playing && requireContext().checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) ==
+            PackageManager.PERMISSION_GRANTED
+        ) {
+            viewModel.showNotification()
         }
+
     }
 
     override fun onStart() {
         super.onStart()
-        viewModel.hideNotification()
+            musicService?.hideNotification()
+
+
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
         unbindMusicService()
+        super.onDestroyView()
+
+    }
+
+    private fun showForegroundNotificationIfNeeded() {
+
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val granted =
+                requireContext().checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) ==
+                        PackageManager.PERMISSION_GRANTED
+
+            if (!granted) {
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                return
+            }
+        }
+
     }
 
     private fun bindMusicService(songDto: Song) {
