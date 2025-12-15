@@ -1,15 +1,11 @@
 package com.denica.playlistmaker.settings.ui
 
 import android.content.Intent
-import androidx.appcompat.widget.DialogTitle
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.denica.playlistmaker.settings.domain.api.SettingsInteractor
 import com.denica.playlistmaker.settings.domain.api.SharingInteractor
 import com.denica.playlistmaker.settings.domain.model.ThemeSettings
-import org.w3c.dom.Text
 
 class SettingsViewModel(
     private val settingsInteractor: SettingsInteractor,

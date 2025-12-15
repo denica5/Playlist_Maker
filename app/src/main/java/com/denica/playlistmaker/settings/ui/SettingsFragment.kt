@@ -7,12 +7,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.Switch
 import androidx.compose.material.SwitchDefaults
 import androidx.compose.material3.ColorScheme
@@ -112,7 +114,7 @@ class SettingsFragment : Fragment() {
             )
 
             if (trailing != null) {
-                trailing()
+              trailing()
             }
         }
     }
@@ -145,11 +147,11 @@ class SettingsFragment : Fragment() {
                             checkedTrackColor = MaterialTheme.colorScheme.switchSettingTrackActive,
                             uncheckedThumbColor = MaterialTheme.colorScheme.switchSettingThumbInactive,
                             uncheckedTrackColor = MaterialTheme.colorScheme.switchSettingTrackInactive
-                        )
+                        ),
+
                     )
 
-                },
-                onClick = {}
+                }
             )
 
             SettingsRow(
@@ -158,7 +160,8 @@ class SettingsFragment : Fragment() {
                     Icon(
                         painterResource(R.drawable.ic_share),
                         null,
-                        tint = MaterialTheme.colorScheme.settingsIcon
+                        tint = MaterialTheme.colorScheme.settingsIcon,
+                        modifier = Modifier.padding(end = 8.dp)
                     )
                 },
                 onClick = onShareClick
@@ -170,7 +173,8 @@ class SettingsFragment : Fragment() {
                     Icon(
                         painterResource(R.drawable.ic_support),
                         null,
-                        tint = MaterialTheme.colorScheme.settingsIcon
+                        tint = MaterialTheme.colorScheme.settingsIcon,
+                        modifier = Modifier.padding(end = 8.dp)
                     )
                 },
                 onClick = onSupportClick
@@ -182,7 +186,8 @@ class SettingsFragment : Fragment() {
                     Icon(
                         painterResource(R.drawable.ic_arrow_forward),
                         null,
-                        tint = MaterialTheme.colorScheme.settingsIcon
+                        tint = MaterialTheme.colorScheme.settingsIcon,
+                        modifier = Modifier.padding(end = 8.dp)
                     )
                 },
                 onClick = onAgreementClick
