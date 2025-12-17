@@ -5,9 +5,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.denica.playlistmaker.R
 import com.denica.playlistmaker.search.domain.models.Song
-import com.denica.playlistmaker.search.ui.Loading
-import com.denica.playlistmaker.search.ui.NothingFound
-import com.denica.playlistmaker.search.ui.TrackLazyColumn
+import com.denica.playlistmaker.utils.Loading
+import com.denica.playlistmaker.utils.NothingFound
+import com.denica.playlistmaker.utils.TrackLazyColumn
 
 @Composable
 fun FavouriteTracksScreen(

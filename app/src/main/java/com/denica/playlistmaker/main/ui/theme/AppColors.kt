@@ -1,4 +1,4 @@
-package com.denica.playlistmaker
+package com.denica.playlistmaker.main.ui.theme
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
