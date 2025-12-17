@@ -32,8 +32,8 @@ import coil3.compose.AsyncImage
 import com.denica.playlistmaker.R
 import com.denica.playlistmaker.mediaLibrary.domain.Playlist
 import com.denica.playlistmaker.mediaLibrary.ui.playlist.playlists.PlaylistViewModel.Companion.pluralizeTracks
-import com.denica.playlistmaker.search.ui.Loading
-import com.denica.playlistmaker.search.ui.NothingFound
+import com.denica.playlistmaker.utils.Loading
+import com.denica.playlistmaker.utils.NothingFound
 
 
 @OptIn(ExperimentalFoundationApi::class)
