@@ -1,102 +1,30 @@
 package com.denica.playlistmaker.mediaLibrary.ui.favouriteTracks
 
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.core.view.isVisible
-import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.denica.playlistmaker.databinding.FragmentFavouriteTracksBinding
-import com.denica.playlistmaker.mediaLibrary.ui.MediaLibraryFragmentDirections
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import com.denica.playlistmaker.R
 import com.denica.playlistmaker.search.domain.models.Song
-import com.denica.playlistmaker.search.ui.SearchFragment
-import com.denica.playlistmaker.search.ui.TrackListAdapter
-import com.denica.playlistmaker.utils.BindingFragment
-import com.denica.playlistmaker.utils.debounce
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import com.denica.playlistmaker.search.ui.Loading
+import com.denica.playlistmaker.search.ui.NothingFound
+import com.denica.playlistmaker.search.ui.TrackLazyColumn
 
-class FavouriteTracksFragment : BindingFragment<FragmentFavouriteTracksBinding>() {
-
-    val viewModel by viewModel<FavouriteTracksViewModel>()
-
-
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-    }
-
-    override fun createBinding(
-        inflater: LayoutInflater,
-        container: ViewGroup?
-    ): FragmentFavouriteTracksBinding {
-        return FragmentFavouriteTracksBinding.inflate(inflater, container, false)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        viewModel.getFavouriteSongs()
-        val onSongClickDebounce = debounce<Song>(
-            SearchFragment.Companion.CLICK_DEBOUNCE_DELAY,
-            viewLifecycleOwner.lifecycleScope,
-            false
-        ) { song ->
-
-            findNavController().navigate(
-                MediaLibraryFragmentDirections.actionMediaLibraryFragmentToMediaPlayerFragment(
-                    song
-                )
-            )
-
-        }
-        val adapter = TrackListAdapter(
-            onSongClickDebounce
-        )
-        binding.recycler.adapter = adapter
-        binding.recycler.layoutManager =
-            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        viewModel.observeFavouriteState().observe(viewLifecycleOwner) {
-            when (it) {
-                is FavouriteTracksState.Loading -> {
-                    binding.favouriteProgressBar.isVisible = true
-                    binding.placeholder.isVisible = false
-                    binding.recycler.isVisible = false
-                }
-
-                is FavouriteTracksState.Empty -> {
-                    binding.favouriteProgressBar.isVisible = false
-                    binding.placeholder.isVisible = true
-                    binding.recycler.isVisible = false
-                }
-
-                is FavouriteTracksState.Content -> {
-                    binding.favouriteProgressBar.isVisible = false
-                    binding.placeholder.isVisible = false
-                    binding.recycler.isVisible = true
-                    adapter.itemList = it.data
-                    adapter.notifyDataSetChanged()
-                }
-            }
+@Composable
+fun FavouriteTracksScreen(
+    favouriteTracksState: FavouriteTracksState,
+    onSongDebounceClick: (Song) -> Unit
+) {
+    when (favouriteTracksState) {
+        is FavouriteTracksState.Loading -> {
+            Loading()
         }
 
+        is FavouriteTracksState.Empty -> {
+            NothingFound(R.string.media_library_favourite_tracks_empty)
+        }
 
-
-
-
-    }
-
-    companion object {
-
-        @JvmStatic
-        fun newInstance() =
-            FavouriteTracksFragment().apply {
-                arguments = Bundle().apply {
-
-                }
-            }
-
+        is FavouriteTracksState.Content -> {
+            TrackLazyColumn(favouriteTracksState.data,onSongDebounceClick, Modifier.fillMaxSize())
+        }
     }
 }
