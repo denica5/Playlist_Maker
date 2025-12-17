@@ -156,7 +156,7 @@ class MediaPlayerFragment : BindingFragment<FragmentMediaPlayerBinding>() {
             findNavController().navigateUp()
         }
         bindMusicService(songDto)
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             viewModel.getPlayerState().collect {
                 when (it) {
                     is PlayerState.Default -> {
