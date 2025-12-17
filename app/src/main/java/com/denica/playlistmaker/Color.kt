@@ -8,6 +8,7 @@ import androidx.compose.ui.graphics.Color
 val Black = Color(0xFF1A1B22)
 val White = Color(0xFFFFFFFF)
 val Blue = Color(0xFF3772E7)
+val BlueAlpha = Color(0x553772E7)
 val LightGray = Color(0xFFE6E8EB)
 val LightBlue = Color(0xFF9FBBF3)
 val Gray = Color(0xFFAEAFB4)
