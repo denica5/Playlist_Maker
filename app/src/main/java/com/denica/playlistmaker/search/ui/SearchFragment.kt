@@ -1,245 +1,86 @@
 package com.denica.playlistmaker.search.ui
 
-import android.content.Context.INPUT_METHOD_SERVICE
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.EditorInfo
-import android.view.inputmethod.InputMethodManager
-import android.widget.Button
-import androidx.core.view.isVisible
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.denica.playlistmaker.R
-import com.denica.playlistmaker.databinding.FragmentSearchBinding
+import com.denica.playlistmaker.main.ui.theme.MyAppTheme
 import com.denica.playlistmaker.search.domain.models.Song
-import com.denica.playlistmaker.utils.BindingFragment
 import com.denica.playlistmaker.utils.debounce
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.util.Locale
+import java.util.concurrent.TimeUnit
 
 
-class SearchFragment : BindingFragment<FragmentSearchBinding>() {
-    private var searchText = ""
+class SearchFragment : Fragment() {
+
     val viewModel by viewModel<SearchViewModel>()
-    private lateinit var adapter: TrackListAdapter
-    private lateinit var historyAdapter: TrackListAdapter
 
-    private lateinit var onSearchSongClickDebounce: (Song) -> Unit
 
-    override fun createBinding(
+    override fun onCreateView(
         inflater: LayoutInflater,
-        container: ViewGroup?
-    ): FragmentSearchBinding {
-        return FragmentSearchBinding.inflate(inflater, container, false)
-    }
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return ComposeView(requireContext()).apply {
+            setViewCompositionStrategy(
+                ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+            )
+            setContent {
+                MyAppTheme {
+                    val onSearchSongClickDebounce =
+                        debounce<Song>(
+                            CLICK_DEBOUNCE_DELAY,
+                            viewLifecycleOwner.lifecycleScope,
+                            false
+                        )
+                        { song ->
+                            viewLifecycleOwner.lifecycleScope.launch {
+                                viewModel.addTrack(song)
+                            }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+                            findNavController().navigate(
+                                SearchFragmentDirections.actionSearchFragment2ToMediaPlayerFragment(
+                                    song
+                                )
+                            )
 
+                        }
+                    val searchState by viewModel
+                        .getSearchState()
+                        .collectAsState()
 
-        onSearchSongClickDebounce =
-            debounce<Song>(CLICK_DEBOUNCE_DELAY, viewLifecycleOwner.lifecycleScope, false)
-            { song ->
-                var position = -1
-                viewLifecycleOwner.lifecycleScope.launch { position = viewModel.addTrack(song) }
-
-                findNavController().navigate(
-                    SearchFragmentDirections.actionSearchFragment2ToMediaPlayerFragment(
-                        song
+                    val textFieldState by viewModel
+                        .textFieldState
+                        .collectAsState()
+                    val searchHistoryState by viewModel
+                        .getSearchHistoryState()
+                        .collectAsState()
+                    SearchScreen(
+                        searchState,
+                        viewModel::onQueryChange,
+                        viewModel::onSearchFocusChanged,
+                        viewModel::onClearIcClick,
+                        viewModel::searchRequest,
+                        viewModel::clearHistory,
+                        textFieldState,
+                        searchHistoryState,
+                        onSearchSongClickDebounce
                     )
-                )
-                if (position != -1) {
-                    historyAdapter.notifyItemMoved(position, 0)
-                    binding.trackListRc.scrollToPosition(0)
+
                 }
-
-            }
-
-
-        adapter = TrackListAdapter(onSearchSongClickDebounce)
-        historyAdapter = TrackListAdapter(onSearchSongClickDebounce)
-
-        viewModel.getSearchHistoryState()
-            .observe(viewLifecycleOwner) {
-                when (it) {
-                    is SearchHistoryState.Content -> historyAdapter.itemList = it.data
-                    is SearchHistoryState.Empty -> { historyAdapter.itemList = emptyList()}
-                }
-            }
-        binding.searchEditText.setText(searchText)
-
-        binding.searchClearIcX.setOnClickListener {
-            viewModel.removeSearchList()
-            binding.searchEditText.setText("")
-            try {
-                val imm =
-                    requireContext().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-                imm.hideSoftInputFromWindow(it.windowToken, 0)
-                clearTracks("clear_button")
-            } catch (_: Exception) {
-                //
-            }
-
-        }
-        binding.refreshButton.setOnClickListener {
-
-            debounce<Button>(CLICK_DEBOUNCE_DELAY, viewLifecycleOwner.lifecycleScope, false) {
-                viewModel.searchRequest(
-                    binding.searchEditText.text.toString()
-                )
-            }
-
-
-        }
-
-
-        val searchTextWatcher = object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                //
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                binding.searchClearIcX.isVisible = !s.isNullOrEmpty()
-                searchText = s.toString()
-                if (searchText != "") {
-                    viewModel.searchDebounce(searchText)
-                }
-                if (viewModel.isSavedTracksArrayListNotEmpty()) {
-                    if (binding.searchEditText.hasFocus() && s?.isEmpty() == true) {
-                        binding.clearHistoryButton.isVisible = true
-                        binding.youSearchTextView.isVisible = true
-                        binding.trackListRc.adapter = historyAdapter
-                    } else {
-                        binding.clearHistoryButton.isVisible = false
-                        binding.youSearchTextView.isVisible = false
-                        binding.trackListRc.adapter = adapter
-                    }
-                } else {
-                    binding.clearHistoryButton.isVisible = false
-                    binding.youSearchTextView.isVisible = false
-                    binding.trackListRc.adapter = adapter
-                }
-
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-                //
-            }
-        }
-        binding.searchEditText.addTextChangedListener(searchTextWatcher)
-        binding.searchEditText.setOnFocusChangeListener { view, hasFocus ->
-            showHistory()
-        }
-        binding.trackListRc.adapter = adapter
-        binding.trackListRc.layoutManager =
-            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        binding.searchEditText.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                if (binding.searchEditText.text.isNotEmpty()) {
-                    viewModel.searchRequest(binding.searchEditText.text.toString())
-                } else {
-                    clearTracks(getString(R.string.nothing_found))
-                }
-                return@setOnEditorActionListener true
-            }
-            false
-        }
-
-        binding.clearHistoryButton.setOnClickListener {
-            viewModel.clearHistory()
-            binding.clearHistoryButton.isVisible = false
-            binding.youSearchTextView.isVisible = false
-
-        }
-        viewModel.getState()
-            .observe(viewLifecycleOwner) {
-                when (it) {
-                    is SearchState.Loading -> {
-                        binding.searchProgressBar.isVisible = true
-                        binding.trackListRc.isVisible = false
-                        binding.notFoundError.isVisible = false
-                        binding.failedSearchError.isVisible = false
-                    }
-
-                    is SearchState.Content -> {
-                        adapter.itemList = it.data
-                        adapter.notifyDataSetChanged()
-                        clearTracks("")
-                    }
-
-                    is SearchState.Empty -> {
-                        clearTracks(getString(it.message))
-                    }
-
-                    is SearchState.Error -> {
-                        clearTracks(getString(it.message))
-                    }
-                }
-            }
-    }
-
-
-    private fun clearTracks(text: String) {
-
-        if (text.isNotEmpty()) {
-            adapter.itemList = emptyList()
-            adapter.notifyDataSetChanged()
-        }
-        when (text) {
-            getString(R.string.failed_search) -> {
-                binding.notFoundError.isVisible = false
-                binding.trackListRc.isVisible = false
-                binding.failedSearchError.isVisible = true
-                binding.searchProgressBar.isVisible = false
-            }
-
-            getString(R.string.nothing_found) -> {
-                binding.notFoundError.isVisible = true
-                binding.trackListRc.isVisible = false
-                binding.failedSearchError.isVisible = false
-                binding.searchProgressBar.isVisible = false
-            }
-
-            "" -> {
-                binding.notFoundError.isVisible = false
-                binding.trackListRc.isVisible = true
-                binding.failedSearchError.isVisible = false
-                binding.searchProgressBar.isVisible = false
-            }
-
-            "clear_button" -> {
-                binding.notFoundError.isVisible = false
-                binding.trackListRc.isVisible = true
-                binding.failedSearchError.isVisible = false
-                binding.searchProgressBar.isVisible = false
             }
         }
     }
 
-    private fun showHistory() {
-        if (viewModel.isSavedTracksArrayListNotEmpty()) {
-            if (binding.searchEditText.hasFocus() && binding.searchEditText.text.isEmpty()) {
-                binding.clearHistoryButton.isVisible = true
-                binding.youSearchTextView.isVisible = true
-                binding.trackListRc.adapter = historyAdapter
-            } else {
-                binding.clearHistoryButton.isVisible = false
-                binding.youSearchTextView.isVisible = false
-                binding.trackListRc.adapter = adapter
-            }
-        }
-    }
-
-
-    override fun onStop() {
-        super.onStop()
-
-    }
 
     override fun onResume() {
         viewModel.getHistory()
@@ -250,17 +91,23 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
     companion object {
         const val SEARCH_TEXT_KEY = "SEARCH_TEXT"
         const val CLICK_DEBOUNCE_DELAY = 1000L
+        fun formatDuration(durationMillis: Long): String {
+            val minutes = TimeUnit.MILLISECONDS.toMinutes(durationMillis)
+            val seconds = TimeUnit.MILLISECONDS.toSeconds(durationMillis) % 60
+            return String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putString(SEARCH_TEXT_KEY, searchText)
+        outState.putString(SEARCH_TEXT_KEY, viewModel.textFieldState.value.query)
     }
-
-//    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-//        super.onRestoreInstanceState(savedInstanceState)
-//        searchText = savedInstanceState.getString(SEARCH_TEXT_KEY) ?: ""
-//    }
 
 
 }
+
+
+
+
+
+

@@ -36,7 +36,6 @@ class SettingsViewModel(
         getStartSettings()
     }
 
-    companion object {
 
-    }
+
 }

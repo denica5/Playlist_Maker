@@ -6,47 +6,49 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.material3.Scaffold
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.fragment.app.Fragment
 import com.denica.playlistmaker.App
-import com.denica.playlistmaker.utils.BindingFragment
-import com.denica.playlistmaker.databinding.FragmentSettingsBinding
+import com.denica.playlistmaker.main.ui.theme.MyAppTheme
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 const val PLAYLIST_MAKER_PREFERENCES = "playlist_maker_preferences"
 const val DARK_THEME_MODE_KEY = "dark_theme_mode_key"
 
-class SettingsFragment : BindingFragment<FragmentSettingsBinding>() {
+class SettingsFragment : Fragment() {
 
     private val applicationContext: Context by inject()
     val viewModel by viewModel<SettingsViewModel>()
-    override fun createBinding(
+    override fun onCreateView(
         inflater: LayoutInflater,
-        container: ViewGroup?
-    ): FragmentSettingsBinding {
-        return FragmentSettingsBinding.inflate(inflater, container, false)
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        return ComposeView(requireContext()).apply {
+            setViewCompositionStrategy(
+                ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+            )
+            setContent {
+                MyAppTheme {
+                    Scaffold { innerPadding ->
+                        SettingsScreen(
+                            innerPadding,
+                            resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES,
+                            { checked ->
+                                (applicationContext as App).switchTheme(checked)
+                                viewModel.saveSettings(checked)
+                            },
+                            { startActivity(viewModel.shareApp()) },
+                            { startActivity(viewModel.supportApp()) },
+                            { startActivity(viewModel.termsApp()) }
+
+                        )
+                    }
+                }
+            }
+        }
     }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-
-        binding.darkThemeSwitch.isChecked =
-            resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
-        binding.shareAppCategory.setOnClickListener {
-            startActivity(viewModel.shareApp())
-        }
-        binding.writeSupportCategory.setOnClickListener {
-            startActivity(viewModel.supportApp())
-        }
-        binding.userAgreementCategory.setOnClickListener {
-
-            startActivity(viewModel.termsApp())
-
-        }
-        binding.darkThemeSwitch.setOnCheckedChangeListener { switcher, checked ->
-            (applicationContext as App).switchTheme(checked)
-            viewModel.saveSettings(binding.darkThemeSwitch.isChecked)
-        }
-    }
-
 }

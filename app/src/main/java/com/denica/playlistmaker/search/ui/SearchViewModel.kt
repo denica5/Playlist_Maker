@@ -11,7 +11,11 @@ import com.denica.playlistmaker.mediaLibrary.domain.DbSongInteractor
 import com.denica.playlistmaker.search.domain.api.SearchHistoryInteractor
 import com.denica.playlistmaker.search.domain.api.SongInteractor
 import com.denica.playlistmaker.search.domain.models.Song
+import com.denica.playlistmaker.search.ui.SearchHistoryState
 import com.denica.playlistmaker.utils.debounce
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SearchViewModel(
@@ -23,15 +27,44 @@ class SearchViewModel(
     var ids = emptyList<Long>()
     private val handler = Handler(Looper.getMainLooper())
     private var latestSearchText: String? = null
-    private val searchHistoryState = MutableLiveData<SearchHistoryState>()
-    fun getSearchHistoryState(): LiveData<SearchHistoryState> = searchHistoryState
-    private val stateLiveData = MutableLiveData<SearchState>()
-    fun getState(): LiveData<SearchState> = stateLiveData
+    private val searchHistoryState =
+        MutableStateFlow<SearchHistoryState>(SearchHistoryState.Empty())
 
+    fun getSearchHistoryState() = searchHistoryState.asStateFlow()
+    private val searchState = MutableStateFlow<SearchState>(SearchState.Nothing)
+    fun getSearchState() = searchState.asStateFlow()
+
+    private val _textFieldState = MutableStateFlow(TextFieldState())
+    val textFieldState = _textFieldState.asStateFlow()
     private val songSearchDebounce =
         debounce<String>(SEARCH_DEBOUNCE_DELAY, viewModelScope, true) { changedText ->
-            searchRequest(changedText)
+            searchRequest()
         }
+
+    fun onSearchFocusChanged(hasFocus: Boolean) {
+        _textFieldState.update {
+            it.copy(
+                isShowHistory = hasFocus && it.query.isEmpty() && searchHistoryState !is SearchHistoryState.Empty,
+                isFocused = hasFocus
+            )
+        }
+    }
+
+    fun onQueryChange(query: String) {
+        _textFieldState.update {
+            it.copy(
+                query = query,
+                isShowHistory = query.isEmpty() && it.isFocused && searchHistoryState !is SearchHistoryState.Empty,
+                isShowClearIc = query.isNotEmpty()
+            )
+        }
+        searchDebounce(query)
+    }
+
+    fun onClearIcClick() {
+        onQueryChange("")
+        removeSearchList()
+    }
 
     fun searchDebounce(changedText: String) {
         if (latestSearchText == changedText) {
@@ -45,9 +78,12 @@ class SearchViewModel(
 
     }
 
-    fun searchRequest(newSearchText: String) {
+    fun searchRequest() {
+        val newSearchText = textFieldState.value.query
         if (newSearchText.isNotEmpty()) {
-            stateLiveData.postValue(SearchState.Loading)
+            searchState.update {
+                SearchState.Loading
+            }
             viewModelScope.launch {
                 songInteractor.searchSong(newSearchText).collect { pair ->
                     processResult(pair.first, pair.second)
@@ -121,12 +157,12 @@ class SearchViewModel(
 
                     if (searchHistory != null) {
                         if (searchHistory.isEmpty()) {
-                            renderSearchHistoryState(SearchHistoryState.Empty)
+                            renderSearchHistoryState(SearchHistoryState.Empty())
                         } else {
                             renderSearchHistoryState(SearchHistoryState.Content(searchHistory))
                         }
                     } else {
-                        renderSearchHistoryState(SearchHistoryState.Empty)
+                        renderSearchHistoryState(SearchHistoryState.Empty())
                     }
                 }
 
@@ -163,11 +199,11 @@ class SearchViewModel(
     }
 
     private fun renderSearchState(state: SearchState) {
-        stateLiveData.postValue(state)
+        searchState.update { state }
     }
 
     private fun renderSearchHistoryState(state: SearchHistoryState) {
-        searchHistoryState.postValue(state)
+        searchHistoryState.update { state }
     }
 
 
