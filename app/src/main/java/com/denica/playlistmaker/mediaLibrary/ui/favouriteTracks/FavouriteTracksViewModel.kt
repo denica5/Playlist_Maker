@@ -1,7 +1,5 @@
 package com.denica.playlistmaker.mediaLibrary.ui.favouriteTracks
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.denica.playlistmaker.mediaLibrary.domain.DbSongInteractor
@@ -18,7 +16,9 @@ class FavouriteTracksViewModel(
     private val favouriteStateLiveData = MutableStateFlow<FavouriteTracksState>(FavouriteTracksState.Empty)
 
     fun observeFavouriteState() = favouriteStateLiveData.asStateFlow()
+    init {
 
+    }
     fun getFavouriteSongs() {
         renderState(FavouriteTracksState.Loading)
         viewModelScope.launch {

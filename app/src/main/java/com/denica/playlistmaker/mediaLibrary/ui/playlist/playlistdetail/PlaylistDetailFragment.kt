@@ -17,10 +17,8 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.MultiTransformation
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.bumptech.glide.request.RequestOptions
 import com.denica.playlistmaker.R
 import com.denica.playlistmaker.databinding.FragmentPlaylistDetailBinding
 import com.denica.playlistmaker.mediaLibrary.domain.Playlist
@@ -356,12 +354,6 @@ class PlaylistDetailFragment : BindingFragment<FragmentPlaylistDetailBinding>() 
                 .load(uri)
                 .placeholder(placeHolder)
                 .transform(transformation)
-                .apply(
-                    RequestOptions().diskCacheStrategy(DiskCacheStrategy.NONE)
-                        .skipMemoryCache(
-                            true
-                        )
-                )
                 .into(bindingImage)
         }
     }
