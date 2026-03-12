@@ -26,13 +26,11 @@
     <img src= "https://imgur.com/Wt9Rl8W.png" width="210">
     <img src= "https://imgur.com/3wBLo63.png" width="210">
     <img src= "https://imgur.com/9tszUks.png" width="210">
-    <img src= ".png" width="210">
-    <img src= ".png" width="210">
-    <img src= ".png" width="210">
+    <img src= "https://imgur.com/DAhiQjy.png" width="210">
     <img src= "https://imgur.com/2qYrDbo.png" width="210">
     <img src= "https://imgur.com/C2wK6eJ.png" width="210">
     <img src= "https://imgur.com/OjGv0oI.png" width="210">
-    <img src= "https://imgur.com/yD4i3Yq.png" width="210">
+    <img src= "https://imgur.com/uxsU5af.png" width="210">
     <img src= "https://imgur.com/yD4i3Yq.png" width="210">
     <img src= "https://imgur.com/yD4i3Yq.png" width="210">
     <img src= "https://imgur.com/yD4i3Yq.png" width="210">
