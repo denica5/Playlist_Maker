@@ -31,7 +31,8 @@
     <img src= "https://imgur.com/C2wK6eJ.png" width="210">
     <img src= "https://imgur.com/OjGv0oI.png" width="210">
     <img src= "https://imgur.com/uxsU5af.png" width="210">
-    <img src= "https://imgur.com/yD4i3Yq.png" width="210">
-    <img src= "https://imgur.com/yD4i3Yq.png" width="210">
-    <img src= "https://imgur.com/yD4i3Yq.png" width="210">
+    <img src= "https://imgur.com/IG7UEVy.png" width="210">
+    <img src= "https://imgur.com/lAYFizo.png" width="210">
+    <img src= "https://imgur.com/hVnlGLr.png" width="210">
+    <img src= "https://imgur.com/1OT9vFO.png" width="210">
 </p>
