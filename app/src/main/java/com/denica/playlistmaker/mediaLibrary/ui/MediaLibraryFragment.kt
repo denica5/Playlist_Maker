@@ -6,11 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.denica.playlistmaker.R
 import com.denica.playlistmaker.main.ui.theme.MyAppTheme
 import com.denica.playlistmaker.mediaLibrary.domain.Playlist
 import com.denica.playlistmaker.mediaLibrary.ui.favouriteTracks.FavouriteTracksViewModel
@@ -46,38 +48,53 @@ class MediaLibraryFragment : Fragment() {
                     .observePlaylistState()
                     .collectAsState()
 
-                val onSongClickDebounce = debounce<Song>(
-                    SearchFragment.Companion.CLICK_DEBOUNCE_DELAY,
-                    viewLifecycleOwner.lifecycleScope,
-                    false
-                ) { song ->
+                val onSongClickDebounce = remember {
+                    debounce<Song>(
+                        SearchFragment.Companion.CLICK_DEBOUNCE_DELAY,
+                        viewLifecycleOwner.lifecycleScope,
+                        false
+                    )
+                    { song ->
 
-                    findNavController().navigate(
-                        MediaLibraryFragmentDirections.actionMediaLibraryFragmentToMediaPlayerFragment(
-                            song
-                        )
-                    )
+                        navDebounce {
+                            findNavController().navigate(
+                                MediaLibraryFragmentDirections.actionMediaLibraryFragmentToMediaPlayerFragment(
+                                    song
+                                )
+                            )
+                        }
 
+                    }
                 }
-                val onPlaylistDebounce = debounce<Playlist>(
-                    SearchFragment.CLICK_DEBOUNCE_DELAY,
-                    viewLifecycleOwner.lifecycleScope,
-                    false
-                ) { playlist ->
-                    findNavController().navigate(
-                        MediaLibraryFragmentDirections.actionMediaLibraryFragmentToPlaylistDetailFragment(
-                            playlist
-                        )
-                    )
+                val onPlaylistDebounce = remember {
+                    debounce<Playlist>(
+                        SearchFragment.CLICK_DEBOUNCE_DELAY,
+                        viewLifecycleOwner.lifecycleScope,
+                        false
+                    ) { playlist ->
+                        navDebounce {
+                            findNavController().navigate(
+                                MediaLibraryFragmentDirections.actionMediaLibraryFragmentToPlaylistDetailFragment(
+                                    playlist
+                                )
+                            )
+                        }
+                    }
                 }
-                val onAddPlaylistDebounce = debounce(
-                    SearchFragment.CLICK_DEBOUNCE_DELAY,
-                    viewLifecycleOwner.lifecycleScope,
-                    false
-                ) {
-                    findNavController().navigate(
-                        MediaLibraryFragmentDirections.actionMediaLibraryFragmentToCreatePlaylistFragment()
-                    )
+                val onAddPlaylistDebounce = remember {
+                    debounce(
+                        200L,
+                        viewLifecycleOwner.lifecycleScope,
+                        false
+                    ) {
+
+                        navDebounce{
+                            findNavController().navigate(
+                                MediaLibraryFragmentDirections.actionMediaLibraryFragmentToCreatePlaylistFragment()
+                            )
+                        }
+
+                    }
                 }
 
                 MyAppTheme {
@@ -85,9 +102,27 @@ class MediaLibraryFragment : Fragment() {
                     MediaLibraryScreen(
                         favouriteTracksState = favouriteTracksState,
                         playlistState = playlistState,
-                        onSongClick = onSongClickDebounce,
+                        onSongClick = { song ->
+
+                            navDebounce {
+                                findNavController().navigate(
+                                    MediaLibraryFragmentDirections.actionMediaLibraryFragmentToMediaPlayerFragment(
+                                        song
+                                    )
+                                )
+                            }
+
+                        },
                         onPlaylistClick = onPlaylistDebounce,
-                        onAddPlaylistClick = onAddPlaylistDebounce
+                        onAddPlaylistClick = {
+
+                            navDebounce{
+                                findNavController().navigate(
+                                    MediaLibraryFragmentDirections.actionMediaLibraryFragmentToCreatePlaylistFragment()
+                                )
+                            }
+
+                        }
 
                     )
                 }
@@ -101,5 +136,10 @@ class MediaLibraryFragment : Fragment() {
         playlistViewModel.getPlaylists()
     }
 
-
+    fun navDebounce(block: () -> Unit) {
+        val navController = findNavController()
+        if (navController.currentDestination?.id == R.id.mediaLibraryFragment) {
+            block()
+        }
+    }
 }

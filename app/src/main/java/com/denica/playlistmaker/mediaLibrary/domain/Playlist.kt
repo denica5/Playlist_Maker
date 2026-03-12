@@ -5,9 +5,9 @@ import android.os.Parcelable
 
 data class Playlist(
     val id: Long = 0L,
-    val name: String,
-    val description: String,
-    val imagePath: String,
+    val name: String = "",
+    val description: String = "",
+    val imagePath: String = "",
     val trackIds: List<Long> = emptyList(),
     val trackCount: Int = 0
 ) : Parcelable {

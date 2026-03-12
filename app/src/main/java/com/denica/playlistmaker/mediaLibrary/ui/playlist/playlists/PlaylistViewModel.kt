@@ -1,17 +1,16 @@
 package com.denica.playlistmaker.mediaLibrary.ui.playlist.playlists
 
-import android.content.Context
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.denica.playlistmaker.R
 import com.denica.playlistmaker.mediaLibrary.domain.DbPlaylistInteractor
 import com.denica.playlistmaker.mediaLibrary.domain.Playlist
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class PlaylistViewModel(val playlistInteractor: DbPlaylistInteractor) : ViewModel() {
 
@@ -26,9 +25,11 @@ class PlaylistViewModel(val playlistInteractor: DbPlaylistInteractor) : ViewMode
     fun getPlaylists() {
 
         viewModelScope.launch {
-            renderState(PlaylistState.Loading)
-            playlistInteractor.getPlaylistList().collect { playlists ->
-                processResult(playlists)
+            withContext(Dispatchers.IO) {
+                renderState(PlaylistState.Loading)
+                playlistInteractor.getPlaylistList().collect { playlists ->
+                    processResult(playlists)
+                }
             }
         }
     }

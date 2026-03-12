@@ -7,9 +7,11 @@ import androidx.lifecycle.viewModelScope
 import com.denica.playlistmaker.mediaLibrary.domain.DbPlaylistInteractor
 import com.denica.playlistmaker.mediaLibrary.domain.Playlist
 import com.denica.playlistmaker.search.domain.models.Song
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -27,7 +29,7 @@ class PlaylistDetailViewModel(
 
     init {
         viewModelScope.launch {
-            getAllTracks()
+            withContext(Dispatchers.IO) { getAllTracks() }
         }
     }
 
@@ -64,7 +66,13 @@ class PlaylistDetailViewModel(
     }
 
     fun getPlaylistToUpdateUI() {
-        viewModelScope.launch { playlistState.postValue(playlistInteractor.getPlaylist(playlist.id)) }
+        viewModelScope.launch {
+            val dbPlaylist: Playlist
+            withContext(Dispatchers.IO) {
+                dbPlaylist = playlistInteractor.getPlaylist(playlist.id) ?: Playlist()
+            }
+            playlistState.postValue(dbPlaylist)
+        }
     }
 
     fun removeSongFromPlaylist(song: Song) {
