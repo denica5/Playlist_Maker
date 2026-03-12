@@ -5,7 +5,7 @@
 - **Тип проекта:** Многомодульный
 - **UI:** Jetpack Compose/View
 - **DI:** Koin
-- **Network:**Retrofit 
+- **Network:** Retrofit 
 - **База данных:** Room
 
 
