@@ -13,7 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.denica.playlistmaker.main.ui.theme.MyAppTheme
 import com.denica.playlistmaker.search.domain.models.Song
-import com.denica.playlistmaker.utils.debounce
+import com.denica.playlistmaker.utils.throttleFirst
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.Locale
@@ -37,10 +37,9 @@ class SearchFragment : Fragment() {
             setContent {
                 MyAppTheme {
                     val onSearchSongClickDebounce =
-                        debounce<Song>(
+                        throttleFirst<Song>(
                             CLICK_DEBOUNCE_DELAY,
                             viewLifecycleOwner.lifecycleScope,
-                            false
                         )
                         { song ->
                             viewLifecycleOwner.lifecycleScope.launch {

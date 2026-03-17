@@ -34,7 +34,7 @@ import com.denica.playlistmaker.search.domain.models.Song
 import com.denica.playlistmaker.search.ui.SearchFragment
 import com.denica.playlistmaker.search.ui.TrackListViewHolder
 import com.denica.playlistmaker.utils.BindingFragment
-import com.denica.playlistmaker.utils.debounce
+import com.denica.playlistmaker.utils.throttleFirst
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -202,10 +202,9 @@ class MediaPlayerFragment : BindingFragment<FragmentMediaPlayerBinding>() {
 
 
             }
-        val onPlaylistDebounce = debounce<Playlist>(
+        val onPlaylistDebounce = throttleFirst<Playlist>(
             SearchFragment.CLICK_DEBOUNCE_DELAY,
             viewLifecycleOwner.lifecycleScope,
-            false
         ) { playlist ->
             viewModel.addTrackToPlaylist(playlist, songDto.trackId)
 
