@@ -17,6 +17,7 @@ import com.denica.playlistmaker.mediaplayer.ui.PlayerState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -37,6 +38,8 @@ class MusicService : Service(), IMusicService {
     private var mediaPlayer: MediaPlayer? = null
     private val binder = MusicServiceBinder()
     private var timerJob: Job? = null
+    private val serviceJob = SupervisorJob()
+    private val serviceScope = CoroutineScope(serviceJob + Dispatchers.Default)
 
 
     private val _playerState = MutableStateFlow<PlayerState>(PlayerState.Default())
@@ -68,12 +71,12 @@ class MusicService : Service(), IMusicService {
     }
 
     override fun hideNotification() {
-        ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_DETACH)
+        ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
     }
 
     private fun startTimer() {
         timerJob?.cancel()
-        timerJob = CoroutineScope(Dispatchers.Default).launch {
+        timerJob = serviceScope.launch {
             while (mediaPlayer?.isPlaying == true) {
                 delay(REMAINING_TIMER_DELAY)
                 _playerState.value = PlayerState.Playing(getCurrentPlayerPosition())
@@ -97,10 +100,11 @@ class MusicService : Service(), IMusicService {
     private fun releasePlayer() {
         _playerState.value = PlayerState.Default()
         timerJob?.cancel()
-        mediaPlayer?.stop()
+        mediaPlayer?.runCatching { stop() }
         mediaPlayer?.setOnPreparedListener(null)
         mediaPlayer?.setOnCompletionListener(null)
         mediaPlayer?.release()
+        mediaPlayer = null
 
     }
 
@@ -136,6 +140,7 @@ class MusicService : Service(), IMusicService {
 
     override fun onDestroy() {
         releasePlayer()
+        serviceJob.cancel()
         super.onDestroy()
 
     }
