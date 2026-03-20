@@ -28,7 +28,7 @@ import com.denica.playlistmaker.search.ui.SearchFragment
 import com.denica.playlistmaker.search.ui.TrackListAdapter
 import com.denica.playlistmaker.search.ui.TrackListViewHolder.Companion.dpToPx
 import com.denica.playlistmaker.utils.BindingFragment
-import com.denica.playlistmaker.utils.debounce
+import com.denica.playlistmaker.utils.throttleFirst
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
@@ -44,6 +44,8 @@ class PlaylistDetailFragment : BindingFragment<FragmentPlaylistDetailBinding>() 
 
     private lateinit var overflowMenuBottomSheetBehavior: BottomSheetBehavior<LinearLayout>
     private lateinit var viewModel: PlaylistDetailViewModel
+    private var currentPlaylistName: String = ""
+    private var currentSongs: List<Song> = emptyList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,9 +67,9 @@ class PlaylistDetailFragment : BindingFragment<FragmentPlaylistDetailBinding>() 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val playlistViewModel: Playlist = args.playlist
+        val playlistId: Long = args.playlistId
         viewModel = getViewModel<PlaylistDetailViewModel>(
-            parameters = { parametersOf(playlistViewModel) }
+            parameters = { parametersOf(playlistId) }
         )
 
         overflowMenuBottomSheetBehavior =
@@ -96,10 +98,9 @@ class PlaylistDetailFragment : BindingFragment<FragmentPlaylistDetailBinding>() 
                 )
             }
 
-        val onSongClickDebounce = debounce<Song>(
+        val onSongClickDebounce = throttleFirst<Song>(
             SearchFragment.Companion.CLICK_DEBOUNCE_DELAY,
             viewLifecycleOwner.lifecycleScope,
-            false
         ) { song ->
 
             findNavController().navigate(
@@ -112,10 +113,9 @@ class PlaylistDetailFragment : BindingFragment<FragmentPlaylistDetailBinding>() 
         setupUI()
 
 
-        val onSongLongClickDebounce = debounce<Song>(
+        val onSongLongClickDebounce = throttleFirst<Song>(
             SearchFragment.Companion.CLICK_DEBOUNCE_DELAY,
             viewLifecycleOwner.lifecycleScope,
-            false
         ) { song ->
             MaterialAlertDialogBuilder(requireContext(), R.style.AlertTheme)
                 .setTitle(getString(R.string.delete_track_from_playlist_alert_playlist_detail))
@@ -196,6 +196,7 @@ class PlaylistDetailFragment : BindingFragment<FragmentPlaylistDetailBinding>() 
         viewModel.getPlaylistSongState().observe(viewLifecycleOwner) { content ->
             when (content) {
                 is PlaylistSongState.Content -> {
+                    currentSongs = content.data
                     adapter.itemList = content.data
                     adapter.notifyDataSetChanged()
                     binding.allTracksDurationPlaylistDetail.text = getString(
@@ -212,19 +213,13 @@ class PlaylistDetailFragment : BindingFragment<FragmentPlaylistDetailBinding>() 
                             content.data.size,
                             requireContext()
                         )
-                    viewModel.getPlaylistState().observe(viewLifecycleOwner) { playlist ->
-                        binding.icSharePlaylistDetail.setOnClickListener {
-                            shareIntent(content.data, playlist.name)
-                        }
-                        binding.sharePlaylistOverflowMenuBottomSheetPlaylistDetail.setOnClickListener {
-                            shareIntent(content.data, playlist.name)
-                        }
-                    }
+                    updateShareButtons()
                     binding.bottomBehaviorPlaylistsRecycle.isVisible = true
                     binding.emptyTracksPlaceholderBottomSheetPlaylistDetail.isVisible = false
                 }
 
                 PlaylistSongState.Empty -> {
+                    currentSongs = emptyList()
                     adapter.itemList = emptyList()
                     adapter.notifyDataSetChanged()
                     binding.allTracksDurationPlaylistDetail.text = getString(
@@ -235,35 +230,39 @@ class PlaylistDetailFragment : BindingFragment<FragmentPlaylistDetailBinding>() 
                         getString(R.string.tracks_count_playlist_detail, 0)
                     binding.playlistTracksCountOverflowMenuBottomSheetPlaylistDetail.text =
                         getString(R.string.tracks_count_playlist_detail, 0)
-                    binding.icSharePlaylistDetail.setOnClickListener {
-                        Toast.makeText(
-                            requireContext(),
-                            getString(R.string.playlist_dont_have_tracks_playlist_detail),
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-
-                    binding.sharePlaylistOverflowMenuBottomSheetPlaylistDetail.setOnClickListener {
-                        Toast.makeText(
-                            requireContext(),
-                            getString(R.string.playlist_dont_have_tracks_playlist_detail),
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
+                    updateShareButtons()
                     binding.bottomBehaviorPlaylistsRecycle.isVisible = false
                     binding.emptyTracksPlaceholderBottomSheetPlaylistDetail.isVisible = true
                 }
 
                 PlaylistSongState.Loading -> {
+                    currentSongs = emptyList()
                     binding.allTracksDurationPlaylistDetail.text = getString(
                         R.string.all_tracks_duration_playlist_detail,
                         "0"
                     )
                     binding.tracksCountPaylistDetail.text =
                         getString(R.string.tracks_count_playlist_detail, 0)
+                    updateShareButtons()
                 }
             }
         }
+    }
+
+    private fun updateShareButtons() {
+        val shareClick = View.OnClickListener {
+            if (currentSongs.isEmpty()) {
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.playlist_dont_have_tracks_playlist_detail),
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                shareIntent(currentSongs, currentPlaylistName)
+            }
+        }
+        binding.icSharePlaylistDetail.setOnClickListener(shareClick)
+        binding.sharePlaylistOverflowMenuBottomSheetPlaylistDetail.setOnClickListener(shareClick)
     }
 
     fun setupUI() {
@@ -274,6 +273,8 @@ class PlaylistDetailFragment : BindingFragment<FragmentPlaylistDetailBinding>() 
             findNavController().navigateUp()
         }
         viewModel.getPlaylistState().observe(viewLifecycleOwner) { playlist ->
+            currentPlaylistName = playlist.name
+            updateShareButtons()
             setGlide(
                 playlist.imagePath, binding.imageOverflowMenuBottomSheetPlaylistDetail,
                 MultiTransformation(

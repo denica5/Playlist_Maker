@@ -8,6 +8,7 @@ import com.denica.playlistmaker.mediaLibrary.domain.DbPlaylistInteractor
 import com.denica.playlistmaker.mediaLibrary.domain.Playlist
 import com.denica.playlistmaker.search.domain.models.Song
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
@@ -17,9 +18,9 @@ import java.util.Locale
 
 class PlaylistDetailViewModel(
     val playlistInteractor: DbPlaylistInteractor,
-    val playlist: Playlist
+    private val playlistId: Long
 ) : ViewModel() {
-    private val playlistState = MutableLiveData<Playlist>(playlist)
+    private val playlistState = MutableLiveData<Playlist>(Playlist())
     fun getPlaylistState(): LiveData<Playlist> = playlistState
     private val playlistSongState = MutableLiveData<PlaylistSongState>()
     fun getPlaylistSongState(): LiveData<PlaylistSongState> = playlistSongState
@@ -27,16 +28,36 @@ class PlaylistDetailViewModel(
     private val _navigateUpEvent = MutableSharedFlow<Unit>()
     val navigateUpEvent = _navigateUpEvent.asSharedFlow()
 
+    private var tracksJob: Job? = null
+
     init {
+        refreshPlaylistAndTracks()
+    }
+
+    private fun refreshPlaylistAndTracks() {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) { getAllTracks() }
+            val dbPlaylist = withContext(Dispatchers.IO) {
+                playlistInteractor.getPlaylist(playlistId) ?: Playlist()
+            }
+            playlistState.postValue(dbPlaylist)
+            collectTracks(dbPlaylist)
         }
     }
 
-    suspend fun getAllTracks() =
-        playlistInteractor.getPlaylistSongsByIds(playlist.trackIds).collect {
-            processResult(it, getAllTracksDuration(it))
+    private fun collectTracks(playlist: Playlist) {
+        tracksJob?.cancel()
+
+        if (playlist.trackIds.isEmpty()) {
+            playlistSongState.postValue(PlaylistSongState.Empty)
+            return
         }
+
+        tracksJob = viewModelScope.launch(Dispatchers.IO) {
+            playlistInteractor.getPlaylistSongsByIds(playlist.trackIds).collect { songs ->
+                processResult(songs, getAllTracksDuration(songs))
+            }
+        }
+    }
 
 
     fun getAllTracksDuration(listSongs: List<Song>): String {
@@ -60,7 +81,7 @@ class PlaylistDetailViewModel(
 
     fun deletePlaylist() {
         viewModelScope.launch {
-            playlistInteractor.deletePlaylist(playlist.id)
+            playlistInteractor.deletePlaylist(playlistId)
             _navigateUpEvent.emit(Unit)
         }
     }
@@ -69,19 +90,24 @@ class PlaylistDetailViewModel(
         viewModelScope.launch {
             val dbPlaylist: Playlist
             withContext(Dispatchers.IO) {
-                dbPlaylist = playlistInteractor.getPlaylist(playlist.id) ?: Playlist()
+                dbPlaylist = playlistInteractor.getPlaylist(playlistId) ?: Playlist()
             }
             playlistState.postValue(dbPlaylist)
+            collectTracks(dbPlaylist)
         }
     }
 
     fun removeSongFromPlaylist(song: Song) {
         viewModelScope.launch {
             playlistInteractor.removeTrackFromPlayList(
-                playlist.id,
+                playlistId,
                 song.trackId
             )
-            getAllTracks()
+            withContext(Dispatchers.IO) {
+                val dbPlaylist = playlistInteractor.getPlaylist(playlistId) ?: Playlist()
+                playlistState.postValue(dbPlaylist)
+                collectTracks(dbPlaylist)
+            }
         }
     }
 }

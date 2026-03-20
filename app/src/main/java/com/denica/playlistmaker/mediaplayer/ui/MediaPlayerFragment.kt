@@ -34,7 +34,7 @@ import com.denica.playlistmaker.search.domain.models.Song
 import com.denica.playlistmaker.search.ui.SearchFragment
 import com.denica.playlistmaker.search.ui.TrackListViewHolder
 import com.denica.playlistmaker.utils.BindingFragment
-import com.denica.playlistmaker.utils.debounce
+import com.denica.playlistmaker.utils.throttleFirst
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -51,6 +51,7 @@ class MediaPlayerFragment : BindingFragment<FragmentMediaPlayerBinding>() {
     }
     private val dateFormat by lazy { SimpleDateFormat("mm:ss", Locale.getDefault()) }
     private var musicService: IMusicService? = null
+    private var isServiceBound: Boolean = false
 
     companion object {
         const val PREVIEW_SONG_URL_EXTRA = "song_url"
@@ -63,11 +64,12 @@ class MediaPlayerFragment : BindingFragment<FragmentMediaPlayerBinding>() {
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
-        if (isGranted) {
-        } else {
-
-            Toast.makeText(requireContext(), "Can't start foreground service!", Toast.LENGTH_LONG)
-                .show()
+        if (!isGranted) {
+            Toast.makeText(
+                requireContext(),
+                "Без разрешения на уведомления плеер не сможет показывать уведомление в фоне",
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
     private val serviceConnection = object : ServiceConnection {
@@ -75,11 +77,14 @@ class MediaPlayerFragment : BindingFragment<FragmentMediaPlayerBinding>() {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             val binder = service as MusicService.MusicServiceBinder
             musicService = binder.getService()
+            isServiceBound = true
+            musicService?.hideNotification()
             viewModel.onServiceConnected(musicService!!)
         }
 
         override fun onServiceDisconnected(p0: ComponentName?) {
             musicService = null
+            isServiceBound = false
         }
     }
 
@@ -202,10 +207,9 @@ class MediaPlayerFragment : BindingFragment<FragmentMediaPlayerBinding>() {
 
 
             }
-        val onPlaylistDebounce = debounce<Playlist>(
+        val onPlaylistDebounce = throttleFirst<Playlist>(
             SearchFragment.CLICK_DEBOUNCE_DELAY,
             viewLifecycleOwner.lifecycleScope,
-            false
         ) { playlist ->
             viewModel.addTrackToPlaylist(playlist, songDto.trackId)
 
@@ -292,18 +296,22 @@ class MediaPlayerFragment : BindingFragment<FragmentMediaPlayerBinding>() {
     override fun onStop() {
 
         super.onStop()
-        if (viewModel.getPlayerState().value is PlayerState.Playing && requireContext().checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) ==
-            PackageManager.PERMISSION_GRANTED
-        ) {
-            viewModel.showNotification()
+        if (viewModel.getPlayerState().value is PlayerState.Playing) {
+            val canPostNotifications =
+                Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
+                        requireContext().checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) ==
+                        PackageManager.PERMISSION_GRANTED
+
+            if (canPostNotifications) {
+                viewModel.showNotification()
+            }
         }
 
     }
 
     override fun onStart() {
         super.onStart()
-            musicService?.hideNotification()
-
+        viewModel.hideNotification()
 
     }
 
@@ -334,13 +342,24 @@ class MediaPlayerFragment : BindingFragment<FragmentMediaPlayerBinding>() {
             intent.putExtra(PREVIEW_SONG_URL_EXTRA, songDto.previewUrl)
             intent.putExtra(ARTIST_NAME_EXTRA, songDto.artistName)
             intent.putExtra(TRACK_NAME_EXTRA, songDto.trackName)
-            requireActivity().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
-
+            isServiceBound = requireActivity().bindService(
+                intent,
+                serviceConnection,
+                Context.BIND_AUTO_CREATE
+            )
         }
     }
 
     private fun unbindMusicService() {
-        requireContext().unbindService(serviceConnection)
+        if (!isServiceBound) return
+        try {
+            requireActivity().unbindService(serviceConnection)
+        } catch (_: IllegalArgumentException) {
+            
+        } finally {
+            isServiceBound = false
+            musicService = null
+        }
     }
 
 }
